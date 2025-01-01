@@ -2,8 +2,6 @@
 
 #include <ostream>
 
-#include "Object.h"
-
 enum TokenType {
 	// Single-character tokens
 	LEFT_PAREN,
@@ -50,6 +48,8 @@ enum TokenType {
 	TRUE,
 	VAR,
 	WHILE,
+
+	END_OF_FILE
 };
 
 class Token {

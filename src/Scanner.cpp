@@ -1,16 +1,14 @@
-#include <sstream>
-
 #include "Scanner.h"
 
+#include <sstream>
+
+Scanner::Scanner(const std::string &source) : source(source) {}
+
 std::vector<Token> Scanner::scanTokens() {
-    std::vector<Token> tokens;
-
-    std::istringstream stream(source);
-    std::string word;
-
-    while (stream >> word) {
-        tokens.push_back(word);
-    }
-
-    return tokens;
+	while (!isAtEnd()) {
+		start = current;
+		scanToken();
+	}
 }
+
+bool Scanner::isAtEnd() { return current >= source.length(); }
