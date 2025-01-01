@@ -13,6 +13,11 @@ class Scanner {
 
    private:
 	bool isAtEnd();
+	void scanToken();
+	bool match(char expected);
+	char advance();
+	void addToken(TokenType type, std::string literal);
+	void addToken(TokenType type);
 
 	int start = 0;
 	int current = 0;
