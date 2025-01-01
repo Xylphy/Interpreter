@@ -2,8 +2,8 @@
 
 #include "Scanner.h"
 
-std::vector<std::string> Scanner::scanTokens() {
-    std::vector<std::string> tokens;
+std::vector<Token> Scanner::scanTokens() {
+    std::vector<Token> tokens;
 
     std::istringstream stream(source);
     std::string word;

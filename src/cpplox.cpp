@@ -8,9 +8,9 @@ bool hadError = false;
 
 void run(const std::string &source) {
 	Scanner *scanner = new Scanner(source);
-	std::vector<std::string> tokens = scanner->scanTokens();
+	std::vector<Token> tokens = scanner->scanTokens();
 
-	for (std::string token : tokens) std::cout << token << std::endl;
+	for (Token token : tokens) std::cout << token << std::endl;
 }
 
 void runFile(const char *path) {
