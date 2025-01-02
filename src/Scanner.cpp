@@ -1,5 +1,8 @@
 #include "Scanner.h"
 
+#include <any>
+#include <string>
+
 #include "Token.h"
 #include "cpplox.h"
 
@@ -23,6 +26,47 @@ bool Scanner::match(char expected) {
 
 	current++;
 	return true;
+}
+
+char Scanner::peek() {
+	if (isAtEnd()) return '\0';
+	return source[current];
+}
+
+char Scanner::peekNext() {
+	if (current + 1 >= source.length()) return '\0';
+
+	return source[current + 1];
+}
+
+void Scanner::string() {
+	while (peek() != '"' && !isAtEnd()) {
+		if (peek() == '\n') line++;
+
+		advance();
+	}
+
+	if (isAtEnd()) {
+		error(line, "Unterminated string.");
+		return;
+	}
+
+	advance();
+	addToken(STRING, source.substr(start + 1, start - current - 1));
+}
+
+bool Scanner::isDigit(char c) { return c >= '0' && c <= '9'; }
+
+void Scanner::number() {
+	while (isDigit(peek())) advance();
+
+	if (peek() == '.' && isDigit(peekNext())) {
+		advance();
+
+		while (isDigit(peek())) advance();
+	}
+
+	addToken(NUMBER, std::stod(source.substr(start, current - start)));
 }
 
 void Scanner::scanToken() {
@@ -70,15 +114,36 @@ void Scanner::scanToken() {
 		case '>':
 			addToken(match('=') ? GREATER_EQUAL : GREATER);
 			break;
+		case '/':
+			if (match('/')) {
+				while (peek() != '\n' && !isAtEnd()) advance();
+			} else {
+				addToken(SLASH);
+			}
+			break;
+		case ' ':
+		case '\r':
+		case '\t':
+			break;
+		case '\n':
+			line++;
+			break;
+		case '"':
+			string();
+			break;
 		default:
-			error(line, "Unexpected character.");
+			if (isDigit(c)) {
+				number();
+			} else {
+				error(line, "Unexpected character.");
+			}
 			break;
 	}
 }
 
 char Scanner::advance() { return source[current++]; }
 
-void Scanner::addToken(TokenType type, std::string literal) {
+void Scanner::addToken(TokenType type, std::any literal) {
 	tokens.emplace_back(type, source.substr(start, current - start), literal,
 						line);
 }

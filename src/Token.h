@@ -1,5 +1,6 @@
 #pragma once
 
+#include <any>
 #include <ostream>
 
 enum TokenType {
@@ -55,12 +56,12 @@ enum TokenType {
 class Token {
    public:
 	friend std::ostream &operator<<(std::ostream &os, const Token &t);
-    Token(TokenType type, const std::string &lexeme, const std::string &literal, int line);
+    Token(TokenType type, const std::string &lexeme, const std::any &literal, int line);
 
    private:
 	TokenType type;
 	std::string lexeme;
-	std::string literal;
+	std::any literal;
 	int line;
 };
 

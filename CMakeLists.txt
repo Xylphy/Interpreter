@@ -5,8 +5,6 @@ project(Lox)
 set(CMAKE_CXX_STANDARD 26)
 
 add_executable(Lox 
-    "src/Object.h"
-    "src/Object.cpp"
     "src/Token.h"
     "src/Token.cpp"
     "src/Scanner.h"

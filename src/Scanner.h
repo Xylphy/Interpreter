@@ -1,5 +1,6 @@
 #pragma once
 
+#include <any>
 #include <string>
 #include <vector>
 
@@ -14,9 +15,14 @@ class Scanner {
    private:
 	bool isAtEnd();
 	void scanToken();
+	void number();
+	void string();
 	bool match(char expected);
+	char peek();
+	char peekNext();
+	bool isDigit(char c);
 	char advance();
-	void addToken(TokenType type, std::string literal);
+	void addToken(TokenType type, std::any literal);
 	void addToken(TokenType type);
 
 	int start = 0;
