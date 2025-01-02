@@ -2,6 +2,7 @@
 
 #include <any>
 #include <string>
+#include <unordered_map>
 
 #include "Token.h"
 #include "cpplox.h"
@@ -52,7 +53,7 @@ void Scanner::string() {
 	}
 
 	advance();
-	addToken(STRING, source.substr(start + 1, start - current - 1));
+	addToken(STRING, std::stod(source.substr(start + 1, current - start - 2)));
 }
 
 bool Scanner::isDigit(char c) { return c >= '0' && c <= '9'; }
@@ -68,6 +69,24 @@ void Scanner::number() {
 
 	addToken(NUMBER, std::stod(source.substr(start, current - start)));
 }
+
+void Scanner::identifier(){
+	while (isAlphaNumeric(peek())) advance();
+
+	typename std::unordered_map<std::string, TokenType>::const_iterator it = keywords.find(source.substr(start, current - start));
+	TokenType type = it != keywords.end() ? it->second : IDENTIFIER;
+
+	addToken(IDENTIFIER);
+}
+
+bool Scanner::isAlpha(char c){
+	return (c >= 'a' && c <= 'z') || (c <= 'A' && c <= 'Z') || c == '_';
+}
+
+bool Scanner::isAlphaNumeric(char c){
+	return isAlpha(c) || isDigit(c);
+}
+
 
 void Scanner::scanToken() {
 	char c = advance();
@@ -131,9 +150,14 @@ void Scanner::scanToken() {
 		case '"':
 			string();
 			break;
+		case 'o':
+			if (match('r')) addToken(OR);
+			break;
 		default:
 			if (isDigit(c)) {
 				number();
+			} else if(isAlpha(c)){
+				identifier();
 			} else {
 				error(line, "Unexpected character.");
 			}
