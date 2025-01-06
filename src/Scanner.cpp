@@ -76,7 +76,7 @@ void Scanner::identifier(){
 	typename std::unordered_map<std::string, TokenType>::const_iterator it = keywords.find(source.substr(start, current - start));
 	TokenType type = it != keywords.end() ? it->second : IDENTIFIER;
 
-	addToken(IDENTIFIER);
+	addToken(type);
 }
 
 bool Scanner::isAlpha(char c){
@@ -136,6 +136,18 @@ void Scanner::scanToken() {
 		case '/':
 			if (match('/')) {
 				while (peek() != '\n' && !isAtEnd()) advance();
+			} else if (match('*')) {
+				while (peek() != '*' && peekNext() != '/' && !isAtEnd()) {
+					if (peek() == '\n') line++;
+					advance();
+				}
+
+				if (isAtEnd()) {
+					error(line, "Unterminated block comment.");
+					return;
+				}
+				advance();
+				advance();
 			} else {
 				addToken(SLASH);
 			}

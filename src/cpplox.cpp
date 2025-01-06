@@ -1,12 +1,14 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <string>
 
 #include "Scanner.h"
 
 bool hadError = false;
 
 void run(const std::string &source) {
+	std::cout << "Running: " << source << std::endl;
 	Scanner *scanner = new Scanner(source);
 	std::vector<Token> tokens = scanner->scanTokens();
 
@@ -31,11 +33,14 @@ void runFile(const char *path) {
 
 void runPrompt() {
 	std::string line;
+	std::getline(std::cin, line);
+	
 	while (true) {
 		std::cout << "> ";
 		if (!std::getline(std::cin, line) || line.empty()) break;
+
 		run(line);
-        hadError = false;
+		hadError = false;
 	}
 }
 
