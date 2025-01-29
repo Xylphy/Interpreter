@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -94,24 +95,81 @@ void defineAst(std::string outputDir, std::string &&baseName,
 	headerFile.close();
 }
 
-void defineType(std::ofstream &file, std::string &baseName,
-				std::string &className, std::string &fields) {
-	file << "class " << className << " : public " << baseName << " {\n";
-	file << "public:\n";
+void defineType(std::ofstream &headerFile, std::string &baseName,
+				std::string &className, std::string &fieldList) {
+	// Extract the fields
+	// Vector of <type, name>, e.g. {Expr, left}, {Token, op}, {Expr, right}
+	std::vector<std::pair<std::string, std::string>> fields;
+	std::istringstream iss(fieldList);
+	std::string field;
 
-	size_t start = 0;
-	size_t end = fields.find(", ");
-
-	std::vector<std::string> fieldNames;
-
-	while (end != std::string::npos) {
-		fieldNames.push_back(
-			fields.substr(start, end - start).substr(fields.find(" ") + 1));
-		start = end + 2;
-		end = fields.find(", ", start);
+	while (std::getline(iss, field, ','))  // Takes in params by reference
+	{
+		// Remove leading/trailing whitespaces
+		field = field.substr(field.find_first_not_of(" "),
+							 field.find_last_not_of(" ") + 1);
+		std::string type = field.substr(0, field.find(" "));
+		std::string name = field.substr(field.find(" ") + 1);
+		fields.push_back(std::make_pair(type, name));
 	}
 
-	file << "\t" << fields.substr(start) << ";\n";
-	/* 	file << "\t" << className << "(" << fields << ") : " << fields << "
-	   {}\n"; file << "\t" << fields << ";\n"; file << "};\n\n"; */
+	std::string constructorParams;
+	std::string initializationParams;
+
+	// Start class
+	headerFile << "class " << className << " : public " << baseName << " {"
+			   << "\n";
+	headerFile << "public:"
+			   << "\n";
+
+	// Define the fields
+	// E.g. Expr left; Token op; Expr right;
+	for (const auto &field : fields) {
+		// NOTE: Structured bindings
+		auto &[type, name] = field;
+		headerFile << type << " " << name << ";"
+				   << "\n";
+
+		// If type contains vector of unique_ptr then manually construct the
+		// vector
+		if (type.find("unique_ptr") != std::string::npos) {
+			// E.g. Binary(std::unique_ptr<Expr> &left, Token op,
+			// std::unique_ptr<Expr> &right);
+			constructorParams += type + " &" + name;
+			initializationParams += name + "(std::move(" + name + "))";
+		} else {
+			constructorParams += type + " " + name;
+			// If raw ptr then don't do *ptr( *ptr ), just ptr(ptr)
+			// Example: void *literal; -> literal(literal)
+			if (type.find("*") != std::string::npos) {
+				std::string temp = name.substr(1);
+				initializationParams += temp + "(" + temp + ")";
+			} else
+				initializationParams += name + "(" + name + ")";
+		}
+
+		// Add commas if not the last field
+		if (field != fields.back()) {
+			constructorParams += ", ";
+			initializationParams += ", ";
+		}
+	}
+	headerFile << "\n";
+
+	// E.g. Binary(std::unique_ptr<Expr> left, Token op, std::unique_ptr<Expr>
+	// right) : left(std::move(left)), op(op), right(std::move(right)) {}
+	headerFile << className << "(" << constructorParams
+			   << ") : " << initializationParams << " {}"
+			   << "\n";
+
+	// void accept(Visitor &visitor) override {
+	// visitor.visit[className][baseName](*this); }
+	headerFile << "void accept( " << baseName
+			   << "Visitor &visitor) override { visitor.visit" << className
+			   << baseName << "(*this); }"
+			   << "\n";
+
+	// End class
+	headerFile << "};"
+			   << "\n";
 }
