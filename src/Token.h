@@ -17,7 +17,7 @@ enum TokenType {
 	SLASH,
 	STAR,
 
-    // One or two character tokens
+	// One or two character tokens
 	BANG,
 	BANG_EQUAL,
 	EQUAL,
@@ -55,8 +55,9 @@ enum TokenType {
 
 class Token {
    public:
+	Token(TokenType type, const std::string &lexeme, const std::any &literal,
+		  int line);
 	friend std::ostream &operator<<(std::ostream &os, const Token &t);
-    Token(TokenType type, const std::string &lexeme, const std::any &literal, int line);
 
    private:
 	TokenType type;
