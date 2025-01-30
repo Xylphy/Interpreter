@@ -71,7 +71,7 @@ void Scanner::number() {
 }
 
 void Scanner::identifier() {
-	while (isAlphaNumeric(peek())) advance();
+	while (isAlphaNumeric(peek()) && !isAtEnd()) advance();
 
 	typename std::unordered_map<std::string, TokenType>::const_iterator it =
 		keywords.find(source.substr(start, current - start));
