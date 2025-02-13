@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.31.3)
 project(Lox)
 
 set(CMAKE_CXX_STANDARD 26)
+string(REPLACE "{" "" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -Werror -fsanitize=address")
 
 add_executable(Interpreter
     "src/Abstract Syntax Tree/Expr.h"
@@ -13,10 +14,4 @@ add_executable(Interpreter
     "src/interpreter.hpp"
     "src/interpreter.cpp"
     "src/main.cpp"
-)
-
-add_executable(Tool
-    "tool/generateAst.h"
-    "tool/generateAst.cpp"
-    "tool/main.cpp"
 )

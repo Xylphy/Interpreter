@@ -80,7 +80,7 @@ class Token {
 	TokenType type;
 	std::string lexeme;
 	std::any literal;
-	int line;
+	size_t line;
 };
 
 std::ostream &operator<<(std::ostream &os, const Token &t);

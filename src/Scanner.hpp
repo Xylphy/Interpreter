@@ -1,6 +1,7 @@
 #pragma once
 
 #include <any>
+#include <cstddef>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -31,9 +32,9 @@ class Scanner {
 	void addToken(TokenType type, std::any literal);
 	void addToken(TokenType type);
 
-	int start = 0;
-	int current = 0;
-	int line = 1;
+	size_t start = 0;
+	size_t current = 0;
+	size_t line = 1;
 	std::string source;
 	std::vector<Token> tokens;
 	const std::unordered_map<std::string, TokenType> keywords = {

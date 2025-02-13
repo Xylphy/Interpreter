@@ -113,7 +113,7 @@ bool Scanner::isAlpha(char c) {
 
 bool Scanner::isAlphaNumeric(char c) { return isAlpha(c) || isDigit(c); }
 
-void Scanner::escapeChar(){
+void Scanner::escapeChar() {
 	addToken(ESCAPE_CHARACTER, source.substr(start, current - start));
 	current += 2;
 }
@@ -136,9 +136,9 @@ void Scanner::scanToken() {
 		case ',':
 			addToken(COMMA);
 			break;
-		case '.':
-			addToken(DOT);
-			break;
+			/* 		case '.':
+						addToken(DOT);
+						break; */
 		case '-':
 			if (match('-'))
 				while (peek() != '\n' && !isAtEnd()) advance();
@@ -153,9 +153,9 @@ void Scanner::scanToken() {
 		case '+':
 			addToken(PLUS);
 			break;
-		case ';':
-			addToken(SEMICOLON);  // Optional
-			break;
+			/* 		case ';':
+						addToken(SEMICOLON);  // Optional
+						break; */
 		case '*':
 			addToken(STAR);
 			break;
@@ -195,20 +195,17 @@ void Scanner::scanToken() {
 		case '"':
 			string();
 			break;
-		case 'o':
-			if (match('r')) addToken(OR);  // FIX: OR
-			break;
 		case '\'':
 			charLiteral();
 			break;
 		default:
-			if (isDigit(c)) {
+			if (isDigit(c))
 				number();
-			} else if (isAlpha(c)) {
+			else if (isAlpha(c))
 				identifier();
-			} else {
+			else
 				error(line, "Unexpected character: " + std::to_string(c));
-			}
+
 			break;
 	}
 }
