@@ -4,14 +4,14 @@ project(Lox)
 
 set(CMAKE_CXX_STANDARD 26)
 
-add_executable(Lox 
+add_executable(Interpreter
     "src/Abstract Syntax Tree/Expr.h"
-    "src/Token.h"
+    "src/Token.hpp"
     "src/Token.cpp"
-    "src/Scanner.h"
+    "src/Scanner.hpp"
     "src/Scanner.cpp"
-    "src/cpplox.h"
-    "src/cpplox.cpp"
+    "src/interpreter.hpp"
+    "src/interpreter.cpp"
     "src/main.cpp"
 )
 

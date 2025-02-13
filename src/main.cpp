@@ -1,7 +1,7 @@
 #include <cstdlib>
 #include <iostream>
 
-#include "cpplox.h"
+#include "interpreter.hpp"
 
 int main() {
 	int choice;

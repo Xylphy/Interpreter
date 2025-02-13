@@ -5,7 +5,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include "Token.h"
+#include "Token.hpp"
 
 class Scanner {
    public:
@@ -19,7 +19,9 @@ class Scanner {
 	void identifier();
 	void number();
 	void string();
-	bool match(char expected);
+	void charLiteral();
+	void escapeChar();
+	bool match(char &&expected);
 	char peek();
 	char peekNext();
 	bool isAlpha(char c);
@@ -35,9 +37,13 @@ class Scanner {
 	std::string source;
 	std::vector<Token> tokens;
 	const std::unordered_map<std::string, TokenType> keywords = {
-		{"and", AND},	{"class", CLASS}, {"else", ELSE},	  {"false", FALSE},
-		{"for", FOR},	{"fun", FUN},	  {"if", IF},		  {"nil", NIL},
-		{"or", OR},		{"print", PRINT}, {"return", RETURN}, {"super", SUPER},
-		{"this", THIS}, {"true", TRUE},	  {"var", VAR},		  {"while", WHILE},
+		{"UG", AND},		  {"KLASE", CLASS},	  {"KUNG WALA", ELSE},
+		{"ALANG SA", FOR},	  {"BUHAT", FUN},	  {"KUNG", IF},
+		{"NULL", NIL},		  {"O", OR},		  {"IPAKITA", PRINT},
+		{"BALIK", RETURN},	  {"SUPER", SUPER},	  {"KINI", THIS},
+		{"MUGNA", VAR},		  {"SAMTANG", WHILE}, {"DAWAT", INPUT},
+		{"SUGOD", START},	  {"KATAPUSAN", END}, {"NUMERO", INTEGER},
+		{"PITIK", DECIMAL},	  {"TINUOD", BOOL},	  {"OO", BOOL_TRUE},
+		{"DILI", BOOL_FALSE}, {"LETRA", CHAR},
 	};
 };

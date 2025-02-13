@@ -13,9 +13,14 @@ enum TokenType {
 	DOT,
 	MINUS,
 	PLUS,
-	SEMICOLON,
 	SLASH,
 	STAR,
+	SEMICOLON,
+	MODULO,
+	NEW_LINE,
+	CONCATENATOR,
+	ESCAPE_CHARACTER,
+	COLON,
 
 	// One or two character tokens
 	BANG,
@@ -29,8 +34,13 @@ enum TokenType {
 
 	// Literals
 	IDENTIFIER,
+	CHARACTER,
 	STRING,
 	NUMBER,
+	DECIMAL_NUMBER,
+	BOOL_TRUE,
+	BOOL_FALSE,
+	CHARACTER_LITERAL,
 
 	// Keywords
 	AND,
@@ -49,6 +59,13 @@ enum TokenType {
 	TRUE,
 	VAR,
 	WHILE,
+	INPUT,
+	START,
+	END,
+	INTEGER,
+	DECIMAL,
+	BOOL,
+	CHAR,
 
 	END_OF_FILE
 };

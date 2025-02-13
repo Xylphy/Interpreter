@@ -1,11 +1,11 @@
-#include "Scanner.h"
+#include "Scanner.hpp"
 
 #include <any>
 #include <string>
 #include <unordered_map>
 
-#include "Token.h"
-#include "cpplox.h"
+#include "Token.hpp"
+#include "interpreter.hpp"
 
 Scanner::Scanner(const std::string &source) : source(source) {}
 
@@ -21,7 +21,7 @@ std::vector<Token> Scanner::scanTokens() {
 
 bool Scanner::isAtEnd() { return current >= source.length(); }
 
-bool Scanner::match(char expected) {
+bool Scanner::match(char &&expected) {
 	if (isAtEnd()) return false;
 	if (source[current] != expected) return false;
 
@@ -51,40 +51,72 @@ void Scanner::string() {
 		error(line, "Unterminated string.");
 		return;
 	}
-
 	advance();
-	addToken(STRING, std::stod(source.substr(start + 1, current - start - 2)));
+
+	std::string value = source.substr(start + 1, current - start - 2);
+
+	std::unordered_map<std::string, TokenType>::const_iterator it =
+		keywords.find(value);
+	if (it != keywords.end()) {
+		addToken(it->second);
+	} else
+		addToken(STRING, value);
+}
+
+void Scanner::charLiteral() {
+	while (peek() != '\'' && !isAtEnd()) {
+		if (peek() == '\n') line++;
+
+		advance();
+	}
+
+	if (isAtEnd()) {
+		error(line, "Unterminated character literal.");
+		return;
+	}
+	advance();
+
+	addToken(CHARACTER_LITERAL, source.substr(start + 1, current - start - 2));
 }
 
 bool Scanner::isDigit(char c) { return c >= '0' && c <= '9'; }
 
 void Scanner::number() {
 	while (isDigit(peek())) advance();
+	bool isDecimal = false;
 
 	if (peek() == '.' && isDigit(peekNext())) {
 		advance();
+		isDecimal = true;
 
 		while (isDigit(peek())) advance();
 	}
 
-	addToken(NUMBER, std::stod(source.substr(start, current - start)));
+	if (isDecimal)
+		addToken(DECIMAL, std::stod(source.substr(start, current - start)));
+	else
+		addToken(NUMBER, std::stoi(source.substr(start, current - start)));
 }
 
 void Scanner::identifier() {
-	while (isAlphaNumeric(peek()) && !isAtEnd()) advance();
+	while (isAlphaNumeric(peek())) advance();
 
 	typename std::unordered_map<std::string, TokenType>::const_iterator it =
 		keywords.find(source.substr(start, current - start));
-	TokenType type = it != keywords.end() ? it->second : IDENTIFIER;
 
-	addToken(type);
+	addToken(it != keywords.end() ? it->second : IDENTIFIER);
 }
 
 bool Scanner::isAlpha(char c) {
-	return (c >= 'a' && c <= 'z') || (c <= 'A' && c <= 'Z') || c == '_';
+	return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_';
 }
 
 bool Scanner::isAlphaNumeric(char c) { return isAlpha(c) || isDigit(c); }
+
+void Scanner::escapeChar(){
+	addToken(ESCAPE_CHARACTER, source.substr(start, current - start));
+	current += 2;
+}
 
 void Scanner::scanToken() {
 	char c = advance();
@@ -108,13 +140,21 @@ void Scanner::scanToken() {
 			addToken(DOT);
 			break;
 		case '-':
-			addToken(MINUS);
+			if (match('-'))
+				while (peek() != '\n' && !isAtEnd()) advance();
+			else if (match(isDigit(peek())))
+				number();
+			else
+				addToken(MINUS);
+			break;
+		case ':':
+			addToken(COLON);
 			break;
 		case '+':
 			addToken(PLUS);
 			break;
 		case ';':
-			addToken(SEMICOLON);
+			addToken(SEMICOLON);  // Optional
 			break;
 		case '*':
 			addToken(STAR);
@@ -131,23 +171,18 @@ void Scanner::scanToken() {
 		case '>':
 			addToken(match('=') ? GREATER_EQUAL : GREATER);
 			break;
-		case '/':
-			if (match('/')) {
-				while (peek() != '\n' && !isAtEnd()) advance();
-			} else if (match('*')) {
-				while (peek() != '*' && peekNext() != '/' && !isAtEnd()) {
-					if (peek() == '\n') line++;
-					advance();
-				}
-
-				if (isAtEnd()) {
-					error(line, "Unterminated block comment.");
-					return;
-				}
-				advance();
-				advance();
-			} else {
-				addToken(SLASH);
+		case '%':
+			addToken(MODULO);
+			break;
+		case '&':
+			addToken(CONCATENATOR);
+			break;
+		case '$':
+			addToken(NEW_LINE);
+			break;
+		case '[':
+			if (peekNext() == ']') {
+				escapeChar();
 			}
 			break;
 		case ' ':
@@ -161,7 +196,10 @@ void Scanner::scanToken() {
 			string();
 			break;
 		case 'o':
-			if (match('r')) addToken(OR);
+			if (match('r')) addToken(OR);  // FIX: OR
+			break;
+		case '\'':
+			charLiteral();
 			break;
 		default:
 			if (isDigit(c)) {
@@ -169,7 +207,7 @@ void Scanner::scanToken() {
 			} else if (isAlpha(c)) {
 				identifier();
 			} else {
-				error(line, "Unexpected character.");
+				error(line, "Unexpected character: " + std::to_string(c));
 			}
 			break;
 	}
