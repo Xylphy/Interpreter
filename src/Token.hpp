@@ -49,7 +49,6 @@ enum TokenType {
 	FALSE,
 	FUN,
 	FOR,
-	IF,
 	NIL,
 	OR,
 	PRINT,
@@ -66,6 +65,7 @@ enum TokenType {
 	DECIMAL,
 	BOOL,
 	CHAR,
+	IF,
 
 	END_OF_FILE
 };

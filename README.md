@@ -4,9 +4,9 @@ This project is a simple interpreter for a custom programming language. It can r
 
 ## Features
 
-- Lexical analysis (tokenization)
-- Syntax analysis (parsing)
-- Execution of code
+- Lexical analysis (tokenization) # DONE
+- Syntax analysis (parsing) # TODO
+- Execution of code # TODO
 
 ## Getting Started
 
@@ -35,7 +35,7 @@ You can run the interpreter in two modes: file mode and prompt mode.
 To run a file, use the following command:
 
 ```sh
-./interpreter
+./Interpreter
 ```
 
 Then enter `1` and provide the path to the file when prompted.
@@ -45,7 +45,7 @@ Then enter `1` and provide the path to the file when prompted.
 To run the interactive prompt, use the following command:
 
 ```sh
-./interpreter
+./Interpreter
 ```
 
 Then enter `2` to start the prompt.
@@ -70,7 +70,7 @@ KATAPUSAN
 
 ### Running the Example
 
-Save the example code to a file (e.g., `example.lox`) and run the interpreter in file mode, providing the path to the file.
+Save the example code to a file (e.g., `example.txt`) and run the interpreter in file mode, providing the path to the file.
 
 ## Contributing
 

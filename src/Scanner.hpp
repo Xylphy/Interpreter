@@ -38,13 +38,17 @@ class Scanner {
 	std::string source;
 	std::vector<Token> tokens;
 	const std::unordered_map<std::string, TokenType> keywords = {
-		{"UG", AND},		  {"KLASE", CLASS},	  {"KUNG WALA", ELSE},
-		{"ALANG SA", FOR},	  {"BUHAT", FUN},	  {"KUNG", IF},
-		{"NULL", NIL},		  {"O", OR},		  {"IPAKITA", PRINT},
-		{"BALIK", RETURN},	  {"SUPER", SUPER},	  {"KINI", THIS},
-		{"MUGNA", VAR},		  {"SAMTANG", WHILE}, {"DAWAT", INPUT},
-		{"SUGOD", START},	  {"KATAPUSAN", END}, {"NUMERO", INTEGER},
-		{"PITIK", DECIMAL},	  {"TINUOD", BOOL},	  {"OO", BOOL_TRUE},
-		{"DILI", BOOL_FALSE}, {"LETRA", CHAR},
+		{"UG", AND},		   {"KLASE", CLASS},
+		{"WALA", ELSE},		   {"SA", FOR},
+		{"BUHAT", FUN},		   {"KUNG", IF},
+		{"NULL", NIL},		   {"O", OR},
+		{"IPAKITA", PRINT},	   {"BALIK", RETURN},
+		{"SUPER", SUPER},	   {"KINI", THIS},
+		{"MUGNA", VAR},		   {"ALANG", WHILE},
+		{"DAWAT", INPUT},	   {"SUGOD", START},
+		{"KATAPUSAN", END},	   {"NUMERO", INTEGER},
+		{"PITIK", DECIMAL},	   {"TINUOD", BOOL},
+		{"\"OO\"", BOOL_TRUE}, {"\"DILI\"", BOOL_FALSE},
+		{"LETRA", CHAR},
 	};
 };

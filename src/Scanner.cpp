@@ -53,14 +53,14 @@ void Scanner::string() {
 	}
 	advance();
 
-	std::string value = source.substr(start + 1, current - start - 2);
+	std::string value = source.substr(start, current - start);
 
 	std::unordered_map<std::string, TokenType>::const_iterator it =
 		keywords.find(value);
 	if (it != keywords.end()) {
 		addToken(it->second);
 	} else
-		addToken(STRING, value);
+		addToken(STRING, value.substr(1, value.length() - 2));
 }
 
 void Scanner::charLiteral() {
