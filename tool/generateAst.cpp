@@ -30,8 +30,7 @@ void defineAst(std::string outputDir, std::string &&baseName,
 
 	// Includes
 	headerFile << "#pragma once\n\n";
-	headerFile << "#include \"../Token.hpp\"\n";
-	headerFile << "#include \"Expr.hpp\"\n\n";
+	headerFile << "#include \"Token.hpp\"\n";
 
 	// Forward declarations
 	// e.g. class Binary; class Grouping; class Literal; class Unary;
@@ -46,7 +45,7 @@ void defineAst(std::string outputDir, std::string &&baseName,
 	for (const std::string &subclassName : subClasses) {
 		// e.g. virtual void visitBinaryExpr(const Binary &expr) = 0;
 		// e.g. virtual void visitPrintStmt(const Print &stmt) = 0;
-		headerFile << "virtual void visit" << subclassName << baseName
+		headerFile << "virtual std::string visit" << subclassName << baseName
 				   << "(const " << subclassName << " &" << baseName << ") = 0;"
 				   << "\n";
 	}
@@ -58,7 +57,8 @@ void defineAst(std::string outputDir, std::string &&baseName,
 			   << "\n";
 	headerFile << "virtual ~" << baseName << "() = default;"
 			   << "\n";
-	headerFile << "virtual void accept(" << baseName << "Visitor &visitor) = 0;"
+	headerFile << "virtual std::string accept(" << baseName
+			   << "Visitor &visitor) = 0;"
 			   << "\n";
 	headerFile << "};"
 			   << "\n";
@@ -131,9 +131,9 @@ void defineType(std::ofstream &headerFile, std::string &baseName,
 
 	// void accept(Visitor &visitor) override {
 	// visitor.visit[className][baseName](*this); }
-	headerFile << "void accept( " << baseName
-			   << "Visitor &visitor) override { visitor.visit" << className
-			   << baseName << "(*this); }"
+	headerFile << "std::string accept( " << baseName
+			   << "Visitor &visitor) override { return visitor.visit"
+			   << className << baseName << "(*this); }"
 			   << "\n";
 
 	// End class

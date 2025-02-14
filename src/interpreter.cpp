@@ -3,7 +3,7 @@
 #include <sstream>
 #include <string>
 
-#include "Scanner.hpp"
+#include "Headers/Scanner.hpp"
 
 bool hadError = false;
 

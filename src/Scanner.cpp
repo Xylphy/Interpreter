@@ -1,11 +1,11 @@
-#include "Scanner.hpp"
+#include "Headers/Scanner.hpp"
 
 #include <any>
 #include <string>
 #include <unordered_map>
 
-#include "Token.hpp"
-#include "interpreter.hpp"
+#include "Headers/Token.hpp"
+#include "Headers/interpreter.hpp"
 
 Scanner::Scanner(const std::string &source) : source(source) {}
 

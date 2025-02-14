@@ -8,7 +8,7 @@ int main(int argc, char *argv[]) {
 		exit(64);
 	}
 
-	defineAst("Abstract Syntax Tree", "Stmt",
+	defineAst("Headers", "Expr",
 			  {"Binary: Expr *left, Token op, Expr *right",
 			   "Grouping: Expr *expression", "Literal: std::any value",
 			   "Unary: Token op, Expr *right"});
