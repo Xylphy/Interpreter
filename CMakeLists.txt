@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 26)
 string(REPLACE "{" "" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -Werror -fsanitize=address")
 
 add_executable(Interpreter
-    "src/Abstract Syntax Tree/Expr.h"
+    "src/Abstract Syntax Tree/Expr.hpp"
     "src/Token.hpp"
     "src/Token.cpp"
     "src/Scanner.hpp"
@@ -14,4 +14,10 @@ add_executable(Interpreter
     "src/interpreter.hpp"
     "src/interpreter.cpp"
     "src/main.cpp"
+)
+
+add_executable(Tool
+    "tool/generateAst.hpp"
+    "tool/generateAst.cpp"
+    "tool/main.cpp"
 )
