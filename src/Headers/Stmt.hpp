@@ -1,4 +1,4 @@
-#pragma once
+/* #pragma once
 
 #include "Expr.hpp"
 #include "Token.hpp"
@@ -69,3 +69,4 @@ class Unary : public Stmt {
 		return visitor.visitUnaryStmt(*this);
 	}
 };
+ */

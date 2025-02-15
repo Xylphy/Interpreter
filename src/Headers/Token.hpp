@@ -35,7 +35,7 @@ enum TokenType {
 	// Literals
 	IDENTIFIER,
 	CHARACTER,
-	STRING,
+	STRING_LITERAL,
 	NUMBER,
 	DECIMAL_NUMBER,
 	BOOL_TRUE,
@@ -66,6 +66,7 @@ enum TokenType {
 	BOOL,
 	CHAR,
 	IF,
+	STRING,
 
 	END_OF_FILE
 };
