@@ -13,6 +13,8 @@ add_executable(Interpreter
     "src/Headers/interpreter.hpp"
     "src/Headers/AstPrinter.hpp"
     "src/Headers/Stmt.hpp"
+    "src/Headers/ParseError.hpp"
+    "src/ParseError.cpp"
     "src/Parser.cpp"
     "src/Token.cpp"
     "src/AstPrinter.cpp"

@@ -1,5 +1,6 @@
 #include "Expr.hpp"
 #include "Token.hpp"
+#include "ParseError.hpp"
 
 #include <initializer_list>
 #include <vector>
@@ -23,6 +24,8 @@ class Parser {
     Token advance();
     Token peek();
     Token previous();
+    Token consume(TokenType type, std::string message);
+    ParseError error(Token token, std::string message);
 
     std::vector<Token> tokens;
     int                current = 0;

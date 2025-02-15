@@ -1,5 +1,6 @@
 #include "Headers/Parser.hpp"
 #include "Headers/Expr.hpp"
+#include "Headers/interpreter.hpp"
 
 Parser::Parser(std::vector<Token>& tokens) :
     tokens(tokens) {}
@@ -123,4 +124,17 @@ Expr* Parser::primary() {
     }
 
     throw std::runtime_error("Expect expression.");
+}
+
+Token Parser::consume(TokenType type, std::string message) {
+    if (check(type))
+        return advance();
+
+    throw std::runtime_error(message);
+}
+
+ParseError Parser::error(Token token, std::string message) {
+/*     Interpreter::error(token, message); */
+
+    return ParseError(message);
 }

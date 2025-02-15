@@ -16,7 +16,7 @@ BinPackParameters: false
 BreakBeforeBinaryOperators: NonAssignment
 BreakBeforeBraces: Custom
 BraceWrapping:
-  AfterFunction: false 
+  AfterFunction: false
   AfterClass: false
   AfterControlStatement: true
   BeforeElse: true
@@ -33,6 +33,7 @@ MaxEmptyLinesToKeep: 2
 NamespaceIndentation: None
 PackConstructorInitializers: Never
 ReflowComments: false
+SeparateDefinitionBlocks: Always
 SortIncludes: false
 SortUsingDeclarations: false
 SpaceAfterCStyleCast: true
