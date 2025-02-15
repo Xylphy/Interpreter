@@ -130,6 +130,7 @@ void Scanner::escapeChar() {
 
 void Scanner::scanToken() {
     char c = advance();
+
     switch (c) {
     case '(' :
         addToken(LEFT_PAREN);

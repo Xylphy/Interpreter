@@ -158,7 +158,7 @@ void Parser::synchronize() {
 Expr* Parser::parse() {
     try {
         return expression();
-    } catch (ParseError error) {
+    } catch (ParseError& error) {
         return nullptr;
     }
 }
