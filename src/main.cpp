@@ -15,10 +15,10 @@ int main() {
     case 1 :
         std::cout << "Enter path to file: ";
         std::cin >> path;
-        runFile(path.c_str());
+        BisayaPP::runFile(path.c_str());
         break;
     case 2 :
-        runPrompt();
+        BisayaPP::runPrompt();
         break;
     }
 

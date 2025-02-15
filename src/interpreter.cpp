@@ -1,9 +1,12 @@
+#include <climits>
 #include <fstream>
 #include <iostream>
 #include <sstream>
 #include <string>
 
 #include "Headers/Scanner.hpp"
+
+namespace BisayaPP {
 
 bool hadError = false;
 
@@ -61,3 +64,5 @@ void error(const Token& token, const std::string& message) {
     else
         report(token.line, " at '" + token.lexeme + "'", message);
 }
+
+}  // namespace BisayaPP

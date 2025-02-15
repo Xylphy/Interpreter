@@ -134,7 +134,7 @@ Token Parser::consume(TokenType type, std::string message) {
 }
 
 ParseError Parser::error(Token token, std::string message) {
-/*     Interpreter::error(token, message); */
+    BisayaPP::error(token, message);
 
     return ParseError(message);
 }

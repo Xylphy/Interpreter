@@ -11,20 +11,20 @@ class Parser {
     Parser(std::vector<Token>&& tokens);
 
    private:
-    Expr* expression();
-    Expr* equality();
-    Expr* comparison();
-    Expr* term();
-    Expr* factor();
-    Expr* unary();
-    Expr* primary();
-    bool  match(std::initializer_list<TokenType> types);
-    bool  check(TokenType type);
-    bool  isAtEnd();
-    Token advance();
-    Token peek();
-    Token previous();
-    Token consume(TokenType type, std::string message);
+    Expr*      expression();
+    Expr*      equality();
+    Expr*      comparison();
+    Expr*      term();
+    Expr*      factor();
+    Expr*      unary();
+    Expr*      primary();
+    bool       match(std::initializer_list<TokenType> types);
+    bool       check(TokenType type);
+    bool       isAtEnd();
+    Token      advance();
+    Token      peek();
+    Token      previous();
+    Token      consume(TokenType type, std::string message);
     ParseError error(Token token, std::string message);
 
     std::vector<Token> tokens;
