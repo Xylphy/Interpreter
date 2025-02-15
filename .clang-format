@@ -9,6 +9,7 @@ AllowAllParametersOfDeclarationOnNextLine: true
 AllowShortCaseLabelsOnASingleLine: false
 AllowShortEnumsOnASingleLine: false
 AllowShortIfStatementsOnASingleLine: false
+AllowShortBlocksOnASingleLine: false
 AlwaysBreakTemplateDeclarations: Yes
 BasedOnStyle: WebKit
 BitFieldColonSpacing: After
@@ -18,7 +19,7 @@ BreakBeforeBraces: Custom
 BraceWrapping:
   AfterFunction: false
   AfterClass: false
-  AfterControlStatement: true
+  AfterControlStatement: false
   BeforeElse: true
 BreakBeforeTernaryOperators: true
 BreakConstructorInitializers: AfterColon

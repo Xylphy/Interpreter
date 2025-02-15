@@ -4,26 +4,34 @@
 #include <sstream>
 #include <string>
 
+#include "Headers/Expr.hpp"
 #include "Headers/Scanner.hpp"
+#include "Headers/Parser.hpp"
+#include "Headers/Token.hpp"
 
 namespace BisayaPP {
 
 bool hadError = false;
 
 void run(const std::string& source) {
-    std::cout << "Running: " << source << '\n';
+    std::cout << "Running " << source << '\n';
+
     Scanner*           scanner = new Scanner(source);
     std::vector<Token> tokens  = scanner->scanTokens();
+    Parser*            parser  = new Parser(tokens);
+    Expr*              expr    = parser->parse();
 
     for (Token token : tokens)
         std::cout << token << '\n';
+
+    if (hadError)
+        return;
 }
 
 void runFile(const char* path) {
     std::ifstream file(path);
 
-    if (!file.is_open())
-    {
+    if (!file.is_open()) {
         std::cerr << "Could not open file " << path << '\n';
         exit(74);
     }
@@ -41,8 +49,7 @@ void runPrompt() {
     std::string line;
     std::getline(std::cin, line);
 
-    while (true)
-    {
+    while (true) {
         std::cout << "> ";
         if (!std::getline(std::cin, line) || line.empty())
             break;

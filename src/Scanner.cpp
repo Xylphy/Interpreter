@@ -11,8 +11,7 @@ Scanner::Scanner(const std::string& source) :
     source(source) {}
 
 std::vector<Token> Scanner::scanTokens() {
-    while (!isAtEnd())
-    {
+    while (!isAtEnd()) {
         start = current;
         scanToken();
     }
@@ -47,16 +46,14 @@ char Scanner::peekNext() {
 }
 
 void Scanner::string() {
-    while (peek() != '"' && !isAtEnd())
-    {
+    while (peek() != '"' && !isAtEnd()) {
         if (peek() == '\n')
             line++;
 
         advance();
     }
 
-    if (isAtEnd())
-    {
+    if (isAtEnd()) {
         BisayaPP::error(line, "Unterminated string.");
         return;
     }
@@ -65,8 +62,7 @@ void Scanner::string() {
     std::string value = source.substr(start, current - start);
 
     std::unordered_map<std::string, TokenType>::const_iterator it = keywords.find(value);
-    if (it != keywords.end())
-    {
+    if (it != keywords.end()) {
         addToken(it->second);
     }
     else
@@ -74,16 +70,14 @@ void Scanner::string() {
 }
 
 void Scanner::charLiteral() {
-    while (peek() != '\'' && !isAtEnd())
-    {
+    while (peek() != '\'' && !isAtEnd()) {
         if (peek() == '\n')
             line++;
 
         advance();
     }
 
-    if (isAtEnd())
-    {
+    if (isAtEnd()) {
         BisayaPP::error(line, "Unterminated character literal.");
         return;
     }
@@ -99,8 +93,7 @@ void Scanner::number() {
         advance();
     bool isDecimal = false;
 
-    if (peek() == '.' && isDigit(peekNext()))
-    {
+    if (peek() == '.' && isDigit(peekNext())) {
         advance();
         isDecimal = true;
 
@@ -137,8 +130,7 @@ void Scanner::escapeChar() {
 
 void Scanner::scanToken() {
     char c = advance();
-    switch (c)
-    {
+    switch (c) {
     case '(' :
         addToken(LEFT_PAREN);
         break;
@@ -200,8 +192,7 @@ void Scanner::scanToken() {
         addToken(NEW_LINE);
         break;
     case '[' :
-        if (peekNext() == ']')
-        {
+        if (peekNext() == ']') {
             escapeChar();
         }
         break;
@@ -211,6 +202,7 @@ void Scanner::scanToken() {
         break;
     case '\n' :
         line++;
+        addToken(SEMICOLON);
         break;
     case '"' :
         string();

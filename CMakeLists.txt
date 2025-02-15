@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.31.3)
 project(Lox)
 
 set(CMAKE_CXX_STANDARD 26)
-string(REPLACE "{" "" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -Werror -fsanitize=address")
+# string(REPLACE "{" "" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -Werror -fsanitize=address")
 
 add_executable(Interpreter
     "src/Headers/Parser.hpp"
