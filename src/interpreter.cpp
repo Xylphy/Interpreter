@@ -1,52 +1,75 @@
+#include <climits>
 #include <fstream>
 #include <iostream>
 #include <sstream>
 #include <string>
 
-#include "Scanner.hpp"
+#include "Headers/Expr.hpp"
+#include "Headers/Scanner.hpp"
+#include "Headers/Parser.hpp"
+#include "Headers/Token.hpp"
+
+namespace BisayaPP {
 
 bool hadError = false;
 
-void run(const std::string &source) {
-	std::cout << "Running: " << source << '\n';
-	Scanner *scanner = new Scanner(source);
-	std::vector<Token> tokens = scanner->scanTokens();
+void run(const std::string& source) {
+    std::cout << "Running " << source << '\n';
 
-	for (Token token : tokens) std::cout << token << '\n';
+    Scanner*           scanner = new Scanner(source);
+    std::vector<Token> tokens  = scanner->scanTokens();
+    Parser*            parser  = new Parser(tokens);
+    Expr*              expr    = parser->parse();
+
+    for (Token token : tokens)
+        std::cout << token << '\n';
+
+    if (hadError)
+        return;
 }
 
-void runFile(const char *path) {
-	std::ifstream file(path);
+void runFile(const char* path) {
+    std::ifstream file(path);
 
-	if (!file.is_open()) {
-		std::cerr << "Could not open file " << path << '\n';
-		exit(74);
-	}
+    if (!file.is_open()) {
+        std::cerr << "Could not open file " << path << '\n';
+        exit(74);
+    }
 
-	std::stringstream buffer;
-	buffer << file.rdbuf();
+    std::stringstream buffer;
+    buffer << file.rdbuf();
 
-	run(buffer.str());
+    run(buffer.str());
 
-	if (hadError) exit(65);
+    if (hadError)
+        exit(65);
 }
 
 void runPrompt() {
-	std::string line;
-	std::getline(std::cin, line);
+    std::string line;
+    std::getline(std::cin, line);
 
-	while (true) {
-		std::cout << "> ";
-		if (!std::getline(std::cin, line) || line.empty()) break;
+    while (true) {
+        std::cout << "> ";
+        if (!std::getline(std::cin, line) || line.empty())
+            break;
 
-		run(line);
-		hadError = false;
-	}
+        run(line);
+        hadError = false;
+    }
 }
 
-void report(int line, const std::string &where, const std::string &message) {
-	std::cerr << "[line " << line << "] Error" << where << ": " << message
-			  << std::endl;
+void report(int line, const std::string& where, const std::string& message) {
+    std::cerr << "[line " << line << "] Error" << where << ": " << message << std::endl;
 }
 
-void error(int line, const std::string &message) { report(line, "", message); }
+void error(int line, const std::string& message) { report(line, "", message); }
+
+void error(const Token& token, const std::string& message) {
+    if (token.type == TokenType::END_OF_FILE)
+        report(token.line, " at end", message);
+    else
+        report(token.line, " at '" + token.lexeme + "'", message);
+}
+
+}  // namespace BisayaPP

@@ -4,9 +4,13 @@ This project is a simple interpreter for a custom programming language. It can r
 
 ## Features
 
-- Lexical analysis (tokenization) # DONE
-- Syntax analysis (parsing) # TODO
-- Execution of code # TODO
+- Lexical Analyzer (Lexer) ✅
+    - Lexemes
+    - Tokens
+- Syntactical Analysis (Parser) 🛠️
+    - Abstract Syntax Tree
+    - Recursive Descent Parser
+- Execution of Code ️🛠️
 
 ## Getting Started
 
