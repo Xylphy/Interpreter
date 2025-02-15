@@ -57,8 +57,15 @@ Then enter `2` to start the prompt.
 Here is an example of the custom language syntax:
 
 ```
-var x = 10;
-print(x + 2);
+SUGOD
+    MUGNA NUMERO x, y, z = 5
+    MUGNA LETRA a_1 = 'n'
+    MUGNA TINUOD t = "OO"
+    x=y=4
+    a_1='c'
+    --this is a comment
+    IPAKITA: x & t & z & $ & a_1 & [#] & "last"
+KATAPUSAN
 ```
 
 ### Running the Example
