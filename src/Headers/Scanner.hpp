@@ -9,35 +9,35 @@
 #include "Token.hpp"
 
 class Scanner {
-   public:
-    Scanner(const std::string& source);
+ public:
+  Scanner(const std::string& source);
 
-    std::vector<Token> scanTokens();
+  auto scanTokens() -> std::vector<Token>;
 
-   private:
-    void scanToken();
-    void identifier();
-    void number();
-    void string();
-    void charLiteral();
-    void escapeChar();
-    void addToken(TokenType type, std::any literal);
-    void addToken(TokenType type);
-    bool match(char&& expected);
-    bool isAtEnd();
-    bool isAlpha(char c);
-    bool isAlphaNumeric(char c);
-    bool isDigit(char c);
-    char peek();
-    char peekNext();
-    char advance();
+ private:
+  void scanToken();
+  void identifier();
+  void number();
+  void string();
+  void charLiteral();
+  void escapeChar();
+  void addToken(TokenType type, std::any literal);
+  void addToken(TokenType type);
+  auto match(char&& expected) -> bool;
+  auto isAtEnd() -> bool;
+  auto isAlpha(char character) -> bool;
+  auto isAlphaNumeric(char character) -> bool;
+  auto isDigit(char character) -> bool;
+  auto peek() -> char;
+  auto peekNext() -> char;
+  auto advance() -> char;
 
-    size_t                                           start   = 0;
-    size_t                                           current = 0;
-    size_t                                           line    = 1;
-    std::string                                      source;
-    std::vector<Token>                               tokens;
-    const std::unordered_map<std::string, TokenType> keywords = {
+  size_t start = 0;
+  size_t current = 0;
+  size_t line = 1;
+  std::string source;
+  std::vector<Token> tokens;
+  const std::unordered_map<std::string, TokenType> keywords = {
       {"UG", AND},           {"KLASE", CLASS},
       {"WALA", ELSE},        {"SA", FOR},
       {"BUHAT", FUN},        {"KUNG", IF},

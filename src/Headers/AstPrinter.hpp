@@ -1,14 +1,14 @@
 #include "Expr.hpp"
 
 class AstPrinter : public ExprVisitor {
-   public:
-	std::string visitBinaryExpr(const Binary &Expr) override;
-	std::string visitGroupingExpr(const Grouping &Expr) override;
-	std::string visitLiteralExpr(const Literal &Expr) override;
-	std::string visitUnaryExpr(const Unary &Expr) override;
-	std::string parenthesize(std::string name,
-							 std::initializer_list<Expr *> exprs);
-	std::string print(Expr *expr);
+ public:
+  auto visitBinaryExpr(const Binary& Expr) -> std::string override;
+  auto visitGroupingExpr(const Grouping& Expr) -> std::string override;
+  auto visitLiteralExpr(const Literal& Expr) -> std::string override;
+  auto visitUnaryExpr(const Unary& Expr) -> std::string override;
+  auto parenthesize(const std::string& name, std::initializer_list<Expr*> exprs)
+      -> std::string;
+  auto print(Expr* expr) -> std::string;
 
-   private:
+ private:
 };

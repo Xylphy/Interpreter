@@ -1,48 +1,46 @@
 #include "Headers/Parser.hpp"
+
+#include <algorithm>
+
 #include "Headers/Expr.hpp"
+#include "Headers/Token.hpp"
 #include "Headers/interpreter.hpp"
 
-Parser::Parser(std::vector<Token>& tokens) :
-    tokens(tokens) {}
+Parser::Parser(std::vector<Token> &tokens) : tokens(tokens) {}
 
-Parser::Parser(std::vector<Token>&& tokens) :
-    tokens(std::move(tokens)) {}
+Parser::Parser(std::vector<Token> &&tokens) : tokens(std::move(tokens)) {}
 
-Expr* Parser::expression() { return equality(); }
+auto Parser::expression() -> Expr * { return equality(); }
 
-Expr* Parser::equality() {
-    Expr* expr = comparison();
+auto Parser::equality() -> Expr * {
+  Expr *expr = comparison();
 
-    while (match({TokenType::BANG_EQUAL, TokenType::EQUAL_EQUAL})) {
-        Token op    = previous();
-        Expr* right = comparison();
-        expr        = new Binary(expr, op, right);
-    }
+  while (match({TokenType::BANG_EQUAL, TokenType::EQUAL_EQUAL})) {
+    Token op = previous();
+    Expr *right = comparison();
+    expr = new Binary(expr, op, right);
+  }
 
-    return expr;
+  return expr;
 }
 
-bool Parser::match(std::initializer_list<TokenType> types) {
-    for (TokenType type : types) {
-        if (check(type)) {
-            advance();
-            return true;
-        }
-    }
-
-    return false;
+auto Parser::match(std::initializer_list<TokenType> types) -> bool {
+  if (std::ranges::any_of(types,
+                          [this](TokenType type) -> bool { return check(type); })) {
+    advance();
+    return true;
+  }
+  return false;
 }
 
-bool Parser::check(TokenType type) {
-    if (isAtEnd())
-        return false;
-    return peek().type == type;
+auto Parser::check(TokenType type) -> bool{
+  if (isAtEnd()) return false;
+  return peek().type == type;
 }
 
-Token Parser::advance() {
-    if (!isAtEnd())
-        current++;
-    return previous();
+auto Parser::advance() -> Token{
+  if (!isAtEnd()) current++;
+  return previous();
 }
 
 bool Parser::isAtEnd() { return peek().type == TokenType::END_OF_FILE; }
@@ -51,114 +49,110 @@ Token Parser::peek() { return tokens[current]; }
 
 Token Parser::previous() { return tokens[current - 1]; }
 
-Expr* Parser::comparison() {
-    Expr* expr = term();
+Expr *Parser::comparison() {
+  Expr *expr = term();
 
-    while (match(
-      {TokenType::GREATER, TokenType::GREATER_EQUAL, TokenType::LESS, TokenType::LESS_EQUAL})) {
-        Token op    = previous();
-        Expr* right = term();
-        expr        = new Binary(expr, op, right);
-    }
+  while (match({TokenType::GREATER, TokenType::GREATER_EQUAL, TokenType::LESS,
+                TokenType::LESS_EQUAL})) {
+    Token op = previous();
+    Expr *right = term();
+    expr = new Binary(expr, op, right);
+  }
 
-    return expr;
+  return expr;
 }
 
-Expr* Parser::term() {
-    Expr* expr = factor();
+Expr *Parser::term() {
+  Expr *expr = factor();
 
-    while (match({TokenType::MINUS, TokenType::PLUS})) {
-        Token op    = previous();
-        Expr* right = factor();
-        expr        = new Binary(expr, op, right);
-    }
+  while (match({TokenType::MINUS, TokenType::PLUS})) {
+    Token op = previous();
+    Expr *right = factor();
+    expr = new Binary(expr, op, right);
+  }
 
-    return expr;
+  return expr;
 }
 
-Expr* Parser::factor() {
-    Expr* expr = unary();
+Expr *Parser::factor() {
+  Expr *expr = unary();
 
-    while (match({TokenType::SLASH, TokenType::STAR})) {
-        Token op    = previous();
-        Expr* right = unary();
-        expr        = new Binary(expr, op, right);
-    }
+  while (match({TokenType::SLASH, TokenType::STAR})) {
+    Token op = previous();
+    Expr *right = unary();
+    expr = new Binary(expr, op, right);
+  }
 
-    return expr;
+  return expr;
 }
 
-Expr* Parser::unary() {
-    if (match({TokenType::BANG, TokenType::MINUS})) {
-        Token op    = previous();
-        Expr* right = unary();
-        return new Unary(op, right);
-    }
+Expr *Parser::unary() {
+  if (match({TokenType::BANG, TokenType::MINUS})) {
+    Token op = previous();
+    Expr *right = unary();
+    return new Unary(op, right);
+  }
 
-    return primary();
+  return primary();
 }
 
-Expr* Parser::primary() {
-    if (match({TokenType::FALSE}))
-        return new Literal(false);
-    if (match({TokenType::TRUE}))
-        return new Literal(true);
-    /*     if (match({TokenType::NIL}))
-        return new Literal(nullptr); */
-    if (match({TokenType::NUMBER, TokenType::STRING}))
-        return new Literal(previous().literal);
+Expr *Parser::primary() {
+  if (match({TokenType::FALSE})) return new Literal(false);
+  if (match({TokenType::TRUE})) return new Literal(true);
+  /*     if (match({TokenType::NIL}))
+      return new Literal(nullptr); */
+  if (match({TokenType::NUMBER, TokenType::STRING}))
+    return new Literal(previous().literal);
 
-    if (match({TokenType::LEFT_PAREN})) {
-        Expr* expr = expression();
-        if (!match({TokenType::RIGHT_PAREN}))
-            throw std::runtime_error("Expect ')' after expression.");
-        return new Grouping(expr);
-    }
+  if (match({TokenType::LEFT_PAREN})) {
+    Expr *expr = expression();
+    if (!match({TokenType::RIGHT_PAREN}))
+      throw std::runtime_error("Expect ')' after expression.");
+    return new Grouping(expr);
+  }
 
-    throw std::runtime_error("Expect expression.");
+  throw std::runtime_error("Expect expression.");
 }
 
 Token Parser::consume(TokenType type, std::string message) {
-    if (check(type))
-        return advance();
+  if (check(type)) return advance();
 
-    throw std::runtime_error(message);
+  throw std::runtime_error(message);
 }
 
 ParseError Parser::error(Token token, std::string message) {
-    BisayaPP::error(token, message);
+  BisayaPP::error(token, message);
 
-    return ParseError(message);
+  return ParseError(message);
 }
 
 void Parser::synchronize() {
-    advance();
+  advance();
 
-    while (!isAtEnd()) {
-        if (previous().type == TokenType::SEMICOLON)
-            return;
+  while (!isAtEnd()) {
+    if (previous().type == TokenType::SEMICOLON) return;
 
-        switch (peek().type) {
-        case TokenType::CLASS :
-        case TokenType::FUN :
-        case TokenType::VAR :
-        case TokenType::FOR :
-        case TokenType::IF :
-        case TokenType::WHILE :
-        case TokenType::PRINT :
-        case TokenType::RETURN :
-            return;
-        default :;
-        }
-
-        advance();
+    switch (peek().type) {
+      case TokenType::CLASS:
+      case TokenType::FUN:
+      case TokenType::VAR:
+      case TokenType::FOR:
+      case TokenType::IF:
+      case TokenType::WHILE:
+      case TokenType::PRINT:
+      case TokenType::RETURN:
+        return;
+      default:;
     }
+
+    advance();
+  }
 }
 
-Expr* Parser::parse() {
-    try {
-        return expression();
-    } catch (ParseError& error) {
-        return nullptr;
-    }
+Expr *Parser::parse() {
+  try {
+    return expression();
+  } catch (ParseError &error) {
+    return nullptr;
+  }
 }

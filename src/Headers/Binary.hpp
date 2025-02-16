@@ -1,12 +1,11 @@
-#include "../Token.hpp"
-#include "Expr.hpp"
+/* #include "Expr.hpp"
+#include "Token.hpp"
 
 class Binary : public Expr {
-   public:
-	Binary(Expr *left, Token op, Expr *right);
-		
+ public:
+  Binary(Expr *left, Token op, Expr *right);
 
-   private:
-	Token op;
-	Expr *left, *right;
-};
+ private:
+  Token op;
+  Expr *left, *right;
+}; */

@@ -1,13 +1,12 @@
 #include <stdexcept>
 
-class ParseError: public std::runtime_error {
-   public:
-    ParseError(std::string message) :
-        std::runtime_error(message),
-        message(message) {}
+class ParseError : public std::runtime_error {
+ public:
+  ParseError(const std::string& message)
+      : std::runtime_error(message), message(message) {}
 
-    const char* what() const noexcept override { return message.c_str(); }
+  [[nodiscard]] auto what() const noexcept -> const char* override { return message.c_str(); }
 
-   private:
-    std::string message;
+ private:
+  std::string message;
 };

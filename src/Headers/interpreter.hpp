@@ -1,7 +1,8 @@
 #pragma once
 
-#include "Token.hpp"
 #include <string>
+
+#include "Token.hpp"
 
 namespace BisayaPP {
 
@@ -12,4 +13,4 @@ void error(int line, const std::string& message);
 void report(int line, const std::string& where, const std::string& message);
 void error(const Token& token, const std::string& message);
 
-}// namespace BisayaPP
+}  // namespace BisayaPP
