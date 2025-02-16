@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-void defineAst(const std::string& outputDir, std::string&& baseName,
+void defineAst(std::string&& outputDir, std::string&& baseName,
                std::initializer_list<std::string> types) {
   // Header files that contain information (bag of data) about the AST nodes
 
@@ -73,7 +73,7 @@ void defineAst(const std::string& outputDir, std::string&& baseName,
   headerFile.close();
 }
 
-void defineType(std::ofstream& headerFile, const std::string& baseName,
+void defineType(std::ofstream& file, const std::string& baseName,
                 const TypeInfo&& typeInfo) {
   // Extract the fields
   // Vector of <type, name>, e.g. {Expr, left}, {Token, op}, {Expr, right}
@@ -94,10 +94,10 @@ void defineType(std::ofstream& headerFile, const std::string& baseName,
   std::string initializationParams;
 
   // Start class
-  headerFile << "class " << typeInfo.className << " : public " << baseName
+  file << "class " << typeInfo.className << " : public " << baseName
              << " {"
              << "\n";
-  headerFile << "public:"
+  file << "public:"
              << "\n";
 
   // Define the fields
@@ -105,7 +105,7 @@ void defineType(std::ofstream& headerFile, const std::string& baseName,
   for (const std::pair<std::string, std::string>& field : fields) {
     // NOTE: Structured bindings
     const auto& [type, name] = field;
-    headerFile << type << " " << name << ";"
+    file << type << " " << name << ";"
                << "\n";
 
     constructorParams.append(type).append(" ").append(name);
@@ -124,21 +124,21 @@ void defineType(std::ofstream& headerFile, const std::string& baseName,
       initializationParams += ", ";
     }
   }
-  headerFile << "\n";
+  file << "\n";
 
   // E.g Binary(Expr *left, Token op, Expr *right) : left(left), op(op),
   // right(right) {}
-  headerFile << typeInfo.className << "(" << constructorParams
+  file << typeInfo.className << "(" << constructorParams
              << ") : " << initializationParams << " {}"
              << "\n";
 
   // void accept(Visitor &visitor) override {
   // visitor.visit[className][baseName](*this); }
-  headerFile << "std::string accept( " << baseName
+  file << "std::string accept( " << baseName
              << "Visitor &visitor) override { return visitor.visit"
              << typeInfo.className << baseName << "(*this); }"
              << "\n";
 
   // End class
-  headerFile << "};" << "\n";
+  file << "};" << "\n";
 }
