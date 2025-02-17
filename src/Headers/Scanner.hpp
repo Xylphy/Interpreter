@@ -49,5 +49,7 @@ class Scanner {
       {"KATAPUSAN", END},    {"NUMERO", INTEGER},
       {"PITIK", DECIMAL},    {"TINUOD", BOOL},
       {"\"OO\"", BOOL_TRUE}, {"\"DILI\"", BOOL_FALSE},
-      {"LETRA", CHAR},       {"PISI", STRING}};
+      {"LETRA", CHAR},       {"PISI", STRING},
+      {"\"WALA\"", NIL},
+  };
 };

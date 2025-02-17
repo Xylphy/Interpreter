@@ -1,5 +1,4 @@
-#include <climits>
-#include <cstddef>
+#include <cstdio>
 #include <fstream>
 #include <iostream>
 #include <print>
@@ -12,10 +11,10 @@
 #include "Headers/Scanner.hpp"
 #include "Headers/Token.hpp"
 
+namespace BisayaPP {
+
 const int FILE_OPEN_ERROR = 74;
 const int RUNTIME_ERROR = 70;
-
-namespace BisayaPP {
 
 bool hadError = false;
 
@@ -61,7 +60,7 @@ void runPrompt() {
   std::getline(std::cin, line);
 
   while (true) {
-    std::cout << "> ";
+    std::print("> ");
     if (!std::getline(std::cin, line) || line.empty()) {
       break;
     }
