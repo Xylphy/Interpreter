@@ -27,14 +27,15 @@ endif()
 
 # Enable clang-tidy
 # set(CMAKE_CXX_CLANG_TIDY "clang-tidy;-checks=*,readability-*,modernize-*,performance-*,clang-analyzer-*")
-# set(CMAKE_CXX_CLANG_TIDY "clang-tidy;-checks=*,performance-*")
+set(CMAKE_CXX_CLANG_TIDY "clang-tidy;-checks=*,performance-*")
 
 add_executable(Interpreter
+  "src/Headers/Interpreter.hpp"
   "src/Headers/Parser.hpp"
   "src/Headers/Token.hpp"
   "src/Headers/Expr.hpp"
   "src/Headers/Scanner.hpp"
-  "src/Headers/interpreter.hpp"
+  "src/Headers/bisayaPP.hpp"
   "src/Headers/AstPrinter.hpp"
   "src/Headers/Stmt.hpp"
   "src/Headers/ParseError.hpp"
@@ -43,7 +44,7 @@ add_executable(Interpreter
   "src/Token.cpp"
   "src/AstPrinter.cpp"
   "src/Scanner.cpp"
-  "src/interpreter.cpp"
+  "src/bisayaPP.cpp"
   "src/main.cpp"
 )
 

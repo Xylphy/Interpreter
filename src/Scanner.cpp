@@ -5,11 +5,11 @@
 #include <unordered_map>
 
 #include "Headers/Token.hpp"
-#include "Headers/interpreter.hpp"
+#include "Headers/bisayaPP.hpp"
 
-Scanner::Scanner(const std::string& source) : source(source) {}
+Scanner::Scanner(std::string source) : source(std::move(source)) {}
 
-std::vector<Token> Scanner::scanTokens() {
+auto Scanner::scanTokens() -> std::vector<Token> {
   while (!isAtEnd()) {
     start = current;
     scanToken();
@@ -19,30 +19,40 @@ std::vector<Token> Scanner::scanTokens() {
   return tokens;
 }
 
-bool Scanner::isAtEnd() { return current >= source.length(); }
+auto Scanner::isAtEnd() -> bool { return current >= source.length(); }
 
-bool Scanner::match(char&& expected) {
-  if (isAtEnd()) return false;
-  if (source[current] != expected) return false;
+auto Scanner::match(char&& expected) -> bool {
+  if (isAtEnd()) {
+    return false;
+  }
+  if (source[current] != expected) {
+    return false;
+  }
 
   current++;
   return true;
 }
 
-char Scanner::peek() {
-  if (isAtEnd()) return '\0';
+auto Scanner::peek() -> char {
+  if (isAtEnd()) {
+    return '\0';
+  }
   return source[current];
 }
 
-char Scanner::peekNext() {
-  if (current + 1 >= source.length()) return '\0';
+auto Scanner::peekNext() -> char {
+  if (current + 1 >= source.length()) {
+    return '\0';
+  }
 
   return source[current + 1];
 }
 
 void Scanner::string() {
   while (peek() != '"' && !isAtEnd()) {
-    if (peek() == '\n') line++;
+    if (peek() == '\n') {
+      line++;
+    }
 
     advance();
   }
@@ -55,17 +65,19 @@ void Scanner::string() {
 
   std::string value = source.substr(start, current - start);
 
-  std::unordered_map<std::string, TokenType>::const_iterator it =
-      keywords.find(value);
-  if (it != keywords.end())
-    addToken(it->second);
-  else
+  auto iterator = keywords.find(value);
+  if (iterator != keywords.end()) {
+    addToken(iterator->second);
+  } else {
     addToken(STRING_LITERAL, value.substr(1, value.length() - 2));
+  }
 }
 
 void Scanner::charLiteral() {
   while (peek() != '\'' && !isAtEnd()) {
-    if (peek() == '\n') line++;
+    if (peek() == '\n') {
+      line++;
+    }
 
     advance();
   }
@@ -79,10 +91,14 @@ void Scanner::charLiteral() {
   addToken(CHARACTER_LITERAL, source.substr(start + 1, current - start - 2));
 }
 
-bool Scanner::isDigit(char c) { return c >= '0' && c <= '9'; }
+auto Scanner::isDigit(char character) -> bool {
+  return character >= '0' && character <= '9';
+}
 
 void Scanner::number() {
-  while (isDigit(peek())) advance();
+  while (isDigit(peek())) {
+    advance();
+  }
 
   bool isDecimal = false;
 
@@ -90,29 +106,36 @@ void Scanner::number() {
     advance();
     isDecimal = true;
 
-    while (isDigit(peek())) advance();
+    while (isDigit(peek())) {
+      advance();
+    }
   }
 
-  if (isDecimal)
+  if (isDecimal) {
     addToken(DECIMAL, std::stod(source.substr(start, current - start)));
-  else
+  } else {
     addToken(NUMBER, std::stoi(source.substr(start, current - start)));
+  }
 }
 
 void Scanner::identifier() {
-  while (isAlphaNumeric(peek())) advance();
+  while (isAlphaNumeric(peek())) {
+    advance();
+  }
 
-  typename std::unordered_map<std::string, TokenType>::const_iterator it =
-      keywords.find(source.substr(start, current - start));
+  auto iterator = keywords.find(source.substr(start, current - start));
 
-  addToken(it != keywords.end() ? it->second : IDENTIFIER);
+  addToken(iterator != keywords.end() ? iterator->second : IDENTIFIER);
 }
 
-bool Scanner::isAlpha(char c) {
-  return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_';
+auto Scanner::isAlpha(char character) -> bool {
+  return (character >= 'a' && character <= 'z') ||
+         (character >= 'A' && character <= 'Z') || character == '_';
 }
 
-bool Scanner::isAlphaNumeric(char c) { return isAlpha(c) || isDigit(c); }
+auto Scanner::isAlphaNumeric(char character) -> bool {
+  return isAlpha(character) || isDigit(character);
+}
 
 void Scanner::escapeChar() {
   addToken(ESCAPE_CHARACTER, source.substr(start, current - start));
@@ -120,9 +143,9 @@ void Scanner::escapeChar() {
 }
 
 void Scanner::scanToken() {
-  char c = advance();
+  char character = advance();
 
-  switch (c) {
+  switch (character) {
     case '(':
       addToken(LEFT_PAREN);
       break;
@@ -142,12 +165,13 @@ void Scanner::scanToken() {
                           addToken(DOT);
                           break; */
     case '-':
-      if (match('-'))
-        while (peek() != '\n' && !isAtEnd()) advance();
-      else if (match(isDigit(peek())))
-        number();
-      else
+      if (match('-')) {
+        while (peek() != '\n' && !isAtEnd()) {
+          advance();
+        }
+      } else {
         addToken(MINUS);
+      }
       break;
     case ':':
       addToken(COLON);
@@ -205,20 +229,21 @@ void Scanner::scanToken() {
       charLiteral();
       break;
     default:
-      if (isDigit(c))
+      if (isDigit(character)) {
         number();
-      else if (isAlpha(c))
+      } else if (isAlpha(character)) {
         identifier();
-      else
-        BisayaPP::error(line, "Unexpected character: " + std::to_string(c));
-
+      } else {
+        BisayaPP::error(line,
+                        "Unexpected character: " + std::to_string(character));
+      }
       break;
   }
 }
 
-char Scanner::advance() { return source[current++]; }
+auto Scanner::advance() -> char { return source[current++]; }
 
-void Scanner::addToken(TokenType type, std::any literal) {
+void Scanner::addToken(TokenType type, const std::any& literal) {
   tokens.emplace_back(type, source.substr(start, current - start), literal,
                       line);
 }

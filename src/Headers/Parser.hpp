@@ -9,25 +9,26 @@ class Parser {
  public:
   Parser(std::vector<Token>& tokens);
   Parser(std::vector<Token>&& tokens);
-  Expr* parse();
+  auto parse() -> Expr*;
 
  private:
-  bool match(std::initializer_list<TokenType> types);
-  bool check(TokenType type);
-  bool isAtEnd();
-  Expr* expression();
-  Expr* equality();
-  Expr* comparison();
-  Expr* term();
-  Expr* factor();
-  Expr* unary();
-  Expr* primary();
-  Token advance();
-  Token peek();
-  Token previous();
-  Token consume(TokenType type, std::string message);
+  auto match(std::initializer_list<TokenType> types) -> bool;
+  auto check(TokenType type) -> bool;
+  auto isAtEnd() -> bool;
+  auto expression() -> Expr*;
+  auto equality() -> Expr*;
+  auto comparison() -> Expr*;
+  auto term() -> Expr*;
+  auto factor() -> Expr*;
+  auto unary() -> Expr*;
+  auto primary() -> Expr*;
+  auto advance() -> Token;
+  auto peek() -> Token;
+  auto previous() -> Token;
+  auto consume(TokenType type, const std::string& message) -> Token;
   void synchronize();
-  ParseError error(Token token, std::string message);
+  static auto error(const Token& token, const std::string& message)
+      -> ParseError;
 
   std::vector<Token> tokens;
   int current = 0;

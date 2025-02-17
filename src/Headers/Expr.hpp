@@ -63,7 +63,8 @@ class Unary : public Expr {
   Token op;
   Expr* right;
 
-  Unary(Token operatorToken, Expr* right) : op(std::move(operatorToken)), right(right) {}
+  Unary(Token operatorToken, Expr* right)
+      : op(std::move(operatorToken)), right(right) {}
 
   auto accept(ExprVisitor& visitor) -> std::string override {
     return visitor.visitUnaryExpr(*this);

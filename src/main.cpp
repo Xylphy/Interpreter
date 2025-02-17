@@ -2,7 +2,7 @@
 #include <iostream>
 
 #include "Headers/AstPrinter.hpp"
-#include "Headers/interpreter.hpp"
+#include "Headers/bisayaPP.hpp"
 
 auto main() -> int {
   int choice;

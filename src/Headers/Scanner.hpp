@@ -10,7 +10,7 @@
 
 class Scanner {
  public:
-  Scanner(const std::string& source);
+  Scanner(std::string source);
 
   auto scanTokens() -> std::vector<Token>;
 
@@ -21,13 +21,13 @@ class Scanner {
   void string();
   void charLiteral();
   void escapeChar();
-  void addToken(TokenType type, std::any literal);
+  void addToken(TokenType type, const std::any& literal);
   void addToken(TokenType type);
   auto match(char&& expected) -> bool;
   auto isAtEnd() -> bool;
-  auto isAlpha(char character) -> bool;
-  auto isAlphaNumeric(char character) -> bool;
-  auto isDigit(char character) -> bool;
+  static auto isAlpha(char character) -> bool;
+  static auto isAlphaNumeric(char character) -> bool;
+  static auto isDigit(char character) -> bool;
   auto peek() -> char;
   auto peekNext() -> char;
   auto advance() -> char;

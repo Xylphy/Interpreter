@@ -1,3 +1,4 @@
+#include <cstddef>
 #include <cstdio>
 #include <fstream>
 #include <iostream>
@@ -75,7 +76,7 @@ void report(size_t line, const std::string& where, const std::string& message) {
             << '\n';
 }
 
-void error(int line, const std::string& message) { report(line, "", message); }
+void error(size_t line, const std::string& message) { report(line, "", message); }
 
 void error(const Token& token, const std::string& message) {
   if (token.type == TokenType::END_OF_FILE) {
