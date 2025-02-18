@@ -34,8 +34,10 @@ void run(const std::string& source) {
   if (hadError) {
     return;
   }
+  auto* printer = new AstPrinter();
+  printer->setPrintResult(expr);
 
-  std::print("{}\n", (new AstPrinter())->print(expr));
+  std::print("{}\n", printer->get());
 }
 
 void runFile(const char* path) {
@@ -76,7 +78,9 @@ void report(size_t line, const std::string& where, const std::string& message) {
             << '\n';
 }
 
-void error(size_t line, const std::string& message) { report(line, "", message); }
+void error(size_t line, const std::string& message) {
+  report(line, "", message);
+}
 
 void error(const Token& token, const std::string& message) {
   if (token.type == TokenType::END_OF_FILE) {

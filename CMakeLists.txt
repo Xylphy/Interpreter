@@ -27,7 +27,7 @@ endif()
 
 # Enable clang-tidy
 # set(CMAKE_CXX_CLANG_TIDY "clang-tidy;-checks=*,readability-*,modernize-*,performance-*,clang-analyzer-*")
-set(CMAKE_CXX_CLANG_TIDY "clang-tidy;-checks=*,performance-*")
+# set(CMAKE_CXX_CLANG_TIDY "clang-tidy;-checks=*,performance-*")
 
 add_executable(Interpreter
   "src/Headers/Interpreter.hpp"

@@ -10,16 +10,16 @@ class Unary;
 
 class ExprVisitor {
  public:
-  virtual auto visitBinaryExpr(const Binary& Expr) -> std::string = 0;
-  virtual auto visitGroupingExpr(const Grouping& Expr) -> std::string = 0;
-  virtual auto visitLiteralExpr(const Literal& Expr) -> std::string = 0;
-  virtual auto visitUnaryExpr(const Unary& Expr) -> std::string = 0;
+  virtual auto visitBinaryExpr(const Binary& Expr) -> void = 0;
+  virtual auto visitGroupingExpr(const Grouping& Expr) -> void = 0;
+  virtual auto visitLiteralExpr(const Literal& Expr) -> void = 0;
+  virtual auto visitUnaryExpr(const Unary& Expr) -> void = 0;
 };
 
 class Expr {
  public:
   virtual ~Expr() = default;
-  virtual auto accept(ExprVisitor& visitor) -> std::string = 0;
+  virtual auto accept(ExprVisitor& visitor) -> void = 0;
 };
 
 class Binary : public Expr {
@@ -31,8 +31,8 @@ class Binary : public Expr {
   Binary(Expr* left, Token operatorToken, Expr* right)
       : left(left), op(std::move(operatorToken)), right(right) {}
 
-  auto accept(ExprVisitor& visitor) -> std::string override {
-    return visitor.visitBinaryExpr(*this);
+  auto accept(ExprVisitor& visitor) -> void override {
+    visitor.visitBinaryExpr(*this);
   }
 };
 
@@ -42,8 +42,8 @@ class Grouping : public Expr {
 
   Grouping(Expr* expression) : expression(expression) {}
 
-  auto accept(ExprVisitor& visitor) -> std::string override {
-    return visitor.visitGroupingExpr(*this);
+  auto accept(ExprVisitor& visitor) -> void override {
+    visitor.visitGroupingExpr(*this);
   }
 };
 
@@ -53,8 +53,8 @@ class Literal : public Expr {
 
   Literal(std::any value) : value(std::move(value)) {}
 
-  auto accept(ExprVisitor& visitor) -> std::string override {
-    return visitor.visitLiteralExpr(*this);
+  auto accept(ExprVisitor& visitor) -> void override {
+    visitor.visitLiteralExpr(*this);
   }
 };
 
@@ -66,7 +66,7 @@ class Unary : public Expr {
   Unary(Token operatorToken, Expr* right)
       : op(std::move(operatorToken)), right(right) {}
 
-  auto accept(ExprVisitor& visitor) -> std::string override {
-    return visitor.visitUnaryExpr(*this);
+  auto accept(ExprVisitor& visitor) -> void override {
+    visitor.visitUnaryExpr(*this);
   }
 };

@@ -7,15 +7,15 @@
 #include "Headers/Expr.hpp"
 #include "Headers/Token.hpp"
 
-auto AstPrinter::visitBinaryExpr(const Binary& Expr) -> std::string {
-  return parenthesize(Expr.op.lexeme, {Expr.left, Expr.right});
+auto AstPrinter::visitBinaryExpr(const Binary& Expr) -> void {
+  parenthesize(Expr.op.lexeme, {Expr.left, Expr.right});
 }
 
-auto AstPrinter::visitGroupingExpr(const Grouping& Expr) -> std::string {
-  return parenthesize("group", {Expr.expression});
+auto AstPrinter::visitGroupingExpr(const Grouping& Expr) -> void {
+  parenthesize("group", {Expr.expression});
 }
 
-auto AstPrinter::visitLiteralExpr(const Literal& Expr) -> std::string {
+auto AstPrinter::visitLiteralExpr(const Literal& Expr) -> void {
   static const std::unordered_map<std::type_index,
                                   std::function<std::string(const std::any&)>>
       typeToString{{typeid(int),
@@ -37,28 +37,27 @@ auto AstPrinter::visitLiteralExpr(const Literal& Expr) -> std::string {
   if (Expr.value.has_value()) {
     auto iterator = typeToString.find(Expr.value.type());
     if (iterator != typeToString.end()) {
-      return iterator->second(Expr.value);
+      result.append(iterator->second(Expr.value));
+      return;
     }
   }
-  return "nil";
+  result.append("nil");
 }
 
-auto AstPrinter::visitUnaryExpr(const Unary& Expr) -> std::string {
-  return parenthesize(Expr.op.lexeme, {Expr.right});
+auto AstPrinter::visitUnaryExpr(const Unary& Expr) -> void {
+  parenthesize(Expr.op.lexeme, {Expr.right});
 }
 
-auto AstPrinter::print(Expr* expr) -> std::string {
-  return expr->accept(*this);
-}
+auto AstPrinter::setPrintResult(Expr* expr) -> void { expr->accept(*this); }
 
 auto AstPrinter::parenthesize(const std::string& name,
-                              std::initializer_list<Expr*> exprs)
-    -> std::string {
-  std::string res;
+                              std::initializer_list<Expr*> exprs) -> void {
+  result.append("( ").append(name);
   for (Expr* expr : exprs) {
-    res += " ";
-    res += expr->accept(*this);
+    result.append(" ");
+    setPrintResult(expr);
   }
-
-  return "(" + name + res + ")";
+  result.append(" )");
 }
+
+[[nodiscard]] auto AstPrinter::get() const -> const std::string& { return result; }
