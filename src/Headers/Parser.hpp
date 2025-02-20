@@ -2,7 +2,7 @@
 #include <vector>
 
 #include "Expr.hpp"
-#include "ParseError.hpp"
+#include "Errors.hpp"
 #include "Token.hpp"
 
 class Parser {

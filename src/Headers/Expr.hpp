@@ -50,8 +50,10 @@ class Grouping : public Expr {
 class Literal : public Expr {
  public:
   std::any value;
+  TokenType type;
 
-  Literal(std::any value) : value(std::move(value)) {}
+  Literal(std::any value, TokenType type)
+      : value(std::move(value)), type(type) {}
 
   auto accept(ExprVisitor& visitor) -> void override {
     visitor.visitLiteralExpr(*this);

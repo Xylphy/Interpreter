@@ -102,15 +102,15 @@ auto Parser::unary() -> Expr * {
 
 auto Parser::primary() -> Expr * {
   if (match({TokenType::FALSE})) {
-    return new Literal(false);
+    return new Literal(false, TokenType::BOOL_FALSE);
   }
   if (match({TokenType::TRUE})) {
-    return new Literal(true);
+    return new Literal(true, TokenType::BOOL_TRUE);
   }
   /*     if (match({TokenType::NIL}))
       return new Literal(nullptr); */
   if (match({TokenType::NUMBER, TokenType::STRING})) {
-    return new Literal(previous().literal);
+    return new Literal(previous().literal, previous().type);
   }
 
   if (match({TokenType::LEFT_PAREN})) {
@@ -136,7 +136,7 @@ auto Parser::error(const Token &token, const std::string &message)
     -> ParseError {
   BisayaPP::error(token, message);
 
-  return {message};
+  return {token, message};
 }
 
 void Parser::synchronize() {

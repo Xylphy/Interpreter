@@ -30,6 +30,7 @@ endif()
 # set(CMAKE_CXX_CLANG_TIDY "clang-tidy;-checks=*,performance-*")
 
 add_executable(Interpreter
+  #Headers
   "src/Headers/Interpreter.hpp"
   "src/Headers/Parser.hpp"
   "src/Headers/Token.hpp"
@@ -37,9 +38,14 @@ add_executable(Interpreter
   "src/Headers/Scanner.hpp"
   "src/Headers/bisayaPP.hpp"
   "src/Headers/AstPrinter.hpp"
+  "src/Headers/Errors.hpp"
+  "src/Headers/Lib/utility.hpp"
   "src/Headers/Stmt.hpp"
-  "src/Headers/ParseError.hpp"
-  "src/ParseError.cpp"
+
+  #Source
+  "src/Interpreter.cpp"
+  "src/utility.cpp"
+  "src/Errors.cpp"
   "src/Parser.cpp"
   "src/Token.cpp"
   "src/AstPrinter.cpp"
