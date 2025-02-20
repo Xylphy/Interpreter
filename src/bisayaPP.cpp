@@ -8,6 +8,7 @@
 
 #include "Headers/AstPrinter.hpp"
 #include "Headers/Expr.hpp"
+#include "Headers/Interpreter.hpp"
 #include "Headers/Parser.hpp"
 #include "Headers/Scanner.hpp"
 #include "Headers/Token.hpp"
@@ -16,8 +17,13 @@ namespace BisayaPP {
 
 const int FILE_OPEN_ERROR = 74;
 const int RUNTIME_ERROR = 70;
+const int SYNTAX_ERROR = 65;
 
 bool hadError = false;
+bool hadRuntimeError = false;
+
+// Interpreter for the AST
+static Interpreter interpreter;
 
 void run(const std::string& source) {
   std::print("Running {}\n", source);
@@ -36,8 +42,9 @@ void run(const std::string& source) {
   }
   auto* printer = new AstPrinter();
   printer->setPrintResult(expr);
-
   std::print("{}\n", printer->get());
+
+  interpreter.evaluate(expr);
 }
 
 void runFile(const char* path) {
@@ -54,6 +61,9 @@ void runFile(const char* path) {
   run(buffer.str());
 
   if (hadError) {
+    exit(SYNTAX_ERROR);
+  }
+  if (hadRuntimeError) {
     exit(RUNTIME_ERROR);
   }
 }
@@ -88,6 +98,11 @@ void error(const Token& token, const std::string& message) {
   } else {
     report(token.line, " at '" + token.lexeme + "'", message);
   }
+}
+
+void runtimeError(const RuntimeError& runtimeError) {
+  error(runtimeError.token, runtimeError.what());
+  hadRuntimeError = true;
 }
 
 }  // namespace BisayaPP

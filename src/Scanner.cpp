@@ -111,11 +111,11 @@ void Scanner::number() {
     }
   }
 
-  if (isDecimal) {
-    addToken(DECIMAL, std::stod(source.substr(start, current - start)));
-  } else {
-    addToken(NUMBER, std::stoi(source.substr(start, current - start)));
-  }
+  // if (isDecimal) {
+  addToken(NUMBER, std::stod(source.substr(start, current - start)));
+  // } else {
+  // addToken(NUMBER, std::stoi(source.substr(start, current - start)));
+  // }
 }
 
 void Scanner::identifier() {
