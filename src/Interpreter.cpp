@@ -19,7 +19,7 @@ auto Interpreter::setResult(std::any& toSet, const std::any& toGet,
                             TokenType type) -> void {
   switch (type) {
     case TokenType::NUMBER:
-    case TokenType::STRING:
+    case TokenType::STRING_LITERAL:
     case TokenType::CHAR:
     case TokenType::BOOL_TRUE:
     case TokenType::BOOL_FALSE:
@@ -64,8 +64,16 @@ auto Interpreter::visitBinaryExpr(const Binary& Expr) -> void {
   bool newResult;
   std::any tempResult;
 
-  auto leftNum = std::any_cast<double>(left);
-  auto rightNum = std::any_cast<double>(right);
+  double leftNum;
+  double rightNum;
+
+  if (left.type() == typeid(double)) {
+    leftNum = std::any_cast<double>(left);
+  }
+  if (right.type() == typeid(double)) {
+    rightNum = std::any_cast<double>(right);
+  }
+
   std::string leftStr;
   std::string rightStr;
   switch (Expr.op.type) {

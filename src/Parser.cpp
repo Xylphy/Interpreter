@@ -69,7 +69,7 @@ auto Parser::comparison() -> Expr * {
 auto Parser::term() -> Expr * {
   Expr *expr = factor();
 
-  while (match({TokenType::MINUS, TokenType::PLUS})) {
+  while (match({TokenType::MINUS, TokenType::PLUS, TokenType::CONCATENATOR})) {
     Token operatorToken = previous();
     Expr *right = factor();
     expr = new Binary(expr, operatorToken, right);
@@ -109,7 +109,7 @@ auto Parser::primary() -> Expr * {
   }
   /*     if (match({TokenType::NIL}))
       return new Literal(nullptr); */
-  if (match({TokenType::NUMBER, TokenType::STRING})) {
+  if (match({TokenType::NUMBER, TokenType::STRING_LITERAL})) {
     return new Literal(previous().literal, previous().type);
   }
 

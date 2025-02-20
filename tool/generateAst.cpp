@@ -24,7 +24,7 @@ void defineAst(std::string&& outputDir, std::string&& baseName,
   for (const std::string& type : types) {
     // Remove spaces after the class name, e.g. "Unary   " -> "Unary"
     subClasses.push_back(type.substr(0, type.find(':'))
-                             .substr(type.find_first_not_of(""),
+                             .substr(type.find_first_not_of(' '),
                                      type.find_last_not_of(' ') + 1));
   }
 
@@ -94,11 +94,10 @@ void defineType(std::ofstream& file, const std::string& baseName,
   std::string initializationParams;
 
   // Start class
-  file << "class " << typeInfo.className << " : public " << baseName
-             << " {"
-             << "\n";
+  file << "class " << typeInfo.className << " : public " << baseName << " {"
+       << "\n";
   file << "public:"
-             << "\n";
+       << "\n";
 
   // Define the fields
   // E.g. Expr left; Token op; Expr right;
@@ -106,7 +105,7 @@ void defineType(std::ofstream& file, const std::string& baseName,
     // NOTE: Structured bindings
     const auto& [type, name] = field;
     file << type << " " << name << ";"
-               << "\n";
+         << "\n";
 
     constructorParams.append(type).append(" ").append(name);
     // If raw ptr then don't do *ptr( *ptr ), just ptr(ptr)
@@ -120,8 +119,8 @@ void defineType(std::ofstream& file, const std::string& baseName,
 
     // Add commas if not the last field
     if (field != fields.back()) {
-      constructorParams += ", ";
-      initializationParams += ", ";
+      constructorParams.append(", ");
+      initializationParams.append(", ");
     }
   }
   file << "\n";
@@ -129,15 +128,15 @@ void defineType(std::ofstream& file, const std::string& baseName,
   // E.g Binary(Expr *left, Token op, Expr *right) : left(left), op(op),
   // right(right) {}
   file << typeInfo.className << "(" << constructorParams
-             << ") : " << initializationParams << " {}"
-             << "\n";
+       << ") : " << initializationParams << " {}"
+       << "\n";
 
   // void accept(Visitor &visitor) override {
   // visitor.visit[className][baseName](*this); }
   file << "std::string accept( " << baseName
-             << "Visitor &visitor) override { return visitor.visit"
-             << typeInfo.className << baseName << "(*this); }"
-             << "\n";
+       << "Visitor &visitor) override { return visitor.visit"
+       << typeInfo.className << baseName << "(*this); }"
+       << "\n";
 
   // End class
   file << "};" << "\n";
