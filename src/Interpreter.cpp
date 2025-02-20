@@ -111,6 +111,9 @@ auto Interpreter::visitBinaryExpr(const Binary& Expr) -> void {
       goto SET_NUMBER;
     case TokenType::SLASH:
       checkNumberOperands(Expr.op, leftType, rightType);
+      if (rightNum == 0) {
+        throw RuntimeError(Expr.op, "Division by zero.");
+      }
       tempResult = leftNum / rightNum;
       goto SET_NUMBER;
     case TokenType::STAR:
