@@ -10,9 +10,7 @@ auto main(int argc, char *argv[]) -> int {
     exit(USAGE_ERROR_CODE);
   }
 
-  defineAst("Headers", "Expr",
-            {"Binary: Expr *left, Token op, Expr *right",
-             "Grouping: Expr *expression", "Literal: std::any value",
-             "Unary: Token op, Expr *right"});
+  defineAst("Headers", "Stmt",
+            {"Expression: Expr* expression", "Print: Expr* expression"});
   return 0;
 }

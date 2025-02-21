@@ -1,7 +1,5 @@
 #pragma once
 
-#include <utility>
-
 #include "Token.hpp"
 class Binary;
 class Grouping;
@@ -10,39 +8,40 @@ class Unary;
 
 class ExprVisitor {
  public:
-  virtual auto visitBinaryExpr(const Binary& Expr) -> void = 0;
-  virtual auto visitGroupingExpr(const Grouping& Expr) -> void = 0;
-  virtual auto visitLiteralExpr(const Literal& Expr) -> void = 0;
-  virtual auto visitUnaryExpr(const Unary& Expr) -> void = 0;
+  virtual auto visitBinaryExpr(const Binary &Expr) -> void = 0;
+  virtual auto visitGroupingExpr(const Grouping &Expr) -> void = 0;
+  virtual auto visitLiteralExpr(const Literal &Expr) -> void = 0;
+  virtual auto visitUnaryExpr(const Unary &Expr) -> void = 0;
+  virtual ~ExprVisitor() = default;
 };
 
 class Expr {
  public:
   virtual ~Expr() = default;
-  virtual auto accept(ExprVisitor& visitor) -> void = 0;
+  virtual auto accept(ExprVisitor &visitor) -> void = 0;
 };
 
 class Binary : public Expr {
  public:
-  Expr* left;
+  Expr *left;
   Token op;
-  Expr* right;
+  Expr *right;
 
-  Binary(Expr* left, Token operatorToken, Expr* right)
-      : left(left), op(std::move(operatorToken)), right(right) {}
+  Binary(Expr *left, Token op, Expr *right)
+      : left(left), op(op), right(right) {}
 
-  auto accept(ExprVisitor& visitor) -> void override {
+  auto accept(ExprVisitor &visitor) -> void override {
     visitor.visitBinaryExpr(*this);
   }
 };
 
 class Grouping : public Expr {
  public:
-  Expr* expression;
+  Expr *expression;
 
-  Grouping(Expr* expression) : expression(expression) {}
+  Grouping(Expr *expression) : expression(expression) {}
 
-  auto accept(ExprVisitor& visitor) -> void override {
+  auto accept(ExprVisitor &visitor) -> void override {
     visitor.visitGroupingExpr(*this);
   }
 };
@@ -52,10 +51,9 @@ class Literal : public Expr {
   std::any value;
   TokenType type;
 
-  Literal(std::any value, TokenType type)
-      : value(std::move(value)), type(type) {}
+  Literal(std::any value, TokenType type) : value(value), type(type) {}
 
-  auto accept(ExprVisitor& visitor) -> void override {
+  auto accept(ExprVisitor &visitor) -> void override {
     visitor.visitLiteralExpr(*this);
   }
 };
@@ -63,12 +61,11 @@ class Literal : public Expr {
 class Unary : public Expr {
  public:
   Token op;
-  Expr* right;
+  Expr *right;
 
-  Unary(Token operatorToken, Expr* right)
-      : op(std::move(operatorToken)), right(right) {}
+  Unary(Token op, Expr *right) : op(op), right(right) {}
 
-  auto accept(ExprVisitor& visitor) -> void override {
+  auto accept(ExprVisitor &visitor) -> void override {
     visitor.visitUnaryExpr(*this);
   }
 };

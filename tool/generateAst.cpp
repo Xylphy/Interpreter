@@ -30,7 +30,13 @@ void defineAst(std::string&& outputDir, std::string&& baseName,
 
   // Includes
   headerFile << "#pragma once\n\n";
-  headerFile << "#include \"Token.hpp\"\n";
+
+  if (baseName == "Expr") {
+    headerFile << "#include \"Token.hpp\"\n";
+  } else if (baseName == "Stmt") {
+    headerFile << "#include \"Expr.hpp\"\n";
+  }
+  headerFile << '\n';
 
   // Forward declarations
   // e.g. class Binary; class Grouping; class Literal; class Unary;
@@ -45,10 +51,13 @@ void defineAst(std::string&& outputDir, std::string&& baseName,
   for (const std::string& subclassName : subClasses) {
     // e.g. virtual void visitBinaryExpr(const Binary &expr) = 0;
     // e.g. virtual void visitPrintStmt(const Print &stmt) = 0;
-    headerFile << "virtual std::string visit" << subclassName << baseName
-               << "(const " << subclassName << " &" << baseName << ") = 0;"
+    headerFile << "virtual auto visit" << subclassName << baseName << "(const "
+               << subclassName << " &" << baseName << ") -> void = 0;"
                << "\n";
   }
+  headerFile << "virtual ~" << baseName << "Visitor() = default;"
+             << "\n";
+
   headerFile << "};\n\n";
 
   headerFile << "class " << baseName << "{"
@@ -57,8 +66,8 @@ void defineAst(std::string&& outputDir, std::string&& baseName,
              << "\n";
   headerFile << "virtual ~" << baseName << "() = default;"
              << "\n";
-  headerFile << "virtual std::string accept(" << baseName
-             << "Visitor &visitor) = 0;"
+  headerFile << "virtual auto accept(" << baseName
+             << "Visitor &visitor) -> void = 0;"
              << "\n";
   headerFile << "};"
              << "\n";
@@ -101,9 +110,9 @@ void defineType(std::ofstream& file, const std::string& baseName,
 
   // Define the fields
   // E.g. Expr left; Token op; Expr right;
-  for (const std::pair<std::string, std::string>& field : fields) {
+  for (std::pair<std::string, std::string>& field : fields) {
     // NOTE: Structured bindings
-    const auto& [type, name] = field;
+    auto& [type, name] = field;
     file << type << " " << name << ";"
          << "\n";
 
@@ -111,11 +120,9 @@ void defineType(std::ofstream& file, const std::string& baseName,
     // If raw ptr then don't do *ptr( *ptr ), just ptr(ptr)
     // Example: void *literal; -> literal(literal)
     if (name.find('*') != std::string::npos) {
-      std::string temp = name.substr(1);
-      initializationParams.append(temp).append("(").append(temp).append(")");
-    } else {
-      initializationParams.append(name).append("(").append(name).append(")");
+      name = name.substr(1);
     }
+    initializationParams.append(name).append("(").append(name).append(")");
 
     // Add commas if not the last field
     if (field != fields.back()) {
@@ -133,8 +140,8 @@ void defineType(std::ofstream& file, const std::string& baseName,
 
   // void accept(Visitor &visitor) override {
   // visitor.visit[className][baseName](*this); }
-  file << "std::string accept( " << baseName
-       << "Visitor &visitor) override { return visitor.visit"
+  file << "auto accept( " << baseName
+       << "Visitor &visitor) -> void override { visitor.visit"
        << typeInfo.className << baseName << "(*this); }"
        << "\n";
 

@@ -1,72 +1,40 @@
-/* #pragma once
+#pragma once
 
 #include "Expr.hpp"
-#include "Token.hpp"
-
-class Binary;
-class Grouping;
-class Literal;
-class Unary;
+class Expression;
+class Print;
 
 class StmtVisitor {
-   public:
-        virtual std::string visitBinaryStmt(const Binary &Stmt) = 0;
-        virtual std::string visitGroupingStmt(const Grouping &Stmt) = 0;
-        virtual std::string visitLiteralStmt(const Literal &Stmt) = 0;
-        virtual std::string visitUnaryStmt(const Unary &Stmt) = 0;
+ public:
+  virtual auto visitExpressionStmt(const Expression &Stmt) -> void = 0;
+  virtual auto visitPrintStmt(const Print &Stmt) -> void = 0;
+  virtual ~StmtVisitor() = default;
 };
 
 class Stmt {
-   public:
-        virtual ~Stmt() = default;
-        virtual std::string accept(StmtVisitor &visitor) = 0;
+ public:
+  virtual ~Stmt() = default;
+  virtual auto accept(StmtVisitor &visitor) -> void = 0;
 };
 
-class Binary : public Stmt {
-   public:
-        Expr *left;
-        Token op;
-        Expr *right;
+class Expression : public Stmt {
+ public:
+  Expr *expression;
 
-        Binary(Expr *left, Token op, Expr *right)
-                : left(left), op(op), right(right) {}
+  Expression(Expr *expression) : expression(expression) {}
 
-        std::string accept(StmtVisitor &visitor) override {
-                return visitor.visitBinaryStmt(*this);
-        }
+  auto accept(StmtVisitor &visitor) -> void override {
+    visitor.visitExpressionStmt(*this);
+  }
 };
 
-class Grouping : public Stmt {
-   public:
-        Expr *expression;
+class Print : public Stmt {
+ public:
+  Expr *expression;
 
-        Grouping(Expr *expression) : expression(expression) {}
+  Print(Expr *expression) : expression(expression) {}
 
-        std::string accept(StmtVisitor &visitor) override {
-                return visitor.visitGroupingStmt(*this);
-        }
+  auto accept(StmtVisitor &visitor) -> void override {
+    visitor.visitPrintStmt(*this);
+  }
 };
-
-class Literal : public Stmt {
-   public:
-        std::any value;
-
-        Literal(std::any value) : value(value) {}
-
-        std::string accept(StmtVisitor &visitor) override {
-                return visitor.visitLiteralStmt(*this);
-        }
-};
-
-class Unary : public Stmt {
-   public:
-        Token op;
-        Expr *right;
-
-        Unary(Token op, Expr *right) : op(op), right(right) {}
-
-        std::string accept(StmtVisitor &visitor) override {
-                return visitor.visitUnaryStmt(*this);
-        }
-};
- */
