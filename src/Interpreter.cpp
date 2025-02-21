@@ -1,6 +1,9 @@
 #include "Headers/Interpreter.hpp"
 
+#include <any>
+#include <cmath>
 #include <print>
+#include <stdexcept>
 
 #include "Headers/Errors.hpp"
 #include "Headers/Lib/utility.hpp"
@@ -9,16 +12,19 @@
 
 auto Interpreter::checkNumberOperands(const Token& token, TokenType left,
                                       TokenType right) -> void {
-  if (left == TokenType::NUMBER && right == TokenType::NUMBER) {
-    return;
+  try {
+    checkNumberOperand(token, left);
+    checkNumberOperand(token, right);
+  } catch (const RuntimeError& error) {
+    throw RuntimeError(token, "Operands must be numbers.");
   }
-  throw RuntimeError(token, "Operands must be numbers.");
 }
 
 auto Interpreter::setResult(std::any& toSet, const std::any& toGet,
                             TokenType type) -> void {
   switch (type) {
     case TokenType::NUMBER:
+    case TokenType::DECIMAL_NUMBER:
     case TokenType::STRING_LITERAL:
     case TokenType::CHAR:
     case TokenType::BOOL_TRUE:
@@ -47,10 +53,6 @@ auto Interpreter::evaluate(Expr* expression) -> bool {
   }
 }
 
-
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wswitch"
-
 auto Interpreter::visitBinaryExpr(const Binary& Expr) -> void {
   setInterpretResult(Expr.left);
   TokenType leftType = type;
@@ -62,82 +64,64 @@ auto Interpreter::visitBinaryExpr(const Binary& Expr) -> void {
   std::any right;
   setResult(right, result, rightType);
 
-  bool newResult;
+  std::string leftConvert;
+  std::string rightConvert;
+  utility::anyToString(leftConvert, left);
+  utility::anyToString(rightConvert, right);
+
+  if (!utility::checkValidOperation(left, Expr.op.type, right)) {
+    throw RuntimeError(Expr.op, "Invalid operation");
+  }
+
   std::any tempResult;
 
-  double leftNum;
-  double rightNum;
+  try {
+    checkNumberOperands(Expr.op, leftType,
+                        rightType);  // throws RuntimeError if not numbers
+    const TokenType& exprTokenType = Expr.op.type;
 
-  if (left.type() == typeid(double)) {
-    leftNum = std::any_cast<double>(left);
+    if (leftType == TokenType::NUMBER && rightType == TokenType::NUMBER) {
+      tempResult = numericOperation(std::any_cast<int>(left), exprTokenType,
+                                    std::any_cast<int>(right));
+    } else if (leftType == TokenType::NUMBER &&
+               rightType == TokenType::DECIMAL_NUMBER) {
+      tempResult = numericOperation(std::any_cast<int>(left), exprTokenType,
+                                    std::any_cast<double>(right));
+    } else if (leftType == TokenType::DECIMAL_NUMBER &&
+               rightType == TokenType::NUMBER) {
+      tempResult = numericOperation(std::any_cast<double>(left), exprTokenType,
+                                    std::any_cast<int>(right));
+    } else if (leftType == TokenType::DECIMAL_NUMBER &&
+               rightType == TokenType::DECIMAL_NUMBER) {
+      tempResult = numericOperation(std::any_cast<double>(left), exprTokenType,
+                                    std::any_cast<double>(right));
+    }
+
+    if (tempResult.type() == typeid(int)) {
+      type = TokenType::NUMBER;
+    } else if (result.type() == typeid(double)) {
+      type = TokenType::DECIMAL_NUMBER;
+    } else {
+      type = TokenType::STRING_LITERAL;
+    }
+
+  } catch (const RuntimeError& error) {
+    if (Expr.op.type == TokenType::CONCATENATOR) {
+      type = TokenType::STRING_LITERAL;
+
+      std::string leftString;
+      std::string rightString;
+      utility::anyToString(leftString, left);
+      utility::anyToString(rightString, right);
+
+      tempResult = leftString.append(rightString);
+    }
+  } catch (const std::runtime_error& error) {  // Division by zero
+    throw RuntimeError(Expr.op, error.what());
   }
-  if (right.type() == typeid(double)) {
-    rightNum = std::any_cast<double>(right);
-  }
 
-  std::string leftStr;
-  std::string rightStr;
-  switch (Expr.op.type) {
-    case TokenType::GREATER:
-      checkNumberOperands(Expr.op, leftType, rightType);
-      newResult = leftNum > rightNum;
-      break;
-    case TokenType::GREATER_EQUAL:
-      checkNumberOperands(Expr.op, leftType, rightType);
-      newResult = leftNum >= rightNum;
-      break;
-    case TokenType::LESS:
-      checkNumberOperands(Expr.op, leftType, rightType);
-      newResult = leftNum < rightNum;
-      break;
-    case TokenType::LESS_EQUAL:
-      checkNumberOperands(Expr.op, leftType, rightType);
-      newResult = leftNum <= rightNum;
-      break;
-    case TokenType::BANG_EQUAL:
-      checkNumberOperands(Expr.op, leftType, rightType);
-      newResult = leftNum != rightNum;
-      break;
-    case TokenType::EQUAL_EQUAL:
-      checkNumberOperands(Expr.op, leftType, rightType);
-      newResult = leftNum == rightNum;
-      break;
-    case TokenType::MINUS:
-      checkNumberOperands(Expr.op, leftType, rightType);
-      tempResult = leftNum - rightNum;
-      goto SET_NUMBER;
-    case TokenType::PLUS:
-      checkNumberOperands(Expr.op, leftType, rightType);
-      tempResult = leftNum + rightNum;
-      goto SET_NUMBER;
-    case TokenType::SLASH:
-      checkNumberOperands(Expr.op, leftType, rightType);
-      if (rightNum == 0) {
-        throw RuntimeError(Expr.op, "Division by zero.");
-      }
-      tempResult = leftNum / rightNum;
-      goto SET_NUMBER;
-    case TokenType::STAR:
-      checkNumberOperands(Expr.op, leftType, rightType);
-      tempResult = leftNum * rightNum;
-      goto SET_NUMBER;
-    case TokenType::CONCATENATOR:
-      utility::anyToString(leftStr, left);
-      utility::anyToString(rightStr, right);
-      tempResult = leftStr.append(rightStr);
-      goto SET_RESULT;
-  }
-  type = newResult ? TokenType::BOOL_TRUE : TokenType::BOOL_FALSE;
-  tempResult = (newResult);
-
-SET_NUMBER:
-  type = TokenType::NUMBER;
-
-SET_RESULT:
   setResult(result, tempResult, type);
 }
-
-#pragma clang diagnostic pop
 
 auto Interpreter::visitGroupingExpr(const Grouping& Expr) -> void {
   setInterpretResult(Expr.expression);
@@ -161,7 +145,6 @@ auto Interpreter::visitUnaryExpr(const Unary& Expr) -> void {
   std::any right;
   setResult(right, result, rightType);
   switch (Expr.op.type) {
-    // negate
     case TokenType::BANG:
       newResult = isTruthy(right, rightType);
       type = newResult ? TokenType::BOOL_TRUE : TokenType::BOOL_FALSE;
@@ -186,8 +169,11 @@ auto Interpreter::isTruthy(const std::any& value, TokenType type) -> bool {
   if (type == TokenType::BOOL_TRUE) {
     return true;
   }
-  if (type == TokenType::NUMBER) {
+  if (type == TokenType::DECIMAL_NUMBER) {
     return std::any_cast<double>(value) != 0;
+  }
+  if (type == TokenType::NUMBER) {
+    return std::any_cast<int>(value) != 0;
   }
   if (type == TokenType::STRING_LITERAL) {
     return !std::any_cast<std::string>(value).empty();
@@ -198,7 +184,7 @@ auto Interpreter::isTruthy(const std::any& value, TokenType type) -> bool {
 
 auto Interpreter::checkNumberOperand(const Token& token, TokenType operand)
     -> void {
-  if (operand == TokenType::NUMBER) {
+  if (operand == TokenType::NUMBER || operand == TokenType::DECIMAL_NUMBER) {
     return;
   }
   throw RuntimeError(token, "Operand must be a number.");

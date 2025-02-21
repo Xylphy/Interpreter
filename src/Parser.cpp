@@ -81,7 +81,7 @@ auto Parser::term() -> Expr * {
 auto Parser::factor() -> Expr * {
   Expr *expr = unary();
 
-  while (match({TokenType::SLASH, TokenType::STAR})) {
+  while (match({TokenType::SLASH, TokenType::STAR, TokenType::MODULO})) {
     Token operatorToken = previous();
     Expr *right = unary();
     expr = new Binary(expr, operatorToken, right);
@@ -109,7 +109,8 @@ auto Parser::primary() -> Expr * {
   }
   /*     if (match({TokenType::NIL}))
       return new Literal(nullptr); */
-  if (match({TokenType::NUMBER, TokenType::STRING_LITERAL})) {
+  if (match({TokenType::NUMBER, TokenType::STRING_LITERAL,
+             TokenType::CHARACTER_LITERAL, TokenType::DECIMAL_NUMBER})) {
     return new Literal(previous().literal, previous().type);
   }
 
