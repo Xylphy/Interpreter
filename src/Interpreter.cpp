@@ -1,9 +1,7 @@
 #include "Headers/Interpreter.hpp"
 
 #include <any>
-#include <cmath>
 #include <print>
-#include <stdexcept>
 
 #include "Headers/Errors.hpp"
 #include "Headers/Lib/utility.hpp"

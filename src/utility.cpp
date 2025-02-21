@@ -2,7 +2,6 @@
 
 #include <any>
 #include <functional>
-#include <string>
 #include <typeindex>
 
 namespace utility {

@@ -5,7 +5,6 @@
 #include <print>
 #include <stdexcept>
 #include <string>
-#include <typeinfo>
 
 #include "../Token.hpp"  // IWYU pragma: export
 

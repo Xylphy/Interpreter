@@ -78,8 +78,7 @@ class Token {
   std::any literal;
   size_t line;
 
-  Token(TokenType type, const std::string& lexeme, const std::any& literal,
-        int line);
+  Token(TokenType type, std::string lexeme, std::any literal, int line);
 
   [[nodiscard]] auto toString() const -> std::string;
 
