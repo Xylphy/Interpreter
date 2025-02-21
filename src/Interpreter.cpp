@@ -47,6 +47,7 @@ auto Interpreter::evaluate(Expr* expression) -> bool {
   }
 }
 
+
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wswitch"
 
