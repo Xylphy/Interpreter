@@ -30,6 +30,7 @@ void defineAst(std::string&& outputDir, std::string&& baseName,
 
   // Includes
   headerFile << "#pragma once\n\n";
+  headerFile << "#include <vector>\n";
 
   if (baseName == "Expr") {
     headerFile << "#include \"Token.hpp\"\n";

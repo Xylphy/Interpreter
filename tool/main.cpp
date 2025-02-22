@@ -10,14 +10,15 @@ auto main(int argc, char *argv[]) -> int {
     exit(USAGE_ERROR_CODE);
   }
 
-  // defineAst("Headers", "Stmt",
-  //           {"Expression: Expr* expression", "Print: Expr* expression",
-  //            "Var: Token name, Expr* initializer"});
+  defineAst("Headers", "Stmt",
+            {"Block: std::vector<Stmt*> statements","Expression: Expr* expression", "Print: Expr* expression",
+             "Var: Token name, Expr* initializer"});
 
   // defineAst(
   //     "Headers", "Expr",
-  //     {"Binary: Expr *left, Token op, Expr *right",
-  //      "Grouping: Expr *expression", "Literal: std::any value, TokenType
-  //      type", "Unary: Token op, Expr *right", "Variable: Token name"});
+  //     {"Assign: Token name, Expr *value",
+  //      "Binary: Expr *left, Token op, Expr *right",
+  //      "Grouping: Expr *expression", "Literal: std::any value, TokenType type",
+  //      "Unary: Token op, Expr *right", "Variable: Token name"});
   return 0;
 }

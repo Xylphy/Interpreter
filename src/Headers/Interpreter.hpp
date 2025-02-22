@@ -18,12 +18,16 @@ class Interpreter : public ExprVisitor, public StmtVisitor {
   auto visitLiteralExpr(const Literal& Expr) -> void override;
   auto visitUnaryExpr(const Unary& Expr) -> void override;
   auto visitVariableExpr(const Variable& Expr) -> void override;
+  auto visitAssignExpr(const Assign& Expr) -> void override;
 
   auto visitExpressionStmt(const Expression& Stmt) -> void override;
   auto visitPrintStmt(const Print& Stmt) -> void override;
   auto visitVarStmt(const Var& Stmt) -> void override;
+  auto visitBlockStmt(const Block& Stmt) -> void override;
 
   auto execute(Stmt* statement) -> void;
+  auto executeBlock(const std::vector<Stmt*>& statements, Environment* env)
+      -> void;
   auto setPrintResult(Expr* expr) -> void;
   auto setInterpretResult(Expr* expr) -> void;
   auto setResult(std::any& toSet, const std::any& toGet, TokenType type)

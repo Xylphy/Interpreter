@@ -29,6 +29,7 @@ auto Interpreter::setResult(std::any& toSet, const std::any& toGet,
     case TokenType::CHAR:
     case TokenType::BOOL_TRUE:
     case TokenType::BOOL_FALSE:
+    case TokenType::CHARACTER_LITERAL:
       toSet = toGet;
       break;
     default:
@@ -225,4 +226,9 @@ auto Interpreter::visitVariableExpr(const Variable& Expr) -> void {
   }
 
   setResult(result, variableExpr.first, type);
+}
+
+auto Interpreter::visitAssignExpr(const Assign& Expr) -> void {
+  setInterpretResult(Expr.value);
+  environment->assign(Expr.name, result, type);
 }

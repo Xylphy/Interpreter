@@ -2,6 +2,7 @@
 #include <vector>
 
 #include "Errors.hpp"
+#include "Expr.hpp"
 #include "Stmt.hpp"
 
 class Parser {
@@ -21,11 +22,13 @@ class Parser {
   auto factor() -> Expr*;
   auto unary() -> Expr*;
   auto primary() -> Expr*;
+  auto assignment() -> Expr*;
   auto advance() -> Token;
   auto peek() -> Token;
   auto previous() -> Token;
   auto consume(TokenType type, const std::string& message) -> Token;
   auto synchronize() -> void;
+  auto block() -> std::vector<Stmt*>;
 
   auto declaration() -> Stmt*;
   auto varDeclaration() -> Stmt*;

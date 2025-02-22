@@ -2,6 +2,7 @@
 
 #include "Token.hpp"
 
+class Assign;
 class Binary;
 class Grouping;
 class Literal;
@@ -10,6 +11,7 @@ class Variable;
 
 class ExprVisitor {
  public:
+  virtual auto visitAssignExpr(const Assign &Expr) -> void = 0;
   virtual auto visitBinaryExpr(const Binary &Expr) -> void = 0;
   virtual auto visitGroupingExpr(const Grouping &Expr) -> void = 0;
   virtual auto visitLiteralExpr(const Literal &Expr) -> void = 0;
@@ -22,6 +24,18 @@ class Expr {
  public:
   virtual ~Expr() = default;
   virtual auto accept(ExprVisitor &visitor) -> void = 0;
+};
+
+class Assign : public Expr {
+ public:
+  Token name;
+  Expr *value;
+
+  Assign(Token name, Expr *value) : name(name), value(value) {}
+
+  auto accept(ExprVisitor &visitor) -> void override {
+    visitor.visitAssignExpr(*this);
+  }
 };
 
 class Binary : public Expr {

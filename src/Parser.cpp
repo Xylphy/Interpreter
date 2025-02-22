@@ -3,6 +3,7 @@
 #include <algorithm>
 
 #include "Headers/Expr.hpp"
+#include "Headers/Interpreter.hpp"
 #include "Headers/Stmt.hpp"
 #include "Headers/Token.hpp"
 #include "Headers/bisayaPP.hpp"
@@ -11,7 +12,7 @@ Parser::Parser(std::vector<Token> &tokens) : tokens(tokens) {}
 
 Parser::Parser(std::vector<Token> &&tokens) : tokens(std::move(tokens)) {}
 
-auto Parser::expression() -> Expr * { return equality(); }
+auto Parser::expression() -> Expr * { return assignment(); }
 
 auto Parser::equality() -> Expr * {
   Expr *expr = comparison();
@@ -226,5 +227,53 @@ auto Parser::statement() -> Stmt * {
   if (match({TokenType::PRINT})) {
     return printStatement();
   }
+  if (match({TokenType::LEFT_BRACE})) {
+    return new Block(block());
+  }
+
   return expressionStatement();
+}
+
+auto Parser::assignment() -> Expr * {
+  Expr *expr = equality();
+
+  if (match({TokenType::EQUAL})) {
+    Token equals = previous();
+    Expr *value = assignment();
+
+    if (dynamic_cast<Variable *>(expr) != nullptr) {
+      Token name = static_cast<Variable *>(expr)->name;
+      return new Assign(name, value);
+    }
+
+    error(equals, "Invalid assignment target.");
+  }
+
+  return expr;
+}
+
+auto Parser::block() -> std::vector<Stmt *> {
+  std::vector<Stmt *> statements;
+  while (!check(TokenType::RIGHT_BRACE) && !isAtEnd()) {
+    statements.push_back(declaration());
+  }
+  consume(TokenType::RIGHT_BRACE, "Expect '}' after block.");
+  return statements;
+}
+
+auto Interpreter::visitBlockStmt(const Block &Stmt) -> void {
+  executeBlock(Stmt.statements, environment);
+}
+
+auto Interpreter::executeBlock(const std::vector<Stmt *> &statements,
+                               Environment *env) -> void {
+  Environment *previous = environment;
+  try {
+    environment = env;
+    for (Stmt *statement : statements) {
+      execute(statement);
+    }
+  } catch (const RuntimeError &error) {
+    environment = previous;
+  }
 }

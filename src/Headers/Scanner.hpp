@@ -45,7 +45,7 @@ class Scanner {
       {"MUGNA", VAR},        {"ALANG", WHILE},
       {"DAWAT", INPUT},      {"SUGOD", START},
       {"KATAPUSAN", END},    {"NUMERO", INTEGER},
-      {"PITIK", DECIMAL},    {"TINUOD", BOOL},
+      {"TIPIK", DECIMAL},    {"TINUOD", BOOL},
       {"\"OO\"", BOOL_TRUE}, {"\"DILI\"", BOOL_FALSE},
       {"LETRA", CHAR},       {"PISI", STRING},
       {"\"WALA\"", NIL},
