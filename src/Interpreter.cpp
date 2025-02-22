@@ -8,6 +8,8 @@
 #include "Headers/Token.hpp"
 #include "Headers/bisayaPP.hpp"
 
+Interpreter::Interpreter() : environment(new Environment()) {}
+
 auto Interpreter::checkNumberOperands(const Token& token, TokenType left,
                                       TokenType right) -> void {
   try {
@@ -38,12 +40,22 @@ auto Interpreter::setInterpretResult(Expr* expr) -> void {
   expr->accept(*this);
 }
 
+auto Interpreter::setInterpretResult(const std::vector<Stmt*>& statements)
+    -> void {
+  try {
+    for (Stmt* statement : statements) {
+      execute(statement);
+    }
+  } catch (const RuntimeError& error) {
+    BisayaPP::runtimeError(error);
+  }
+}
+
+auto Interpreter::execute(Stmt* statement) -> void { statement->accept(*this); }
+
 auto Interpreter::evaluate(Expr* expression) -> bool {
   try {
     setPrintResult(expression);
-    std::string resultString;
-    utility::anyToString(resultString, result);
-    std::print("Result is: {}\n", resultString);
     return true;
   } catch (RuntimeError& error) {
     BisayaPP::runtimeError(error);
@@ -61,11 +73,6 @@ auto Interpreter::visitBinaryExpr(const Binary& Expr) -> void {
   TokenType rightType = type;
   std::any right;
   setResult(right, result, rightType);
-
-  std::string leftConvert;
-  std::string rightConvert;
-  utility::anyToString(leftConvert, left);
-  utility::anyToString(rightConvert, right);
 
   if (!utility::checkValidOperation(left, Expr.op.type, right)) {
     throw RuntimeError(Expr.op, "Invalid operation");
@@ -107,12 +114,8 @@ auto Interpreter::visitBinaryExpr(const Binary& Expr) -> void {
     if (Expr.op.type == TokenType::CONCATENATOR) {
       type = TokenType::STRING_LITERAL;
 
-      std::string leftString;
-      std::string rightString;
-      utility::anyToString(leftString, left);
-      utility::anyToString(rightString, right);
-
-      tempResult = leftString.append(rightString);
+      tempResult =
+          utility::anyToString(left).append(utility::anyToString(right));
     }
   } catch (const std::runtime_error& error) {  // Division by zero
     throw RuntimeError(Expr.op, error.what());
@@ -186,4 +189,40 @@ auto Interpreter::checkNumberOperand(const Token& token, TokenType operand)
     return;
   }
   throw RuntimeError(token, "Operand must be a number.");
+}
+
+auto Interpreter::visitExpressionStmt(const Expression& Stmt) -> void {
+  evaluate(Stmt.expression);
+}
+
+auto Interpreter::visitPrintStmt(const Print& Stmt) -> void {
+  bool success = evaluate(Stmt.expression);
+  if (success) {
+    std::print("{}\n", utility::anyToString(result));
+  }
+}
+
+auto Interpreter::visitVarStmt(const Var& Stmt) -> void {
+  std::any value;
+  TokenType tokenType = TokenType::UNITIALIZED;
+
+  if (Stmt.initializer != nullptr) {
+    setInterpretResult(Stmt.initializer);
+    value = result;
+    tokenType = type;
+  }
+
+  environment->defineVar(Stmt.name.lexeme, value, tokenType);
+}
+
+auto Interpreter::visitVariableExpr(const Variable& Expr) -> void {
+  std::pair<std::any, TokenType>& variableExpr = environment->get(Expr.name);
+
+  type = variableExpr.second;
+
+  if (type == TokenType::UNITIALIZED) {
+    throw RuntimeError(Expr.name, "Variable not initialized.");
+  }
+
+  setResult(result, variableExpr.first, type);
 }

@@ -41,6 +41,7 @@ enum TokenType : std::uint8_t {
   BOOL_TRUE,
   BOOL_FALSE,
   CHARACTER_LITERAL,
+  UNITIALIZED,
 
   // Keywords
   AND,

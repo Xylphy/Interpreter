@@ -126,7 +126,7 @@ void Scanner::identifier() {
 
 auto Scanner::isAlpha(char character) -> bool {
   return (character >= 'a' && character <= 'z') ||
-         (character >= 'A' && character <= 'Z') || character == '_';
+         (character >= 'A' && character <= 'Z') || character == '_' || character == ':';
 }
 
 auto Scanner::isAlphaNumeric(char character) -> bool {

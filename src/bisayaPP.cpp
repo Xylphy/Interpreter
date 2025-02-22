@@ -7,10 +7,10 @@
 #include <string>
 
 #include "Headers/AstPrinter.hpp"
-#include "Headers/Expr.hpp"
 #include "Headers/Interpreter.hpp"
 #include "Headers/Parser.hpp"
 #include "Headers/Scanner.hpp"
+#include "Headers/Stmt.hpp"
 #include "Headers/Token.hpp"
 
 namespace BisayaPP {
@@ -26,25 +26,23 @@ bool hadRuntimeError = false;
 static Interpreter interpreter;
 
 void run(const std::string& source) {
-  std::print("Running {}\n", source);
+  std::print("Running\n {}\n", source);
 
   auto* scanner = new Scanner(source);
   std::vector<Token> tokens = scanner->scanTokens();
-  auto* parser = new Parser(tokens);
-  Expr* expr = parser->parse();
 
-  for (Token token : tokens) {
-    std::print("{}\n", token);
-  }
+  // for (Token token : tokens) {
+  //   std::print("{}\n", token);
+  // }
+
+  auto* parser = new Parser(tokens);
+  std::vector<Stmt*> statements = parser->parse();
 
   if (hadError) {
     return;
   }
-  auto* printer = new AstPrinter();
-  printer->setPrintResult(expr);
-  std::print("{}\n", printer->get());
 
-  interpreter.evaluate(expr);
+  interpreter.setInterpretResult(statements);
 }
 
 void runFile(const char* path) {

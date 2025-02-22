@@ -1,10 +1,12 @@
 #pragma once
 
 #include "Token.hpp"
+
 class Binary;
 class Grouping;
 class Literal;
 class Unary;
+class Variable;
 
 class ExprVisitor {
  public:
@@ -12,6 +14,7 @@ class ExprVisitor {
   virtual auto visitGroupingExpr(const Grouping &Expr) -> void = 0;
   virtual auto visitLiteralExpr(const Literal &Expr) -> void = 0;
   virtual auto visitUnaryExpr(const Unary &Expr) -> void = 0;
+  virtual auto visitVariableExpr(const Variable &Expr) -> void = 0;
   virtual ~ExprVisitor() = default;
 };
 
@@ -67,5 +70,16 @@ class Unary : public Expr {
 
   auto accept(ExprVisitor &visitor) -> void override {
     visitor.visitUnaryExpr(*this);
+  }
+};
+
+class Variable : public Expr {
+ public:
+  Token name;
+
+  Variable(Token name) : name(name) {}
+
+  auto accept(ExprVisitor &visitor) -> void override {
+    visitor.visitVariableExpr(*this);
   }
 };

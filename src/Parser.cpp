@@ -3,6 +3,7 @@
 #include <algorithm>
 
 #include "Headers/Expr.hpp"
+#include "Headers/Stmt.hpp"
 #include "Headers/Token.hpp"
 #include "Headers/bisayaPP.hpp"
 
@@ -101,10 +102,10 @@ auto Parser::unary() -> Expr * {
 }
 
 auto Parser::primary() -> Expr * {
-  if (match({TokenType::FALSE})) {
+  if (match({TokenType::BOOL_FALSE})) {
     return new Literal(false, TokenType::BOOL_FALSE);
   }
-  if (match({TokenType::TRUE})) {
+  if (match({TokenType::BOOL_TRUE})) {
     return new Literal(true, TokenType::BOOL_TRUE);
   }
   /*     if (match({TokenType::NIL}))
@@ -112,6 +113,9 @@ auto Parser::primary() -> Expr * {
   if (match({TokenType::NUMBER, TokenType::STRING_LITERAL,
              TokenType::CHARACTER_LITERAL, TokenType::DECIMAL_NUMBER})) {
     return new Literal(previous().literal, previous().type);
+  }
+  if (match({TokenType::IDENTIFIER})) {
+    return new Variable(previous());
   }
 
   if (match({TokenType::LEFT_PAREN})) {
@@ -165,10 +169,62 @@ void Parser::synchronize() {
   }
 }
 
-auto Parser::parse() -> Expr * {
+auto Parser::varDeclaration() -> Stmt * {
+  Token name = consume(TokenType::IDENTIFIER, "Expect variable name.");
+
+  Expr *initializer = nullptr;
+  if (match({TokenType::EQUAL})) {
+    initializer = expression();
+  }
+
+  consume(TokenType::SEMICOLON, "Expect newline after variable declaration.");
+  return new Var(name, initializer);
+}
+
+auto Parser::declaration() -> Stmt * {
   try {
-    return expression();
+    if (match({TokenType::VAR}) &&
+        (peek().type == TokenType::INTEGER ||
+         peek().type == TokenType::DECIMAL || peek().type == TokenType::CHAR ||
+         peek().type == TokenType::BOOL)) {
+      advance();
+      return varDeclaration();
+    }
+
+    return statement();
   } catch (const ParseError &error) {
+    synchronize();
     return nullptr;
   }
+}
+
+auto Parser::parse() -> std::vector<Stmt *> {
+  try {
+    std::vector<Stmt *> statements;
+    while (!isAtEnd()) {
+      statements.push_back(declaration());
+    }
+    return statements;
+  } catch (const ParseError &error) {
+    return {};
+  }
+}
+
+auto Parser::expressionStatement() -> Stmt * {
+  Expr *value = expression();
+  consume(TokenType::SEMICOLON, "Expect newline after expression.");
+  return new Expression(value);
+}
+
+auto Parser::printStatement() -> Stmt * {
+  Expr *value = expression();
+  consume(TokenType::SEMICOLON, "Expect newline after value.");
+  return new Print(value);
+}
+
+auto Parser::statement() -> Stmt * {
+  if (match({TokenType::PRINT})) {
+    return printStatement();
+  }
+  return expressionStatement();
 }

@@ -40,7 +40,7 @@ class Scanner {
       {"WALA", ELSE},        {"SA", FOR},
       {"BUHAT", FUN},        {"KUNG", IF},
       {"NULL", NIL},         {"O", OR},
-      {"IPAKITA", PRINT},    {"BALIK", RETURN},
+      {"IPAKITA:", PRINT},    {"BALIK", RETURN},
       {"SUPER", SUPER},      {"KINI", THIS},
       {"MUGNA", VAR},        {"ALANG", WHILE},
       {"DAWAT", INPUT},      {"SUGOD", START},

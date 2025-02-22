@@ -1,28 +1,40 @@
 #pragma once
 #include <cmath>
+#include <vector>
 
-#include "Expr.hpp"
+#include "Environment.hpp"
 #include "Lib/utility.hpp"
-#include "Token.hpp"
+#include "Stmt.hpp"
 
-class Interpreter : public ExprVisitor {
+class Interpreter : public ExprVisitor, public StmtVisitor {
  public:
+  Interpreter();
   auto evaluate(Expr* expression) -> bool;
+  auto setInterpretResult(const std::vector<Stmt*>& statements) -> void;
 
  private:
   auto visitBinaryExpr(const Binary& Expr) -> void override;
   auto visitGroupingExpr(const Grouping& Expr) -> void override;
   auto visitLiteralExpr(const Literal& Expr) -> void override;
   auto visitUnaryExpr(const Unary& Expr) -> void override;
+  auto visitVariableExpr(const Variable& Expr) -> void override;
+
+  auto visitExpressionStmt(const Expression& Stmt) -> void override;
+  auto visitPrintStmt(const Print& Stmt) -> void override;
+  auto visitVarStmt(const Var& Stmt) -> void override;
+
+  auto execute(Stmt* statement) -> void;
   auto setPrintResult(Expr* expr) -> void;
   auto setInterpretResult(Expr* expr) -> void;
   auto setResult(std::any& toSet, const std::any& toGet, TokenType type)
       -> void;
+
   static auto checkNumberOperands(const Token& token, TokenType left,
                                   TokenType right) -> void;
   static auto checkNumberOperand(const Token& token, TokenType operand) -> void;
   static auto isTruthy(const std::any& value, TokenType type) -> bool;
   static auto stringify(std::any& value) -> std::string;
+  [[nodiscard]] auto getResult() const -> std::any;
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wswitch"
@@ -67,8 +79,7 @@ class Interpreter : public ExprVisitor {
   }
 
 #pragma clang diagnostic pop
-
-  [[nodiscard]] auto getResult() const -> std::any;
+  Environment* environment;
   TokenType type;
   std::any result;
 };

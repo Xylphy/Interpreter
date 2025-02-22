@@ -14,9 +14,7 @@ auto AstPrinter::visitGroupingExpr(const Grouping& Expr) -> void {
 
 auto AstPrinter::visitLiteralExpr(const Literal& Expr) -> void {
   if (Expr.value.has_value()) {
-    std::string toString;
-    utility::anyToString(toString, Expr.value);
-    result.append(toString);
+    result.append(utility::anyToString(Expr.value));
     return;
   }
   result.append("nil");

@@ -6,7 +6,11 @@
 
 namespace utility {
 
-auto anyToString(std::string& result, const std::any& value) noexcept -> bool {
+auto anyToString(std::string& result, const std::any& value) noexcept -> void {
+  result.append(anyToString(value));
+}
+
+auto anyToString(const std::any& value) noexcept -> std::string {
   static const std::unordered_map<std::type_index,
                                   std::function<std::string(const std::any&)>>
       typeToString{{typeid(int),
@@ -21,16 +25,19 @@ auto anyToString(std::string& result, const std::any& value) noexcept -> bool {
                     [](const std::any& value) -> std::string {
                       return std::any_cast<std::string>(value);
                     }},
-                   {typeid(char), [](const std::any& value) -> std::string {
+                   {typeid(char),
+                    [](const std::any& value) -> std::string {
                       return {1, std::any_cast<char>(value)};
+                    }},
+                   {typeid(bool), [](const std::any& value) -> std::string {
+                      return std::any_cast<bool>(value) ? "true" : "false";
                     }}};
 
   auto iterator = typeToString.find(value.type());
   if (iterator != typeToString.end()) {
-    result.append(iterator->second(value));
-    return true;
+    return iterator->second(value);
   }
-  return false;
+  return {};
 }
 
 auto isConvertibleToString(const std::any& value) -> bool {

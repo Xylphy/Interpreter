@@ -11,7 +11,8 @@
 // This namespace contains utility functions that are used in the project.
 namespace utility {
 
-auto anyToString(std::string& result, const std::any& value) noexcept -> bool;
+auto anyToString(std::string& result, const std::any& value) noexcept -> void;
+auto anyToString(const std::any& value) noexcept -> std::string;
 
 template <typename T, typename U>
 auto addNumerics(const T& left, const U& right) -> decltype(left + right) {

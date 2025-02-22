@@ -1,15 +1,14 @@
 #include <initializer_list>
 #include <vector>
 
-#include "Expr.hpp"
 #include "Errors.hpp"
-#include "Token.hpp"
+#include "Stmt.hpp"
 
 class Parser {
  public:
   Parser(std::vector<Token>& tokens);
   Parser(std::vector<Token>&& tokens);
-  auto parse() -> Expr*;
+  auto parse() -> std::vector<Stmt*>;
 
  private:
   auto match(std::initializer_list<TokenType> types) -> bool;
@@ -26,7 +25,14 @@ class Parser {
   auto peek() -> Token;
   auto previous() -> Token;
   auto consume(TokenType type, const std::string& message) -> Token;
-  void synchronize();
+  auto synchronize() -> void;
+
+  auto declaration() -> Stmt*;
+  auto varDeclaration() -> Stmt*;
+
+  auto statement() -> Stmt*;
+  auto printStatement() -> Stmt*;
+  auto expressionStatement() -> Stmt*;
   static auto error(const Token& token, const std::string& message)
       -> ParseError;
 

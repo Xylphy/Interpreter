@@ -41,8 +41,10 @@ add_executable(Interpreter
   "src/Headers/Errors.hpp"
   "src/Headers/Lib/utility.hpp"
   "src/Headers/Stmt.hpp"
+  "src/Headers/Environment.hpp"
 
   #Source
+  "src/Environment.cpp"
   "src/Interpreter.cpp"
   "src/utility.cpp"
   "src/Errors.cpp"
