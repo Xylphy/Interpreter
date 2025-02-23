@@ -254,10 +254,17 @@ auto Parser::assignment() -> Expr * {
 
 auto Parser::block() -> std::vector<Stmt *> {
   std::vector<Stmt *> statements;
+  if (check(TokenType::SEMICOLON)) {
+    advance();
+  }
+
   while (!check(TokenType::RIGHT_BRACE) && !isAtEnd()) {
     statements.push_back(declaration());
   }
   consume(TokenType::RIGHT_BRACE, "Expect '}' after block.");
+  if (check(TokenType::SEMICOLON)) {
+    advance();
+  }
   return statements;
 }
 
