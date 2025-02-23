@@ -49,7 +49,9 @@ auto Parser::advance() -> Token {
   return previous();
 }
 
-auto Parser::isAtEnd() -> bool { return peek().type == TokenType::END_OF_FILE; }
+auto Parser::isAtEnd() -> bool {
+  return peek().type == TokenType::END_OF_FILE || peek().type == TokenType::END;
+}
 
 auto Parser::peek() -> Token { return tokens[current]; }
 
@@ -201,10 +203,21 @@ auto Parser::declaration() -> Stmt * {
 
 auto Parser::parse() -> std::vector<Stmt *> {
   try {
+    if (tokens[0].type != TokenType::START) {
+      throw std::runtime_error("Expect 'SUGOD' at the beginning of the file.");
+    }
+    advance();
+    advance();
+
     std::vector<Stmt *> statements;
     while (!isAtEnd()) {
       statements.push_back(declaration());
     }
+
+    if (tokens[current].type != TokenType::END) {
+      throw std::runtime_error("Expect 'KATAPUSAN' at the end of the file.");
+    }
+
     return statements;
   } catch (const ParseError &error) {
     return {};
@@ -266,21 +279,4 @@ auto Parser::block() -> std::vector<Stmt *> {
     advance();
   }
   return statements;
-}
-
-auto Interpreter::visitBlockStmt(const Block &Stmt) -> void {
-  executeBlock(Stmt.statements, environment);
-}
-
-auto Interpreter::executeBlock(const std::vector<Stmt *> &statements,
-                               Environment *env) -> void {
-  Environment *previous = environment;
-  try {
-    environment = env;
-    for (Stmt *statement : statements) {
-      execute(statement);
-    }
-  } catch (const RuntimeError &error) {
-    environment = previous;
-  }
 }

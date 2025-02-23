@@ -232,3 +232,20 @@ auto Interpreter::visitAssignExpr(const Assign& Expr) -> void {
   setInterpretResult(Expr.value);
   environment->assign(Expr.name, result, type);
 }
+
+auto Interpreter::visitBlockStmt(const Block& Stmt) -> void {
+  executeBlock(Stmt.statements, new Environment(environment));
+}
+
+auto Interpreter::executeBlock(const std::vector<Stmt*>& statements,
+                               Environment* env) -> void {
+  Environment* previous = environment;
+  // try {
+  environment = env;
+  for (Stmt* statement : statements) {
+    execute(statement);
+  }
+  // } catch (const RuntimeError& error) {
+  environment = previous;
+  // }
+}
