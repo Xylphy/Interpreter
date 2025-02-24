@@ -4,6 +4,7 @@
 #include "Errors.hpp"
 #include "Expr.hpp"
 #include "Stmt.hpp"
+#include "Token.hpp"
 
 class Parser {
  public:
@@ -31,13 +32,16 @@ class Parser {
   auto block() -> std::vector<Stmt*>;
 
   auto declaration() -> Stmt*;
-  auto varDeclaration() -> Stmt*;
+  auto varDeclaration(TokenType type) -> Stmt*;
 
   auto statement() -> Stmt*;
   auto printStatement() -> Stmt*;
   auto expressionStatement() -> Stmt*;
+  
+
   static auto error(const Token& token, const std::string& message)
       -> ParseError;
+
 
   std::vector<Token> tokens;
   int current = 0;

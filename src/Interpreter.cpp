@@ -1,6 +1,5 @@
 #include "Headers/Interpreter.hpp"
 
-#include <any>
 #include <print>
 
 #include "Headers/Errors.hpp"
@@ -211,6 +210,7 @@ auto Interpreter::visitVarStmt(const Var& Stmt) -> void {
     setInterpretResult(Stmt.initializer);
     value = result;
     tokenType = type;
+    utility::convertData(tokenType, value);
   }
 
   environment->defineVar(Stmt.name.lexeme, value, tokenType);
@@ -230,6 +230,7 @@ auto Interpreter::visitVariableExpr(const Variable& Expr) -> void {
 
 auto Interpreter::visitAssignExpr(const Assign& Expr) -> void {
   setInterpretResult(Expr.value);
+  utility::convertData(type, result);
   environment->assign(Expr.name, result, type);
 }
 

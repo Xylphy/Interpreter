@@ -40,15 +40,18 @@ auto anyToString(const std::any& value) noexcept -> std::string {
   return {};
 }
 
-auto isConvertibleToString(const std::any& value) -> bool {
-  const std::type_info& type = value.type();
-  return isArithmetic(value) || type == typeid(std::string) ||
-         type == typeid(char);
-}
-
-auto isArithmetic(const std::any& value) -> bool {
-  const std::type_info& type = value.type();
-  return type == typeid(int) || type == typeid(double);
+auto convertData(const TokenType& type, std::any& value) -> void {
+  if (type == TokenType::NUMBER) {
+    value = std::any_cast<int>(value);
+  } else if (type == TokenType::DECIMAL_NUMBER) {
+    value = std::any_cast<double>(value);
+  } else if (type == TokenType::STRING_LITERAL) {
+    value = std::any_cast<std::string>(value);
+  } else if (type == TokenType::CHARACTER_LITERAL) {
+    value = std::any_cast<char>(value);
+  } else if (type == TokenType::BOOL_TRUE) {
+    value = std::any_cast<bool>(value);
+  }
 }
 
 auto checkValidOperation(const std::any& left, TokenType type,
@@ -71,5 +74,16 @@ auto checkValidOperation(const std::any& left, TokenType type,
     default:
       return false;
   }
+}
+
+auto isConvertibleToString(const std::any& value) -> bool {
+  const std::type_info& type = value.type();
+  return isArithmetic(value) || type == typeid(std::string) ||
+         type == typeid(char);
+}
+
+auto isArithmetic(const std::any& value) -> bool {
+  const std::type_info& type = value.type();
+  return type == typeid(int) || type == typeid(double);
 }
 }  // namespace utility

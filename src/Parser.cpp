@@ -2,10 +2,6 @@
 
 #include <algorithm>
 
-#include "Headers/Expr.hpp"
-#include "Headers/Interpreter.hpp"
-#include "Headers/Stmt.hpp"
-#include "Headers/Token.hpp"
 #include "Headers/bisayaPP.hpp"
 
 Parser::Parser(std::vector<Token> &tokens) : tokens(tokens) {}
@@ -172,8 +168,9 @@ void Parser::synchronize() {
   }
 }
 
-auto Parser::varDeclaration() -> Stmt * {
+auto Parser::varDeclaration(TokenType type) -> Stmt * {
   Token name = consume(TokenType::IDENTIFIER, "Expect variable name.");
+  name.type = type;
 
   Expr *initializer = nullptr;
   if (match({TokenType::EQUAL})) {
@@ -191,7 +188,7 @@ auto Parser::declaration() -> Stmt * {
          peek().type == TokenType::DECIMAL || peek().type == TokenType::CHAR ||
          peek().type == TokenType::BOOL)) {
       advance();
-      return varDeclaration();
+      return varDeclaration(previous().type);
     }
 
     return statement();
@@ -204,7 +201,8 @@ auto Parser::declaration() -> Stmt * {
 auto Parser::parse() -> std::vector<Stmt *> {
   try {
     if (tokens[0].type != TokenType::START) {
-      throw std::runtime_error("Expect 'SUGOD' at the beginning of the file.");
+      BisayaPP::error(tokens[0],
+                      "Expect 'SUGOD' at the beginning of the file.");
     }
     advance();
     advance();
@@ -215,7 +213,8 @@ auto Parser::parse() -> std::vector<Stmt *> {
     }
 
     if (tokens[current].type != TokenType::END) {
-      throw std::runtime_error("Expect 'KATAPUSAN' at the end of the file.");
+      BisayaPP::error(tokens[current],
+                      "Expect 'KATAPUSAN' at the end of the file.");
     }
 
     return statements;
