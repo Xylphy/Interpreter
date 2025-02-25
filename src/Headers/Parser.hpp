@@ -30,6 +30,8 @@ class Parser {
   auto consume(TokenType type, const std::string& message) -> Token;
   auto synchronize() -> void;
   auto block() -> std::vector<Stmt*>;
+  auto orExpression() -> Expr*;
+  auto andExpression() -> Expr*;
 
   auto declaration() -> Stmt*;
   auto varDeclaration(TokenType type) -> Stmt*;
@@ -37,7 +39,7 @@ class Parser {
   auto statement() -> Stmt*;
   auto printStatement() -> Stmt*;
   auto expressionStatement() -> Stmt*;
-  
+  auto ifStatement() -> Stmt*;
 
   static auto error(const Token& token, const std::string& message)
       -> ParseError;

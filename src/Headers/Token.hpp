@@ -68,6 +68,8 @@ enum TokenType : std::uint8_t {
   CHAR,
   IF,
   STRING,
+  ELSE_IF,
+  BLOCK,
 
   END_OF_FILE
 };

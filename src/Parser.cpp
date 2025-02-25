@@ -2,6 +2,8 @@
 
 #include <algorithm>
 
+#include "Headers/Interpreter.hpp"
+#include "Headers/Token.hpp"
 #include "Headers/bisayaPP.hpp"
 
 Parser::Parser(std::vector<Token> &tokens) : tokens(tokens) {}
@@ -236,6 +238,13 @@ auto Parser::printStatement() -> Stmt * {
 }
 
 auto Parser::statement() -> Stmt * {
+  if (match({TokenType::IF})) {
+    if (tokens[current - 2].type == TokenType::ELSE) {
+      BisayaPP::error(previous(), "Invalid syntax after WALA");
+    } else {
+      return ifStatement();
+    }
+  }
   if (match({TokenType::PRINT})) {
     return printStatement();
   }
@@ -247,7 +256,7 @@ auto Parser::statement() -> Stmt * {
 }
 
 auto Parser::assignment() -> Expr * {
-  Expr *expr = equality();
+  Expr *expr = orExpression();
 
   if (match({TokenType::EQUAL})) {
     Token equals = previous();
@@ -278,4 +287,63 @@ auto Parser::block() -> std::vector<Stmt *> {
     advance();
   }
   return statements;
+}
+
+auto Parser::ifStatement() -> Stmt * {
+  consume(TokenType::LEFT_PAREN, "Expect '(' after 'KUNG'.");
+  Expr *condition = expression();
+  consume(TokenType::RIGHT_PAREN, "Expect ')' after condition.");
+
+  Stmt *thenBranch = statement();
+  Stmt *elseBranch = nullptr;
+
+  if (match({TokenType::IF})) {
+    if (match({TokenType::ELSE_IF})) {
+      elseBranch = ifStatement();
+    } else if (match({TokenType::ELSE})) {
+      elseBranch = statement();
+    } else {
+      BisayaPP::error(previous(), "Expect 'KUNG' or 'DILI' after 'KUNG'.");
+    }
+  }
+
+  return new If(condition, thenBranch, elseBranch);
+}
+
+auto Parser::orExpression() -> Expr * {
+  Expr *expr = andExpression();
+
+  while (match({TokenType::OR})) {
+    Token operatorToken = previous();
+    Expr *right = andExpression();
+    expr = new Logical(expr, operatorToken, right);
+  }
+  return expr;
+}
+
+auto Parser::andExpression() -> Expr * {
+  Expr *expr = equality();
+
+  while (match({TokenType::AND})) {
+    Token operatorToken = previous();
+    Expr *right = equality();
+    expr = new Logical(expr, operatorToken, right);
+  }
+  return expr;
+}
+
+auto Interpreter::visitLogicalExpr(const Logical &Expr) -> void {
+  evaluate(Expr.left);
+
+  if (Expr.op.type == TokenType::OR) {
+    if (isTruthy(result, type)) {
+      return;
+    }
+  } else {
+    if (!isTruthy(result, type)) {
+      return;
+    }
+  }
+
+  evaluate(Expr.right);
 }

@@ -250,3 +250,13 @@ auto Interpreter::executeBlock(const std::vector<Stmt*>& statements,
   environment = previous;
   // }
 }
+
+auto Interpreter::visitIfStmt(const If& Stmt) -> void {
+  evaluate(Stmt.condition);
+
+  if (isTruthy(result, type)) {
+    execute(Stmt.thenBranch);
+  } else if (Stmt.elseBranch != nullptr) {
+    execute(Stmt.elseBranch);
+  }
+}

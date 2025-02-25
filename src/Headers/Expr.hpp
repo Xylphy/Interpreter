@@ -1,11 +1,14 @@
 #pragma once
 
+#include <vector>
+
 #include "Token.hpp"
 
 class Assign;
 class Binary;
 class Grouping;
 class Literal;
+class Logical;
 class Unary;
 class Variable;
 
@@ -15,6 +18,7 @@ class ExprVisitor {
   virtual auto visitBinaryExpr(const Binary &Expr) -> void = 0;
   virtual auto visitGroupingExpr(const Grouping &Expr) -> void = 0;
   virtual auto visitLiteralExpr(const Literal &Expr) -> void = 0;
+  virtual auto visitLogicalExpr(const Logical &Expr) -> void = 0;
   virtual auto visitUnaryExpr(const Unary &Expr) -> void = 0;
   virtual auto visitVariableExpr(const Variable &Expr) -> void = 0;
   virtual ~ExprVisitor() = default;
@@ -72,6 +76,20 @@ class Literal : public Expr {
 
   auto accept(ExprVisitor &visitor) -> void override {
     visitor.visitLiteralExpr(*this);
+  }
+};
+
+class Logical : public Expr {
+ public:
+  Expr *left;
+  Token op;
+  Expr *right;
+
+  Logical(Expr *left, Token op, Expr *right)
+      : left(left), op(op), right(right) {}
+
+  auto accept(ExprVisitor &visitor) -> void override {
+    visitor.visitLogicalExpr(*this);
   }
 };
 
