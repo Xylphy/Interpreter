@@ -1,17 +1,12 @@
 cmake_minimum_required(VERSION 3.31.3)
 
-# Set build system
-set(CMAKE_MAKE_PROGRAM "D:/APPS/interpreter/ninja-win/ninja.exe" CACHE FILEPATH "Ninja Build Program")
-
 project(Interpreter)
-
 
 set(CMAKE_CXX_STANDARD 26)
 # string(REPLACE "{" "" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -Werror -fsanitize=address")
 
-# set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
+# set(CMAKE_CXX_EXTENSIONS OFF)
 
 find_program(CLANG_FORMAT "clang-format")
 if(CLANG_FORMAT)
@@ -35,8 +30,6 @@ endif()
 # Enable clang-tidy
 # set(CMAKE_CXX_CLANG_TIDY "clang-tidy;-checks=*,readability-*,modernize-*,performance-*,clang-analyzer-*")
 # set(CMAKE_CXX_CLANG_TIDY "clang-tidy;-checks=*,performance-*")
-
-add_compile_definitions(_GLIBCXX_USE_CXX11_ABI=0)
 
 add_executable(Interpreter
   #Headers
