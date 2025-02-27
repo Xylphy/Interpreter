@@ -40,6 +40,8 @@ class Parser {
   auto printStatement() -> Stmt*;
   auto expressionStatement() -> Stmt*;
   auto ifStatement() -> Stmt*;
+  auto whileStatement() -> Stmt*;
+  auto forStatement() -> Stmt*;
 
   static auto error(const Token& token, const std::string& message)
       -> ParseError;
@@ -47,4 +49,5 @@ class Parser {
 
   std::vector<Token> tokens;
   int current = 0;
+  int loopDepth = 0;
 };

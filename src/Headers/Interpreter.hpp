@@ -26,6 +26,7 @@ class Interpreter : public ExprVisitor, public StmtVisitor {
   auto visitVarStmt(const Var& Stmt) -> void override;
   auto visitBlockStmt(const Block& Stmt) -> void override;
   auto visitIfStmt(const If& Stmt) -> void override;
+  auto visitWhileStmt(const While& Stmt) -> void override;
 
   auto execute(Stmt* statement) -> void;
   auto executeBlock(const std::vector<Stmt*>& statements, Environment* env)
