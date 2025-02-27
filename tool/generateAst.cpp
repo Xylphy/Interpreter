@@ -145,6 +145,15 @@ void defineType(std::ofstream& file, const std::string& baseName,
        << "Visitor &visitor) -> void override { visitor.visit"
        << typeInfo.className << baseName << "(*this); }"
        << "\n";
+  
+  file << "~" << typeInfo.className << "() override {\n";
+  for (const auto& field : fields) {
+    auto& [type, name] = field;
+    if (type.find('*') != std::string::npos) {  
+      file << "delete " << name << ";\n";
+    }
+  }
+  file << "}\n";
 
   // End class
   file << "};" << "\n";
