@@ -3,3 +3,4 @@
 /.vscode/
 *.JSON
 /cmake-build-debug/
+/.idea/
