@@ -17,3 +17,8 @@ class RuntimeError : public std::runtime_error {
 
   RuntimeError(Token token, const std::string& message);
 };
+
+class BreakError : public std::runtime_error {
+ public:
+  BreakError();
+};

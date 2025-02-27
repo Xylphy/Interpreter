@@ -44,6 +44,7 @@ auto Interpreter::setInterpretResult(const std::vector<Stmt*>& statements)
     -> void {
   try {
     for (Stmt* statement : statements) {
+      std::print("Executing statement\n");
       execute(statement);
     }
   } catch (const RuntimeError& error) {
@@ -51,7 +52,11 @@ auto Interpreter::setInterpretResult(const std::vector<Stmt*>& statements)
   }
 }
 
-auto Interpreter::execute(Stmt* statement) -> void { statement->accept(*this); }
+auto Interpreter::execute(Stmt* statement) -> void {
+  if (statement != nullptr) {
+    statement->accept(*this);
+  }
+}
 
 auto Interpreter::evaluate(Expr* expression) -> bool {
   try {
@@ -258,5 +263,18 @@ auto Interpreter::visitIfStmt(const If& Stmt) -> void {
     execute(Stmt.thenBranch);
   } else if (Stmt.elseBranch != nullptr) {
     execute(Stmt.elseBranch);
+  }
+}
+
+auto Interpreter::visitWhileStmt(const While& Stmt) -> void {
+  evaluate(Stmt.condition);
+
+  try {
+    while (isTruthy(result, type)) {
+      execute(Stmt.body);
+      evaluate(Stmt.condition);
+    }
+  } catch (const BreakError& error) {
+    return;
   }
 }

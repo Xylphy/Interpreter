@@ -126,7 +126,8 @@ void Scanner::identifier() {
 
 auto Scanner::isAlpha(char character) -> bool {
   return (character >= 'a' && character <= 'z') ||
-         (character >= 'A' && character <= 'Z') || character == '_' || character == ':';
+         (character >= 'A' && character <= 'Z') || character == '_' ||
+         character == ':';
 }
 
 auto Scanner::isAlphaNumeric(char character) -> bool {
@@ -214,6 +215,7 @@ void Scanner::scanToken() {
     case '\r':
     case '\t':
       break;
+    case ';':
     case '\n':
       line++;
       addToken(SEMICOLON);

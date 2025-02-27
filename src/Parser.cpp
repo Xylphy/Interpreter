@@ -2,7 +2,10 @@
 
 #include <algorithm>
 
+#include "Headers/Errors.hpp"
+#include "Headers/Expr.hpp"
 #include "Headers/Interpreter.hpp"
+#include "Headers/Stmt.hpp"
 #include "Headers/Token.hpp"
 #include "Headers/bisayaPP.hpp"
 
@@ -127,7 +130,7 @@ auto Parser::primary() -> Expr * {
     return new Grouping(expr);
   }
 
-  throw std::runtime_error("Expect expression.");
+  throw ParseError(previous(), "Expect expression.");
 }
 
 auto Parser::consume(TokenType type, const std::string &message) -> Token {
@@ -135,7 +138,7 @@ auto Parser::consume(TokenType type, const std::string &message) -> Token {
     return advance();
   }
 
-  throw std::runtime_error(message);
+  throw ParseError(peek(), message);
 }
 
 auto Parser::error(const Token &token, const std::string &message)
@@ -248,6 +251,13 @@ auto Parser::statement() -> Stmt * {
   if (match({TokenType::PRINT})) {
     return printStatement();
   }
+  if (match({TokenType::WHILE})) {
+    if (match({TokenType::FOR})) {
+      return forStatement();
+    }
+    return whileStatement();
+  }
+
   if (match({TokenType::LEFT_BRACE})) {
     return new Block(block());
   }
@@ -346,4 +356,73 @@ auto Interpreter::visitLogicalExpr(const Logical &Expr) -> void {
   }
 
   evaluate(Expr.right);
+}
+
+auto Parser::whileStatement() -> Stmt * {
+  consume(TokenType::LEFT_PAREN, "Expect '(' after 'SAMTANG'.");
+  Expr *condition = expression();
+  consume(TokenType::RIGHT_PAREN, "Expect ')' after condition.");
+
+  loopDepth++;
+  Stmt *body = statement();
+
+  return new While(condition, body);
+}
+
+auto Parser::forStatement() -> Stmt * {
+  consume(TokenType::LEFT_PAREN, "Expect 'c' after 'ALANG SA',");
+
+  Stmt *initializer;
+  if (match({TokenType::SEMICOLON})) {
+    initializer = nullptr;
+  } else if (match({TokenType::VAR})) {
+    if (match({TokenType::INTEGER, TokenType::DECIMAL, TokenType::CHAR,
+               TokenType::BOOL})) {
+      initializer = varDeclaration(previous().type);
+    } else {
+      BisayaPP::error(previous(), "Expect data type after 'VAR'.");
+    }
+  } else {
+    initializer = expressionStatement();
+  }
+
+  Expr *condition = nullptr;
+  if (!check(TokenType::SEMICOLON)) {
+    condition = expression();
+  }
+
+  consume(TokenType::SEMICOLON, "Expect ';' after loop condition.");
+
+  Expr *increment = nullptr;
+  if (!check(TokenType::RIGHT_PAREN)) {
+    increment = expression();
+  }
+
+  consume(TokenType::RIGHT_BRACE, "Expect ')' after for clauses.");
+
+  loopDepth++;
+
+  Stmt *body = statement();
+
+  std::vector<Stmt *> whileBody;
+  whileBody.push_back(body);
+  if (increment != nullptr) {
+    whileBody.push_back(new Expression(increment));
+  }
+
+  if (condition == nullptr) {
+    condition = new Literal(true, TokenType::BOOL_TRUE);
+  }
+
+  Stmt *whileBodyBlock = new Block(whileBody);
+  Stmt *whileLoop = new While(condition, whileBodyBlock);
+
+  std::vector<Stmt *> forStmt;
+  if (initializer != nullptr) {
+    forStmt.push_back(initializer);
+  }
+
+  forStmt.push_back(whileLoop);
+
+  return new Block(forStmt);
 }

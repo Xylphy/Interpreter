@@ -9,6 +9,7 @@ class Expression;
 class If;
 class Print;
 class Var;
+class While;
 
 class StmtVisitor {
  public:
@@ -17,6 +18,7 @@ class StmtVisitor {
   virtual auto visitIfStmt(const If& Stmt) -> void = 0;
   virtual auto visitPrintStmt(const Print& Stmt) -> void = 0;
   virtual auto visitVarStmt(const Var& Stmt) -> void = 0;
+  virtual auto visitWhileStmt(const While& Stmt) -> void = 0;
   virtual ~StmtVisitor() = default;
 };
 
@@ -82,5 +84,17 @@ class Var : public Stmt {
 
   auto accept(StmtVisitor& visitor) -> void override {
     visitor.visitVarStmt(*this);
+  }
+};
+
+class While : public Stmt {
+ public:
+  Expr* condition;
+  Stmt* body;
+
+  While(Expr* condition, Stmt* body) : condition(condition), body(body) {}
+
+  auto accept(StmtVisitor& visitor) -> void override {
+    visitor.visitWhileStmt(*this);
   }
 };
