@@ -109,8 +109,14 @@ auto Interpreter::visitBinaryExpr(const Binary& Expr) -> void {
 
     if (tempResult.type() == typeid(int)) {
       type = TokenType::NUMBER;
-    } else if (result.type() == typeid(double)) {
+    } else if (tempResult.type() == typeid(double)) {
       type = TokenType::DECIMAL_NUMBER;
+    } else if (tempResult.type() == typeid(bool)) {
+      if(std::any_cast<bool>(tempResult)) {
+        type = TokenType::BOOL_TRUE;
+      } else {
+        type = TokenType::BOOL_FALSE;
+      }
     } else {
       type = TokenType::STRING_LITERAL;
     }

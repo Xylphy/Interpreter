@@ -252,6 +252,7 @@ auto Parser::statement() -> Stmt * {
     return printStatement();
   }
   if (match({TokenType::WHILE})) {
+    loopDepth--;
     if (match({TokenType::FOR})) {
       return forStatement();
     }
@@ -379,6 +380,7 @@ auto Parser::forStatement() -> Stmt * {
     if (match({TokenType::INTEGER, TokenType::DECIMAL, TokenType::CHAR,
                TokenType::BOOL})) {
       initializer = varDeclaration(previous().type);
+      //
     } else {
       BisayaPP::error(previous(), "Expect data type after 'VAR'.");
     }
@@ -398,10 +400,9 @@ auto Parser::forStatement() -> Stmt * {
     increment = expression();
   }
 
-  consume(TokenType::RIGHT_BRACE, "Expect ')' after for clauses.");
+  consume(TokenType::RIGHT_PAREN, "Expect ')' after for clauses.");
 
   loopDepth++;
-
   Stmt *body = statement();
 
   std::vector<Stmt *> whileBody;
