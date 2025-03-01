@@ -44,7 +44,7 @@ auto Interpreter::setInterpretResult(const std::vector<Stmt*>& statements)
     -> void {
   try {
     for (Stmt* statement : statements) {
-      std::print("Executing statement\n");
+      // std::print("Executing statement\n");
       execute(statement);
     }
   } catch (const RuntimeError& error) {
@@ -53,9 +53,9 @@ auto Interpreter::setInterpretResult(const std::vector<Stmt*>& statements)
 }
 
 auto Interpreter::execute(Stmt* statement) -> void {
-  if (statement != nullptr) {
-    statement->accept(*this);
-  }
+  // if (statement != nullptr) {
+  statement->accept(*this);
+  // }
 }
 
 auto Interpreter::evaluate(Expr* expression) -> bool {
@@ -112,7 +112,7 @@ auto Interpreter::visitBinaryExpr(const Binary& Expr) -> void {
     } else if (tempResult.type() == typeid(double)) {
       type = TokenType::DECIMAL_NUMBER;
     } else if (tempResult.type() == typeid(bool)) {
-      if(std::any_cast<bool>(tempResult)) {
+      if (std::any_cast<bool>(tempResult)) {
         type = TokenType::BOOL_TRUE;
       } else {
         type = TokenType::BOOL_FALSE;
