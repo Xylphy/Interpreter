@@ -4,17 +4,16 @@ project(Interpreter)
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU") # GCC
   execute_process(COMMAND ${CMAKE_CXX_COMPILER} -dumpversion OUTPUT_VARIABLE GCC_VERSION)
-  if(GCC_VERSION VERSION_GREATER_EQUAL 14.0)
-    set(CMAKE_CXX_STANDARD 26)
-    add_compile_options(-std=c++2c)
-  else()
-    set(CMAKE_CXX_STANDARD 23) # Fallback to C++23
-  endif()
+  # if(GCC_VERSION VERSION_GREATER_EQUAL 14.0)
+  #   set(CMAKE_CXX_STANDARD 26)
+  #   add_compile_options(-std=c++2c)
+  # else()
+  set(CMAKE_CXX_STANDARD 23)
+  # endif()
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang") # Clang
-  set(CMAKE_CXX_STANDARD 26)
+  set(CMAKE_CXX_STANDARD 23)
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC") # MSVC
-  add_compile_options(/std:c++latest)
-  set(CMAKE_CXX_STANDARD 26)
+  set(CMAKE_CXX_STANDARD 23)
 endif()
 
 # string(REPLACE "{" "" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -Werror -fsanitize=address")
