@@ -44,7 +44,6 @@ auto Interpreter::setInterpretResult(const std::vector<Stmt*>& statements)
     -> void {
   try {
     for (Stmt* statement : statements) {
-      // std::print("Executing statement\n");
       execute(statement);
     }
   } catch (const RuntimeError& error) {
@@ -53,9 +52,7 @@ auto Interpreter::setInterpretResult(const std::vector<Stmt*>& statements)
 }
 
 auto Interpreter::execute(Stmt* statement) -> void {
-  // if (statement != nullptr) {
   statement->accept(*this);
-  // }
 }
 
 auto Interpreter::evaluate(Expr* expression) -> bool {
@@ -283,4 +280,20 @@ auto Interpreter::visitWhileStmt(const While& Stmt) -> void {
   } catch (const BreakError& error) {
     return;
   }
+}
+
+auto Interpreter::visitLogicalExpr(const Logical& Expr) -> void {
+  evaluate(Expr.left);
+
+  if (Expr.op.type == TokenType::OR) {
+    if (isTruthy(result, type)) {
+      return;
+    }
+  } else {
+    if (!isTruthy(result, type)) {
+      return;
+    }
+  }
+
+  evaluate(Expr.right);
 }

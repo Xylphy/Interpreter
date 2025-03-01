@@ -1,7 +1,8 @@
 #include "Headers/Lib/utility.hpp"
-#include <string>
+
 #include <any>
 #include <functional>
+#include <string>
 #include <typeindex>
 
 namespace utility {
@@ -86,4 +87,19 @@ auto isArithmetic(const std::any& value) -> bool {
   const std::type_info& type = value.type();
   return type == typeid(int) || type == typeid(double);
 }
+
+auto isAlpha(char character) noexcept -> bool {
+  return (character >= 'a' && character <= 'z') ||
+         (character >= 'A' && character <= 'Z') || character == '_' ||
+         character == ':';
+}
+
+auto isAlphaNumeric(char character) noexcept -> bool {
+  return isAlpha(character) || isDigit(character);
+}
+
+auto isDigit(char character) noexcept -> bool {
+  return character >= '0' && character <= '9';
+}
+
 }  // namespace utility

@@ -1,6 +1,5 @@
 #pragma once
 
-#include <any>
 #include <unordered_map>
 #include <vector>
 
@@ -23,9 +22,6 @@ class Scanner {
   void addToken(TokenType type);
   auto match(char&& expected) -> bool;
   auto isAtEnd() -> bool;
-  static auto isAlpha(char character) -> bool;
-  static auto isAlphaNumeric(char character) -> bool;
-  static auto isDigit(char character) -> bool;
   auto peek() -> char;
   auto peekNext() -> char;
   auto advance() -> char;

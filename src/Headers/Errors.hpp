@@ -1,7 +1,5 @@
 #pragma once
 
-#include <stdexcept>
-
 #include "Token.hpp"
 
 class ParseError : public std::runtime_error {
@@ -21,4 +19,10 @@ class RuntimeError : public std::runtime_error {
 class BreakError : public std::runtime_error {
  public:
   BreakError();
+};
+
+class SyntaxError : public std::runtime_error {
+ public:
+ Token token;
+  SyntaxError(Token token, const std::string& message);
 };

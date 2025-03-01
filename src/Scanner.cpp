@@ -1,6 +1,6 @@
 #include "Headers/Scanner.hpp"
 
-#include "Headers/Token.hpp"
+#include "Headers/Lib/utility.hpp"
 #include "Headers/bisayaPP.hpp"
 
 Scanner::Scanner(std::string source) : source(std::move(source)) {}
@@ -18,10 +18,7 @@ auto Scanner::scanTokens() -> std::vector<Token> {
 auto Scanner::isAtEnd() -> bool { return current >= source.length(); }
 
 auto Scanner::match(char&& expected) -> bool {
-  if (isAtEnd()) {
-    return false;
-  }
-  if (source[current] != expected) {
+  if (isAtEnd() || source[current] != expected) {
     return false;
   }
 
@@ -87,27 +84,18 @@ void Scanner::charLiteral() {
   addToken(CHARACTER_LITERAL, source.substr(start + 1, current - start - 2));
 }
 
-auto Scanner::isDigit(char character) -> bool {
-  return character >= '0' && character <= '9';
-}
-
 void Scanner::number() {
-  while (isDigit(peek())) {
+  while (utility::isDigit(peek())) {
     advance();
   }
 
-  bool isDecimal = false;
-
-  if (peek() == '.' && isDigit(peekNext())) {
+  if (peek() == '.' && utility::isDigit(peekNext())) {
     advance();
-    isDecimal = true;
 
-    while (isDigit(peek())) {
+    while (utility::isDigit(peek())) {
       advance();
     }
-  }
 
-  if (isDecimal) {
     addToken(DECIMAL_NUMBER, std::stod(source.substr(start, current - start)));
   } else {
     addToken(NUMBER, std::stoi(source.substr(start, current - start)));
@@ -115,23 +103,13 @@ void Scanner::number() {
 }
 
 void Scanner::identifier() {
-  while (isAlphaNumeric(peek())) {
+  while (utility::isAlphaNumeric(peek())) {
     advance();
   }
 
   auto iterator = keywords.find(source.substr(start, current - start));
 
   addToken(iterator != keywords.end() ? iterator->second : IDENTIFIER);
-}
-
-auto Scanner::isAlpha(char character) -> bool {
-  return (character >= 'a' && character <= 'z') ||
-         (character >= 'A' && character <= 'Z') || character == '_' ||
-         character == ':';
-}
-
-auto Scanner::isAlphaNumeric(char character) -> bool {
-  return isAlpha(character) || isDigit(character);
 }
 
 void Scanner::escapeChar() {
@@ -176,9 +154,6 @@ void Scanner::scanToken() {
     case '+':
       addToken(PLUS);
       break;
-      /* 		case ';':
-                          addToken(SEMICOLON);  // Optional
-                          break; */
     case '*':
       addToken(STAR);
       break;
@@ -227,9 +202,9 @@ void Scanner::scanToken() {
       charLiteral();
       break;
     default:
-      if (isDigit(character)) {
+      if (utility::isDigit(character)) {
         number();
-      } else if (isAlpha(character)) {
+      } else if (utility::isAlpha(character)) {
         identifier();
       } else {
         BisayaPP::error(line,

@@ -12,4 +12,7 @@ auto isArithmetic(const std::any& value) -> bool;
 auto isConvertibleToString(const std::any& value) -> bool;
 auto checkValidOperation(const std::any& left, TokenType type,
                          const std::any& right) -> bool;
+auto isAlpha(char character) noexcept -> bool;
+auto isAlphaNumeric(char character) noexcept -> bool;
+auto isDigit(char character) noexcept-> bool;
 }  // namespace utility

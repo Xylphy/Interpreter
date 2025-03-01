@@ -3,9 +3,6 @@
 #include <algorithm>
 
 #include "Headers/Errors.hpp"
-#include "Headers/Expr.hpp"
-#include "Headers/Interpreter.hpp"
-#include "Headers/Stmt.hpp"
 #include "Headers/Token.hpp"
 #include "Headers/bisayaPP.hpp"
 
@@ -112,8 +109,6 @@ auto Parser::primary() -> Expr * {
   if (match({TokenType::BOOL_TRUE})) {
     return new Literal(true, TokenType::BOOL_TRUE);
   }
-  /*     if (match({TokenType::NIL}))
-      return new Literal(nullptr); */
   if (match({TokenType::NUMBER, TokenType::STRING_LITERAL,
              TokenType::CHARACTER_LITERAL, TokenType::DECIMAL_NUMBER})) {
     return new Literal(previous().literal, previous().type);
@@ -224,6 +219,10 @@ auto Parser::parse() -> std::vector<Stmt *> {
 
     return statements;
   } catch (const ParseError &error) {
+    BisayaPP::error(previous(), error.what());
+    return {};
+  } catch (const SyntaxError &error) {
+    BisayaPP::error(previous(), error.what());
     return {};
   }
 }
@@ -259,8 +258,12 @@ auto Parser::statement() -> Stmt * {
     return whileStatement();
   }
 
-  if (match({TokenType::LEFT_BRACE})) {
+  if (match({TokenType::BLOCK})) {
     return new Block(block());
+  }
+
+  if (match({TokenType::LEFT_BRACE})) {
+    throw SyntaxError(previous(), "Expected 'PUNDOK' before '{'.");
   }
 
   return expressionStatement();
@@ -286,6 +289,9 @@ auto Parser::assignment() -> Expr * {
 
 auto Parser::block() -> std::vector<Stmt *> {
   std::vector<Stmt *> statements;
+
+  consume(TokenType::LEFT_BRACE, "Expect '{' before block.");
+
   if (check(TokenType::SEMICOLON)) {
     advance();
   }
@@ -293,10 +299,12 @@ auto Parser::block() -> std::vector<Stmt *> {
   while (!check(TokenType::RIGHT_BRACE) && !isAtEnd()) {
     statements.push_back(declaration());
   }
+
   consume(TokenType::RIGHT_BRACE, "Expect '}' after block.");
   if (check(TokenType::SEMICOLON)) {
     advance();
   }
+
   return statements;
 }
 
@@ -343,22 +351,6 @@ auto Parser::andExpression() -> Expr * {
   return expr;
 }
 
-auto Interpreter::visitLogicalExpr(const Logical &Expr) -> void {
-  evaluate(Expr.left);
-
-  if (Expr.op.type == TokenType::OR) {
-    if (isTruthy(result, type)) {
-      return;
-    }
-  } else {
-    if (!isTruthy(result, type)) {
-      return;
-    }
-  }
-
-  evaluate(Expr.right);
-}
-
 auto Parser::whileStatement() -> Stmt * {
   consume(TokenType::LEFT_PAREN, "Expect '(' after 'SAMTANG'.");
   Expr *condition = expression();
@@ -403,6 +395,7 @@ auto Parser::forStatement() -> Stmt * {
   consume(TokenType::RIGHT_PAREN, "Expect ')' after for clauses.");
 
   loopDepth++;
+
   Stmt *body = statement();
 
   std::vector<Stmt *> whileBody;
