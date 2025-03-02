@@ -1,9 +1,10 @@
 #include "Headers/Interpreter.hpp"
 
+#include <iostream>
 #include <print>
-#include <string> // For MSVC Compiler
 
 #include "Headers/Lib/utility.hpp"
+#include "Headers/Token.hpp"
 #include "Headers/bisayaPP.hpp"
 
 Interpreter::Interpreter() : environment(new Environment()) {}
@@ -33,7 +34,6 @@ auto Interpreter::setInterpretResult(const std::vector<Stmt*>& statements)
     -> void {
   try {
     for (Stmt* statement : statements) {
-      std::print("Executing statement\n");
       execute(statement);
     }
   } catch (const RuntimeError& error) {
@@ -167,7 +167,8 @@ auto Interpreter::visitExpressionStmt(const Expression& Stmt) -> void {
 auto Interpreter::visitPrintStmt(const Print& Stmt) -> void {
   bool success = evaluate(Stmt.expression);
   if (success) {
-    std::print("{}\n", utility::anyToString(result));
+    // std::print("{}\n", utility::anyToString(result));
+    std::cout << utility::anyToString(result);
   }
 }
 

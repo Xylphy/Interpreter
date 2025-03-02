@@ -50,35 +50,8 @@ endif()
 # set(CMAKE_CXX_CLANG_TIDY "clang-tidy;-checks=*,readability-*,modernize-*,performance-*,clang-analyzer-*")
 # set(CMAKE_CXX_CLANG_TIDY "clang-tidy;-checks=*,performance-*")
 
-add_executable(Interpreter
-  #Headers
-  "src/Headers/Interpreter.hpp"
-  "src/Headers/Parser.hpp"
-  "src/Headers/Token.hpp"
-  "src/Headers/Expr.hpp"
-  "src/Headers/Scanner.hpp"
-  "src/Headers/bisayaPP.hpp"
-  "src/Headers/AstPrinter.hpp"
-  "src/Headers/Errors.hpp"
-  "src/Headers/Lib/utility.hpp"
-  "src/Headers/Stmt.hpp"
-  "src/Headers/Environment.hpp"
+add_subdirectory(src)
+add_subdirectory(tool)
 
-  #Source
-  "src/Environment.cpp"
-  "src/Interpreter.cpp"
-  "src/utility.cpp"
-  "src/Errors.cpp"
-  "src/Parser.cpp"
-  "src/Token.cpp"
-  "src/AstPrinter.cpp"
-  "src/Scanner.cpp"
-  "src/bisayaPP.cpp"
-  "src/main.cpp"
-)
-
-add_executable(Tool
-  "tool/generateAst.hpp"
-  "tool/generateAst.cpp"
-  "tool/main.cpp"
-)
+# enable_testing()
+# add_subdirectory(tests)

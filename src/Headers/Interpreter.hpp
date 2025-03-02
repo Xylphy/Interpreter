@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cmath>
+#include <string> // For MSVC Compatibility
 
 #include "Environment.hpp"
 #include "Stmt.hpp"

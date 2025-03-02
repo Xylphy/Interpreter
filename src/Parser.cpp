@@ -1,10 +1,6 @@
 #include "Headers/Parser.hpp"
 
-#include <linux/sched/types.h>
-
 #include <algorithm>
-#include <iterator>
-#include <vector>
 
 #include "Headers/Stmt.hpp"
 #include "Headers/Token.hpp"
@@ -75,7 +71,7 @@ auto Parser::comparison() -> Expr * {
 auto Parser::term() -> Expr * {
   Expr *expr = factor();
 
-  while (match({TokenType::MINUS, TokenType::PLUS, TokenType::CONCATENATOR})) {
+  while (match({TokenType::MINUS, TokenType::PLUS})) {
     Token operatorToken = previous();
     Expr *right = factor();
     expr = new Binary(expr, operatorToken, right);
@@ -117,6 +113,10 @@ auto Parser::primary() -> Expr * {
              TokenType::CHARACTER_LITERAL, TokenType::DECIMAL_NUMBER})) {
     return new Literal(previous().literal, previous().type);
   }
+  if (match({TokenType::NEW_LINE})) {
+    return new Literal('\n', TokenType::CHARACTER_LITERAL);
+  }
+
   if (match({TokenType::IDENTIFIER})) {
     return new Variable(previous());
   }
