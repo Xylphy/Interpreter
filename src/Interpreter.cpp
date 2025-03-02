@@ -2,22 +2,10 @@
 
 #include <print>
 
-#include "Headers/Errors.hpp"
 #include "Headers/Lib/utility.hpp"
-#include "Headers/Token.hpp"
 #include "Headers/bisayaPP.hpp"
 
 Interpreter::Interpreter() : environment(new Environment()) {}
-
-auto Interpreter::checkNumberOperands(const Token& token, TokenType left,
-                                      TokenType right) -> void {
-  try {
-    checkNumberOperand(token, left);
-    checkNumberOperand(token, right);
-  } catch (const RuntimeError& error) {
-    throw RuntimeError(token, "Operands must be numbers.");
-  }
-}
 
 auto Interpreter::setResult(std::any& toSet, const std::any& toGet,
                             TokenType type) -> void {
@@ -82,8 +70,9 @@ auto Interpreter::visitBinaryExpr(const Binary& Expr) -> void {
   std::any tempResult;
 
   try {
-    checkNumberOperands(Expr.op, leftType,
-                        rightType);  // throws RuntimeError if not numbers
+    utility::checkNumberOperands(
+        Expr.op, leftType,
+        rightType);  // throws RuntimeError if not numbers
     const TokenType& exprTokenType = Expr.op.type;
 
     if (leftType == TokenType::NUMBER && rightType == TokenType::NUMBER) {
@@ -154,12 +143,12 @@ auto Interpreter::visitUnaryExpr(const Unary& Expr) -> void {
   setResult(right, result, rightType);
   switch (Expr.op.type) {
     case TokenType::BANG:
-      newResult = isTruthy(right, rightType);
+      newResult = utility::isTruthy(right, rightType);
       type = newResult ? TokenType::BOOL_TRUE : TokenType::BOOL_FALSE;
       setResult(result, newResult, type);
       break;
     case TokenType::MINUS:
-      checkNumberOperand(Expr.op, rightType);
+      utility::checkNumberOperand(Expr.op, rightType);
       type = TokenType::NUMBER;
       setResult(result, right, rightType);
       break;
@@ -169,34 +158,6 @@ auto Interpreter::visitUnaryExpr(const Unary& Expr) -> void {
 #pragma clang diagnostic pop
 
 auto Interpreter::setPrintResult(Expr* expr) -> void { expr->accept(*this); }
-
-auto Interpreter::isTruthy(const std::any& value, TokenType type) -> bool {
-  if (type == TokenType::NIL) {
-    return false;
-  }
-  if (type == TokenType::BOOL_TRUE) {
-    return true;
-  }
-  if (type == TokenType::DECIMAL_NUMBER) {
-    return std::any_cast<double>(value) != 0;
-  }
-  if (type == TokenType::NUMBER) {
-    return std::any_cast<int>(value) != 0;
-  }
-  if (type == TokenType::STRING_LITERAL) {
-    return !std::any_cast<std::string>(value).empty();
-  }
-
-  return false;
-}
-
-auto Interpreter::checkNumberOperand(const Token& token, TokenType operand)
-    -> void {
-  if (operand == TokenType::NUMBER || operand == TokenType::DECIMAL_NUMBER) {
-    return;
-  }
-  throw RuntimeError(token, "Operand must be a number.");
-}
 
 auto Interpreter::visitExpressionStmt(const Expression& Stmt) -> void {
   evaluate(Stmt.expression);
@@ -262,7 +223,7 @@ auto Interpreter::executeBlock(const std::vector<Stmt*>& statements,
 auto Interpreter::visitIfStmt(const If& Stmt) -> void {
   evaluate(Stmt.condition);
 
-  if (isTruthy(result, type)) {
+  if (utility::isTruthy(result, type)) {
     execute(Stmt.thenBranch);
   } else if (Stmt.elseBranch != nullptr) {
     execute(Stmt.elseBranch);
@@ -273,7 +234,7 @@ auto Interpreter::visitWhileStmt(const While& Stmt) -> void {
   evaluate(Stmt.condition);
 
   try {
-    while (isTruthy(result, type)) {
+    while (utility::isTruthy(result, type)) {
       execute(Stmt.body);
       evaluate(Stmt.condition);
     }
@@ -286,11 +247,11 @@ auto Interpreter::visitLogicalExpr(const Logical& Expr) -> void {
   evaluate(Expr.left);
 
   if (Expr.op.type == TokenType::OR) {
-    if (isTruthy(result, type)) {
+    if (utility::isTruthy(result, type)) {
       return;
     }
   } else {
-    if (!isTruthy(result, type)) {
+    if (!utility::isTruthy(result, type)) {
       return;
     }
   }

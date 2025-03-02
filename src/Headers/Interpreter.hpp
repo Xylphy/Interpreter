@@ -1,9 +1,8 @@
 #pragma once
+
 #include <cmath>
-#include <vector>
-#include <string>
+
 #include "Environment.hpp"
-#include "Lib/utility.hpp"
 #include "Stmt.hpp"
 
 class Interpreter : public ExprVisitor, public StmtVisitor {
@@ -36,11 +35,6 @@ class Interpreter : public ExprVisitor, public StmtVisitor {
   auto setResult(std::any& toSet, const std::any& toGet, TokenType type)
       -> void;
 
-  static auto checkNumberOperands(const Token& token, TokenType left,
-                                  TokenType right) -> void;
-  static auto checkNumberOperand(const Token& token, TokenType operand) -> void;
-  static auto isTruthy(const std::any& value, TokenType type) -> bool;
-  static auto stringify(std::any& value) -> std::string;
   [[nodiscard]] auto getResult() const -> std::any;
 
   template <typename T, typename U>

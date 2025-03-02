@@ -1,7 +1,10 @@
 #include "Headers/Lib/utility.hpp"
 
 #include <functional>
+#include <string> // MSVC
 #include <typeindex>
+
+#include "Headers/Errors.hpp"
 
 namespace utility {
 
@@ -102,6 +105,43 @@ auto isDigit(char character) noexcept -> bool {
 
 auto validAssignment(const TokenType& tokenType) -> bool {
   return tokenType != TokenType::STRING_LITERAL;
+}
+
+auto checkNumberOperands(const Token& token, TokenType left, TokenType right)
+    -> void {
+  try {
+    checkNumberOperand(token, left);
+    checkNumberOperand(token, right);
+  } catch (const RuntimeError& error) {
+    throw RuntimeError(token, "Operands must be numbers.");
+  }
+}
+
+auto checkNumberOperand(const Token& token, TokenType operand) -> void {
+  if (operand == TokenType::NUMBER || operand == TokenType::DECIMAL_NUMBER) {
+    return;
+  }
+  throw RuntimeError(token, "Operand must be a number.");
+}
+
+auto isTruthy(const std::any& value, TokenType type) -> bool {
+  if (type == TokenType::NIL) {
+    return false;
+  }
+  if (type == TokenType::BOOL_TRUE) {
+    return true;
+  }
+  if (type == TokenType::DECIMAL_NUMBER) {
+    return std::any_cast<double>(value) != 0;
+  }
+  if (type == TokenType::NUMBER) {
+    return std::any_cast<int>(value) != 0;
+  }
+  if (type == TokenType::STRING_LITERAL) {
+    return !std::any_cast<std::string>(value).empty();
+  }
+
+  return false;
 }
 
 }  // namespace utility
