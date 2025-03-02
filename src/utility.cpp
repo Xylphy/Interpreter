@@ -1,7 +1,7 @@
 #include "Headers/Lib/utility.hpp"
 
 #include <functional>
-#include <string> // MSVC
+#include <string> // For MSVC Compiler
 #include <typeindex>
 
 #include "Headers/Errors.hpp"

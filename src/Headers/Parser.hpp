@@ -31,7 +31,7 @@ class Parser {
   auto orExpression() -> Expr*;
   auto andExpression() -> Expr*;
 
-  auto declaration() -> Stmt*;
+  auto declaration() -> std::vector<Stmt*>;
   auto varDeclaration(TokenType type) -> Stmt*;
 
   auto statement() -> Stmt*;
@@ -43,7 +43,6 @@ class Parser {
 
   static auto error(const Token& token, const std::string& message)
       -> ParseError;
-
 
   std::vector<Token> tokens;
   int current = 0;

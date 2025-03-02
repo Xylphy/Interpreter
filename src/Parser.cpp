@@ -1,7 +1,13 @@
 #include "Headers/Parser.hpp"
 
-#include <algorithm>
+#include <linux/sched/types.h>
 
+#include <algorithm>
+#include <iterator>
+#include <vector>
+
+#include "Headers/Stmt.hpp"
+#include "Headers/Token.hpp"
 #include "Headers/bisayaPP.hpp"
 
 Parser::Parser(std::vector<Token> &tokens) : tokens(tokens) {}
@@ -171,24 +177,35 @@ auto Parser::varDeclaration(TokenType type) -> Stmt * {
     initializer = expression();
   }
 
-  consume(TokenType::SEMICOLON, "Expect newline after variable declaration.");
+  if (check(TokenType::SEMICOLON) || check(TokenType::COMMA)) {
+    advance();
+  } else {
+    throw ParseError(previous(), "Expect newline after variable declaration.");
+  }
+
   return new Var(name, initializer);
 }
 
-auto Parser::declaration() -> Stmt * {
+auto Parser::declaration() -> std::vector<Stmt *> {
   try {
     if (match({TokenType::VAR}) &&
         (peek().type == TokenType::INTEGER ||
          peek().type == TokenType::DECIMAL || peek().type == TokenType::CHAR ||
          peek().type == TokenType::BOOL)) {
       advance();
-      return varDeclaration(previous().type);
+
+      std::vector<Stmt *> declarations;
+      do {
+        declarations.push_back(varDeclaration(previous().type));
+      } while (check(TokenType::IDENTIFIER));
+
+      return declarations;
     }
 
-    return statement();
+    return {statement()};
   } catch (const ParseError &error) {
     synchronize();
-    return nullptr;
+    return {};
   }
 }
 
@@ -203,7 +220,10 @@ auto Parser::parse() -> std::vector<Stmt *> {
 
     std::vector<Stmt *> statements;
     while (!isAtEnd()) {
-      statements.push_back(declaration());
+      std::vector<Stmt *> decs = declaration();
+      statements.reserve(statements.size() + decs.size());
+      statements.insert(statements.end(), std::make_move_iterator(decs.begin()),
+                        std::make_move_iterator(decs.end()));
     }
 
     if (tokens[current].type != TokenType::END) {
@@ -291,7 +311,10 @@ auto Parser::block() -> std::vector<Stmt *> {
   }
 
   while (!check(TokenType::RIGHT_BRACE) && !isAtEnd()) {
-    statements.push_back(declaration());
+    std::vector<Stmt *> decs = declaration();
+    statements.reserve(statements.size() + decs.size());
+    statements.insert(statements.end(), std::make_move_iterator(decs.begin()),
+                      std::make_move_iterator(decs.end()));
   }
 
   consume(TokenType::RIGHT_BRACE, "Expect '}' after block.");

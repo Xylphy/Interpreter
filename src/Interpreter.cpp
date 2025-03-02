@@ -1,6 +1,7 @@
 #include "Headers/Interpreter.hpp"
 
 #include <print>
+#include <string> // For MSVC Compiler
 
 #include "Headers/Lib/utility.hpp"
 #include "Headers/bisayaPP.hpp"
