@@ -44,6 +44,7 @@ auto Interpreter::setInterpretResult(const std::vector<Stmt*>& statements)
     -> void {
   try {
     for (Stmt* statement : statements) {
+      std::print("Executing statement\n");
       execute(statement);
     }
   } catch (const RuntimeError& error) {
@@ -51,9 +52,7 @@ auto Interpreter::setInterpretResult(const std::vector<Stmt*>& statements)
   }
 }
 
-auto Interpreter::execute(Stmt* statement) -> void {
-  statement->accept(*this);
-}
+auto Interpreter::execute(Stmt* statement) -> void { statement->accept(*this); }
 
 auto Interpreter::evaluate(Expr* expression) -> bool {
   try {
@@ -221,6 +220,10 @@ auto Interpreter::visitVarStmt(const Var& Stmt) -> void {
     utility::convertData(tokenType, value);
   }
 
+  if (!utility::validAssignment(Stmt.name.type)) {
+    throw RuntimeError(Stmt.name, "Invalid assignment target.");
+  }
+
   environment->defineVar(Stmt.name.lexeme, value, tokenType);
 }
 
@@ -249,14 +252,11 @@ auto Interpreter::visitBlockStmt(const Block& Stmt) -> void {
 auto Interpreter::executeBlock(const std::vector<Stmt*>& statements,
                                Environment* env) -> void {
   Environment* previous = environment;
-  // try {
   environment = env;
   for (Stmt* statement : statements) {
     execute(statement);
   }
-  // } catch (const RuntimeError& error) {
   environment = previous;
-  // }
 }
 
 auto Interpreter::visitIfStmt(const If& Stmt) -> void {

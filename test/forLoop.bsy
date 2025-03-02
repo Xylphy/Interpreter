@@ -1,7 +1,7 @@
 SUGOD
     MUGNA NUMERO a = 0
     MUGNA NUMERO temp
-    ALANG SA(MUGNA NUMERO b = 1; a < 100000; b = temp + b){
+    ALANG SA(MUGNA NUMERO b = 1; a < 100000; b = temp + b)PUNDOK{
         IPAKITA: a
         temp = a
         a = b

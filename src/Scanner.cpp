@@ -1,6 +1,7 @@
 #include "Headers/Scanner.hpp"
 
 #include "Headers/Lib/utility.hpp"
+#include "Headers/Token.hpp"
 #include "Headers/bisayaPP.hpp"
 
 Scanner::Scanner(std::string source) : source(std::move(source)) {}
@@ -113,8 +114,9 @@ void Scanner::identifier() {
 }
 
 void Scanner::escapeChar() {
-  addToken(ESCAPE_CHARACTER, source.substr(start, current - start));
-  current += 2;
+  start = current++;
+  addToken(CHARACTER_LITERAL, source.substr(start, current - start));
+  current++;
 }
 
 void Scanner::scanToken() {
@@ -136,14 +138,13 @@ void Scanner::scanToken() {
     case ',':
       addToken(COMMA);
       break;
-      /* 		case '.':
-                          addToken(DOT);
-                          break; */
     case '-':
       if (match('-')) {
         while (peek() != '\n' && !isAtEnd()) {
           advance();
         }
+      } else if (utility::isDigit(peek())) {
+        number();
       } else {
         addToken(MINUS);
       }
@@ -158,13 +159,19 @@ void Scanner::scanToken() {
       addToken(STAR);
       break;
     case '!':
-      addToken(match('=') ? BANG_EQUAL : BANG);
+      addToken(BANG);
       break;
     case '=':
       addToken(match('=') ? EQUAL_EQUAL : EQUAL);
       break;
     case '<':
-      addToken(match('=') ? LESS_EQUAL : LESS);
+      if (match('=')) {
+        addToken(LESS_EQUAL);
+      } else if (match('>')) {
+        addToken(BANG_EQUAL);
+      } else {
+        addToken(LESS);
+      }
       break;
     case '>':
       addToken(match('=') ? GREATER_EQUAL : GREATER);

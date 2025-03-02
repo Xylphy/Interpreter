@@ -1,8 +1,6 @@
 #include "Headers/Lib/utility.hpp"
 
-#include <any>
 #include <functional>
-#include <string>
 #include <typeindex>
 
 namespace utility {
@@ -100,6 +98,10 @@ auto isAlphaNumeric(char character) noexcept -> bool {
 
 auto isDigit(char character) noexcept -> bool {
   return character >= '0' && character <= '9';
+}
+
+auto validAssignment(const TokenType& tokenType) -> bool {
+  return tokenType != TokenType::STRING_LITERAL;
 }
 
 }  // namespace utility

@@ -2,9 +2,7 @@
 #include <vector>
 
 #include "Errors.hpp"
-#include "Expr.hpp"
 #include "Stmt.hpp"
-#include "Token.hpp"
 
 class Parser {
  public:
@@ -49,5 +47,4 @@ class Parser {
 
   std::vector<Token> tokens;
   int current = 0;
-  int loopDepth = 0;
 };

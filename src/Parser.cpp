@@ -2,8 +2,6 @@
 
 #include <algorithm>
 
-#include "Headers/Errors.hpp"
-#include "Headers/Token.hpp"
 #include "Headers/bisayaPP.hpp"
 
 Parser::Parser(std::vector<Token> &tokens) : tokens(tokens) {}
@@ -152,14 +150,10 @@ void Parser::synchronize() {
     }
 
     switch (peek().type) {
-      case TokenType::CLASS:
-      case TokenType::FUN:
       case TokenType::VAR:
       case TokenType::FOR:
       case TokenType::IF:
       case TokenType::WHILE:
-      case TokenType::PRINT:
-      case TokenType::RETURN:
         return;
       default:;
     }
@@ -235,6 +229,7 @@ auto Parser::expressionStatement() -> Stmt * {
 
 auto Parser::printStatement() -> Stmt * {
   Expr *value = expression();
+
   consume(TokenType::SEMICOLON, "Expect newline after value.");
   return new Print(value);
 }
@@ -251,7 +246,6 @@ auto Parser::statement() -> Stmt * {
     return printStatement();
   }
   if (match({TokenType::WHILE})) {
-    loopDepth--;
     if (match({TokenType::FOR})) {
       return forStatement();
     }
@@ -356,7 +350,6 @@ auto Parser::whileStatement() -> Stmt * {
   Expr *condition = expression();
   consume(TokenType::RIGHT_PAREN, "Expect ')' after condition.");
 
-  loopDepth++;
   Stmt *body = statement();
 
   return new While(condition, body);
@@ -372,7 +365,6 @@ auto Parser::forStatement() -> Stmt * {
     if (match({TokenType::INTEGER, TokenType::DECIMAL, TokenType::CHAR,
                TokenType::BOOL})) {
       initializer = varDeclaration(previous().type);
-      //
     } else {
       BisayaPP::error(previous(), "Expect data type after 'VAR'.");
     }
@@ -393,8 +385,6 @@ auto Parser::forStatement() -> Stmt * {
   }
 
   consume(TokenType::RIGHT_PAREN, "Expect ')' after for clauses.");
-
-  loopDepth++;
 
   Stmt *body = statement();
 

@@ -15,4 +15,5 @@ auto checkValidOperation(const std::any& left, TokenType type,
 auto isAlpha(char character) noexcept -> bool;
 auto isAlphaNumeric(char character) noexcept -> bool;
 auto isDigit(char character) noexcept-> bool;
+auto validAssignment(const TokenType &tokenType) -> bool;
 }  // namespace utility

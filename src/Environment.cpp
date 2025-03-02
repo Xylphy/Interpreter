@@ -1,6 +1,7 @@
 #include "Headers/Environment.hpp"
 
 #include "Headers/Errors.hpp"
+#include "Headers/Lib/utility.hpp"
 
 Environment::Environment() : enclosing(nullptr) {}
 

@@ -1,5 +1,6 @@
 SUGOD
-IPAKITA: "WOAHHH"
-IPAKITA: 2 + 3 * 2.3 / 2.1
-IPAKITA: "OO"
+MUGNA NUMERO xyz
+MUGNA NUMERO abc=100
+xyz= ((abc *5)/10 + 10) * -1
+IPAKITA: [[] & xyz & []]
 KATAPUSAN
