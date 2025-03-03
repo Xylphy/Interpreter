@@ -2,6 +2,7 @@
 
 #include <algorithm>
 
+#include "Headers/Expr.hpp"
 #include "Headers/Stmt.hpp"
 #include "Headers/Token.hpp"
 #include "Headers/bisayaPP.hpp"
@@ -71,9 +72,17 @@ auto Parser::comparison() -> Expr * {
 auto Parser::term() -> Expr * {
   Expr *expr = factor();
 
-  while (match({TokenType::MINUS, TokenType::PLUS})) {
+  while (match({TokenType::MINUS, TokenType::PLUS, TokenType::CONCATENATOR,
+                TokenType::NEW_LINE})) {
     Token operatorToken = previous();
-    Expr *right = factor();
+    Expr *right;
+    if (previous().type == TokenType::NEW_LINE &&
+        tokens[current].type == TokenType::SEMICOLON) {
+      return new Binary(expr, operatorToken,
+                        new Literal("", TokenType::STRING_LITERAL));
+    }
+
+    right = factor();
     expr = new Binary(expr, operatorToken, right);
   }
 
@@ -112,9 +121,6 @@ auto Parser::primary() -> Expr * {
   if (match({TokenType::NUMBER, TokenType::STRING_LITERAL,
              TokenType::CHARACTER_LITERAL, TokenType::DECIMAL_NUMBER})) {
     return new Literal(previous().literal, previous().type);
-  }
-  if (match({TokenType::NEW_LINE})) {
-    return new Literal('\n', TokenType::CHARACTER_LITERAL);
   }
 
   if (match({TokenType::IDENTIFIER})) {
@@ -334,7 +340,7 @@ auto Parser::ifStatement() -> Stmt * {
   Stmt *elseBranch = nullptr;
 
   if (match({TokenType::IF})) {
-    if (match({TokenType::ELSE_IF})) {
+    if (match({TokenType::BANG})) {
       elseBranch = ifStatement();
     } else if (match({TokenType::ELSE})) {
       elseBranch = statement();

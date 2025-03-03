@@ -2,10 +2,10 @@ SUGOD
 MUGNA NUMERO a = 2
 MUGNA LETRA b = 'c'
 MUGNA TINUOD c = "OO"
-{
+PUNDOK{
     MUGNA NUMERO a = 5
     MUGNA LETRA b = 'd'
-    {
+    PUNDOK{
         MUGNA NUMERO a = 9
         IPAKITA: a 
         IPAKITA: b 

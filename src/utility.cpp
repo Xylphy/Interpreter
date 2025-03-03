@@ -1,7 +1,7 @@
 #include "Headers/Lib/utility.hpp"
 
 #include <functional>
-#include <string> // For MSVC Compiler
+#include <string>  // For MSVC Compiler
 #include <typeindex>
 
 #include "Headers/Errors.hpp"
@@ -32,7 +32,7 @@ auto anyToString(const std::any& value) noexcept -> std::string {
                       return {1, std::any_cast<char>(value)};
                     }},
                    {typeid(bool), [](const std::any& value) -> std::string {
-                      return std::any_cast<bool>(value) ? "true" : "false";
+                      return std::any_cast<bool>(value) ? "OO" : "DILI";
                     }}};
 
   auto iterator = typeToString.find(value.type());
@@ -51,7 +51,7 @@ auto convertData(const TokenType& type, std::any& value) -> void {
     value = std::any_cast<std::string>(value);
   } else if (type == TokenType::CHARACTER_LITERAL) {
     value = std::any_cast<char>(value);
-  } else if (type == TokenType::BOOL_TRUE) {
+  } else if (type == TokenType::BOOL_TRUE || type == TokenType::BOOL_FALSE) {
     value = std::any_cast<bool>(value);
   }
 }
@@ -72,6 +72,7 @@ auto checkValidOperation(const std::any& left, TokenType type,
     case TokenType::MODULO:
       return isArithmetic(left) && isArithmetic(right);
     case TokenType::CONCATENATOR:
+    case TokenType::NEW_LINE:
       return isConvertibleToString(left) && isConvertibleToString(right);
     default:
       return false;
@@ -81,7 +82,7 @@ auto checkValidOperation(const std::any& left, TokenType type,
 auto isConvertibleToString(const std::any& value) -> bool {
   const std::type_info& type = value.type();
   return isArithmetic(value) || type == typeid(std::string) ||
-         type == typeid(char);
+         type == typeid(char) || type == typeid(const char*);
 }
 
 auto isArithmetic(const std::any& value) -> bool {

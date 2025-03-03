@@ -108,11 +108,14 @@ auto Interpreter::visitBinaryExpr(const Binary& Expr) -> void {
     }
 
   } catch (const RuntimeError& error) {
-    if (Expr.op.type == TokenType::CONCATENATOR) {
-      type = TokenType::STRING_LITERAL;
-
+    TokenType tokenType = Expr.op.type;
+    type = TokenType::STRING_LITERAL;
+    if (tokenType == TokenType::CONCATENATOR) {
       tempResult =
           utility::anyToString(left).append(utility::anyToString(right));
+    } else if (tokenType == TokenType::NEW_LINE) {
+      tempResult = utility::anyToString(left).append("\n").append(
+          utility::anyToString(right));
     }
   } catch (const std::runtime_error& error) {  // Division by zero
     throw RuntimeError(Expr.op, error.what());
@@ -167,7 +170,6 @@ auto Interpreter::visitExpressionStmt(const Expression& Stmt) -> void {
 auto Interpreter::visitPrintStmt(const Print& Stmt) -> void {
   bool success = evaluate(Stmt.expression);
   if (success) {
-    // std::print("{}\n", utility::anyToString(result));
     std::cout << utility::anyToString(result);
   }
 }

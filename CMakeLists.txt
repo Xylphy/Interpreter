@@ -53,5 +53,5 @@ endif()
 add_subdirectory(src)
 add_subdirectory(tool)
 
-# enable_testing()
-# add_subdirectory(tests)
+enable_testing()
+add_subdirectory(tests)

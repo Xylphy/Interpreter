@@ -44,6 +44,6 @@ class Scanner {
       {"TIPIK", DECIMAL},    {"TINUOD", BOOL},
       {"\"OO\"", BOOL_TRUE}, {"\"DILI\"", BOOL_FALSE},
       {"LETRA", CHAR},       {"PISI", STRING},
-      {"\"WALA\"", NIL},     {"DILI", ELSE_IF},
+      {"\"WALA\"", NIL},     {"DILI", BANG},
       {"PUNDOK", BLOCK}};
 };

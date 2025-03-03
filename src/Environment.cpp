@@ -9,6 +9,7 @@ Environment::Environment(Environment* enclosing) : enclosing(enclosing) {}
 
 auto Environment::defineVar(const std::string& name, const std::any& value,
                             TokenType type) -> void {
+                              
   values[name] = std::make_pair(value, type);
 }
 

@@ -82,7 +82,7 @@ void Scanner::charLiteral() {
   }
   advance();
 
-  addToken(CHARACTER_LITERAL, source.substr(start + 1, current - start - 2));
+  addToken(CHARACTER_LITERAL, source.substr(start + 1, current - start - 2)[0]);
 }
 
 void Scanner::number() {
@@ -157,9 +157,6 @@ void Scanner::scanToken() {
       break;
     case '*':
       addToken(STAR);
-      break;
-    case '!':
-      addToken(BANG);
       break;
     case '=':
       addToken(match('=') ? EQUAL_EQUAL : EQUAL);
