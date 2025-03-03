@@ -68,14 +68,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-vcpkg-
 
-      - name: Setup vcpkg and install GTest
-        uses: lukka/run-vcpkg@v11.5
-        with:
-          vcpkgGitURL: 'https://github.com/microsoft/vcpkg.git'
-          vcpkgGitCommitId: 'fdac52dc790413f4ad041fc50f576a0cf6df17c5' # Replace with a current SHA from vcpkg repo
-          # vcpkgJsonGlob: 'vcpkg.json' # Uncomment if you have a vcpkg.json file in your repo
-          vcpkgArguments: 'gtest' # Install GTest
-          appendedCacheKey: ${{ matrix.os }}-${{ matrix.c_compiler }} # Improve caching across runs
 
       - name: Set reusable strings
         id: strings
@@ -89,7 +81,6 @@ jobs:
           -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
           -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
-          -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake
           -S ${{ github.workspace }}
 
       - name: Build
