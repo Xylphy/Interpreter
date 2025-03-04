@@ -59,10 +59,17 @@ jobs:
         run: choco install visualstudio2022buildtools --package-parameters "--add Microsoft.VisualStudio.Workload.VCTools --includeRecommended --norestart"
 
       - name: Cache vcpkg and installed dependencies
-        uses: lukka/get-cmake@v3.29.8
+        uses: actions/cache@v3
+        with:
+          path: |
+            ${{ github.workspace }}/vcpkg
+            ${{ github.workspace }}/build
+          key: ${{ runner.os }}-vcpkg-${{ hashFiles('**/vcpkg.json') }}
+          restore-keys: |
+            ${{ runner.os }}-vcpkg-
 
       - name: Setup vcpkg and install GTest
-        uses: lukka/run-vcpkg@v11
+        uses: lukka/run-vcpkg@v11.5
         with:
           vcpkgGitURL: 'https://github.com/microsoft/vcpkg.git'
           vcpkgGitCommitId: 'HEAD' # Use the latest vcpkg commit; pin to a specific commit for stability if needed
