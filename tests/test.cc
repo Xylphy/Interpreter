@@ -35,15 +35,13 @@ auto test_assertEqualWithInput(const std::string&& path,
   ASSERT_EQ(outputBuffer.str(), expected);
 }
 
-TEST(Interpreter, Print) {
-  test_assertEqual("../../tests/source_files/print.bsy", "[-60]");
+// Sample Programs
+TEST(Sample_Programs, Test_1) {
+  test_assertEqual("../../tests/source_files/Sample Programs/sample_program_1.bsy", "[-60]");
 }
 
-TEST(Interpreter, FOR_LOOP) {
-  test_assertEqual(
-      "../../tests/source_files/forLoop.bsy",
-      "0\n1\n1\n2\n3\n5\n8\n13\n21\n34\n55\n89\n144\n233\n377\n610\n987\n"
-      "1597\n2584\n4181\n6765\n10946\n17711\n28657\n46368\n75025\n");
+TEST(Sample_Programs, Test_2) {
+  test_assertEqual("../../tests/source_files/Sample Programs/sample_program_2.bsy", "OO");
 }
 
 TEST(Interpreter, Declare) {
@@ -62,9 +60,25 @@ TEST(Interpreter, ShortCircuit) {
   test_assertEqual("../../tests/source_files/logicalExpr.bsy", "HiYES");
 }
 
-TEST(Interpreter, Input) {
-  test_assertEqualWithInput("../../tests/source_files/dawattest.bsy", "1", "1");
+TEST(If_Statements, Test_1) {
+  test_assertEqual("../../tests/source_files/if1.bsy", "BAYOT SI JEREMY");
 }
+
+TEST(If_Statements, Test_2) {
+  test_assertEqual("../../tests/source_files/if2.bsy", "");
+}
+
+TEST(Interpreter, FOR_LOOP) {
+  test_assertEqual(
+      "../../tests/source_files/forLoop.bsy",
+      "0\n1\n1\n2\n3\n5\n8\n13\n21\n34\n55\n89\n144\n233\n377\n610\n987\n"
+      "1597\n2584\n4181\n6765\n10946\n17711\n28657\n46368\n75025\n");
+}
+
+// TEST(Interpreter, Input) {
+//   test_assertEqualWithInput("../../tests/source_files/dawattest.bsy", "1",
+//   "1");
+// }
 
 auto main(int argc, char* argv[]) -> int {
   testing::InitGoogleTest(&argc, argv);

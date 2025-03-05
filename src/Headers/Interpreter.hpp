@@ -10,7 +10,7 @@ class Interpreter : public ExprVisitor, public StmtVisitor {
  public:
   Interpreter();
   auto evaluate(Expr* expression) -> bool;
-  auto setInterpretResult(const std::vector<Stmt*>& statements) -> void;
+  static auto setInterpretResult(const std::vector<Stmt*>& statements) -> void;
 
  private:
   auto visitBinaryExpr(const Binary& Expr) -> void override;

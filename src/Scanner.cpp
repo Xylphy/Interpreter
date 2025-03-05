@@ -55,6 +55,7 @@ void Scanner::string() {
     BisayaPP::error(line, "Unterminated string.");
     return;
   }
+
   advance();
 
   std::string value = source.substr(start, current - start);
@@ -62,9 +63,17 @@ void Scanner::string() {
   auto iterator = keywords.find(value);
   if (iterator != keywords.end()) {
     addToken(iterator->second);
-  } else {
-    addToken(STRING_LITERAL, value.substr(1, value.length() - 2));
+    return;
   }
+
+  iterator = keywords.find(value.substr(1, current - start - 2));
+
+  if (iterator != keywords.end()) {
+    addToken(iterator->second);
+    return;
+  }
+
+  addToken(STRING_LITERAL, value.substr(1, value.length() - 2));
 }
 
 void Scanner::charLiteral() {
@@ -199,7 +208,7 @@ void Scanner::scanToken() {
       line++;
       addToken(SEMICOLON);
       break;
-    case '"':
+    case '\"':
       string();
       break;
     case '\'':

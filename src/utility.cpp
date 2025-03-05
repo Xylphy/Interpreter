@@ -5,6 +5,7 @@
 #include <typeindex>
 
 #include "Headers/Errors.hpp"
+#include "Headers/Token.hpp"
 
 namespace utility {
 
@@ -51,7 +52,7 @@ auto convertData(const TokenType& type, std::any& value) -> void {
     value = std::any_cast<std::string>(value);
   } else if (type == TokenType::CHARACTER_LITERAL) {
     value = std::any_cast<char>(value);
-  } else if (type == TokenType::BOOL_TRUE || type == TokenType::BOOL_FALSE) {
+  } else if (type == TokenType::BOOL) {
     value = std::any_cast<bool>(value);
   }
 }

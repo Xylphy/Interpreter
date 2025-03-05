@@ -16,18 +16,15 @@ const int SYNTAX_ERROR = 65;
 bool hadError = false;
 bool hadRuntimeError = false;
 
-// Interpreter for the AST
-static Interpreter interpreter;
-
 void run(const std::string& source) {
-  // std::print("Running\n {}\n", source);
+  std::print("Running\n {}\n", source);
 
   auto* scanner = new Scanner(source);
   std::vector<Token> tokens = scanner->scanTokens();
 
-  // for (Token token : tokens) {
-  //   std::print("{}\n", token);
-  // }
+  for (Token token : tokens) {
+    std::print("{}\n", token);
+  }
 
   auto* parser = new Parser(tokens);
   std::vector<Stmt*> statements = parser->parse();
@@ -36,7 +33,7 @@ void run(const std::string& source) {
     return;
   }
 
-  interpreter.setInterpretResult(statements);
+  Interpreter::setInterpretResult(statements);
 }
 
 void runFile(const char* path) {

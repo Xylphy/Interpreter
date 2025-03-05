@@ -2,8 +2,6 @@
 
 #include <algorithm>
 
-#include "Headers/Expr.hpp"
-#include "Headers/Stmt.hpp"
 #include "Headers/Token.hpp"
 #include "Headers/bisayaPP.hpp"
 
@@ -336,6 +334,10 @@ auto Parser::ifStatement() -> Stmt * {
   Expr *condition = expression();
   consume(TokenType::RIGHT_PAREN, "Expect ')' after condition.");
 
+  if (check(TokenType::SEMICOLON)) {
+    advance();
+  }
+
   Stmt *thenBranch = statement();
   Stmt *elseBranch = nullptr;
 
@@ -414,6 +416,10 @@ auto Parser::forStatement() -> Stmt * {
   }
 
   consume(TokenType::RIGHT_PAREN, "Expect ')' after for clauses.");
+
+  if (check(TokenType::SEMICOLON)) {
+    advance();
+  }
 
   Stmt *body = statement();
 
