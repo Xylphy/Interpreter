@@ -9,6 +9,8 @@
 
 namespace BisayaPP {
 
+static Interpreter interpreter;
+
 const int FILE_OPEN_ERROR = 74;
 const int RUNTIME_ERROR = 70;
 const int SYNTAX_ERROR = 65;
@@ -17,14 +19,14 @@ bool hadError = false;
 bool hadRuntimeError = false;
 
 void run(const std::string& source) {
-  std::print("Running\n {}\n", source);
+  // std::print("Running\n {}\n", source);
 
   auto* scanner = new Scanner(source);
   std::vector<Token> tokens = scanner->scanTokens();
 
-  for (Token token : tokens) {
-    std::print("{}\n", token);
-  }
+  // for (Token token : tokens) {
+  //   std::print("{}\n", token);
+  // }
 
   auto* parser = new Parser(tokens);
   std::vector<Stmt*> statements = parser->parse();
@@ -33,7 +35,7 @@ void run(const std::string& source) {
     return;
   }
 
-  Interpreter::setInterpretResult(statements);
+  interpreter.setInterpretResult(statements);
 }
 
 void runFile(const char* path) {

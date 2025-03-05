@@ -1,5 +1,6 @@
 #pragma once
 
+#include <any>
 #include <vector>
 
 #include "Expr.hpp"
@@ -10,6 +11,7 @@ class If;
 class Print;
 class Var;
 class While;
+class Input;
 
 class StmtVisitor {
  public:
@@ -18,6 +20,7 @@ class StmtVisitor {
   virtual auto visitIfStmt(const If& Stmt) -> void = 0;
   virtual auto visitPrintStmt(const Print& Stmt) -> void = 0;
   virtual auto visitVarStmt(const Var& Stmt) -> void = 0;
+  virtual auto visitInputStmt(const Input& Stmt) -> void = 0;
   virtual auto visitWhileStmt(const While& Stmt) -> void = 0;
   virtual ~StmtVisitor() = default;
 };
@@ -73,6 +76,15 @@ class Print : public Stmt {
   auto accept(StmtVisitor& visitor) -> void override {
     visitor.visitPrintStmt(*this);
   }
+};
+
+class Input : public Stmt {
+ public:
+  std::vector<Token> variables;
+
+  Input(std::vector<Token> variables) : variables(std::move(variables)) {}
+
+  void accept(StmtVisitor& visitor) override { visitor.visitInputStmt(*this); }
 };
 
 class Var : public Stmt {

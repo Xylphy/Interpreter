@@ -1,5 +1,6 @@
 #include "Headers/Interpreter.hpp"
 
+#include <any>
 #include <iostream>
 #include <print>
 
@@ -77,19 +78,19 @@ auto Interpreter::visitBinaryExpr(const Binary& Expr) -> void {
     const TokenType& exprTokenType = Expr.op.type;
 
     if (leftType == TokenType::NUMBER && rightType == TokenType::NUMBER) {
-      tempResult = numericOperation(std::any_cast<int>(left), exprTokenType,
+      tempResult = utility::numericOperation(std::any_cast<int>(left), exprTokenType,
                                     std::any_cast<int>(right));
     } else if (leftType == TokenType::NUMBER &&
                rightType == TokenType::DECIMAL_NUMBER) {
-      tempResult = numericOperation(std::any_cast<int>(left), exprTokenType,
+      tempResult = utility::numericOperation(std::any_cast<int>(left), exprTokenType,
                                     std::any_cast<double>(right));
     } else if (leftType == TokenType::DECIMAL_NUMBER &&
                rightType == TokenType::NUMBER) {
-      tempResult = numericOperation(std::any_cast<double>(left), exprTokenType,
+      tempResult = utility::numericOperation(std::any_cast<double>(left), exprTokenType,
                                     std::any_cast<int>(right));
     } else if (leftType == TokenType::DECIMAL_NUMBER &&
                rightType == TokenType::DECIMAL_NUMBER) {
-      tempResult = numericOperation(std::any_cast<double>(left), exprTokenType,
+      tempResult = utility::numericOperation(std::any_cast<double>(left), exprTokenType,
                                     std::any_cast<double>(right));
     }
 
@@ -172,6 +173,52 @@ auto Interpreter::visitPrintStmt(const Print& Stmt) -> void {
   if (success) {
     std::cout << utility::anyToString(result);
   }
+}
+
+auto Interpreter::visitInputStmt(const Input& stmt) -> void {
+  //   if (stmt.variables.empty()) {
+  //     throw RuntimeError("DAWAT requires at least one variable.");
+  //     }
+
+  //   std::cout << "Enter values for: ";
+  //   for (size_t i = 0; i < stmt.variables.size(); ++i) {
+  //       std::cout << stmt.variables[i].lexeme;
+  //       if (i < stmt.variables.size() - 1) std::cout << ", ";
+  //   }
+  //   std::cout << "\n";
+
+  //   std::string inputLine;
+  //   std::getline(std::cin, inputLine);
+  //   std::stringstream ss(inputLine);
+  //   std::vector<std::string> values;
+  //   std::string value;
+
+  //   while (std::getline(ss, value, ',')) {
+  //       values.push_back(value);
+  //   }
+
+  //   if (values.size() != stmt.variables.size()) {
+  //       throw RuntimeError("Mismatch between variables and input values.");
+  //   }
+
+  //   for (size_t i = 0; i < stmt.variables.size(); ++i) {
+  //       Token varToken = stmt.variables[i];
+  //       std::any storedValue = values[i];
+
+  //       if (varToken.type == TokenType::NUMBER) {
+  //           storedValue = std::stoi(values[i]);
+  //       } else if (varToken.type == TokenType::DECIMAL_NUMBER) {
+  //           storedValue = std::stod(values[i]);
+  //       } else if (varToken.type == TokenType::CHARACTER_LITERAL &&
+  //       values[i].size() == 1) {
+  //           storedValue = values[i][0];
+  //       } else if (varToken.type == TokenType::BOOL_TRUE || varToken.type ==
+  //       TokenType::BOOL_FALSE) {
+  //           storedValue = (values[i] == "true" || values[i] == "1");
+  //       }
+
+  //       environment->assign(varToken, storedValue, varToken.type);
+  //   }
 }
 
 auto Interpreter::visitVarStmt(const Var& Stmt) -> void {
