@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <string> // For MSVC Compatibility
+#include <any>
 
 #include "Environment.hpp"
 #include "Stmt.hpp"
@@ -23,6 +24,7 @@ class Interpreter : public ExprVisitor, public StmtVisitor {
 
   auto visitExpressionStmt(const Expression& Stmt) -> void override;
   auto visitPrintStmt(const Print& Stmt) -> void override;
+  auto visitInputStmt(const Input& Stmt) -> void override;
   auto visitVarStmt(const Var& Stmt) -> void override;
   auto visitBlockStmt(const Block& Stmt) -> void override;
   auto visitIfStmt(const If& Stmt) -> void override;

@@ -1,4 +1,5 @@
 #include "Headers/Parser.hpp"
+#include <any>
 
 #include <algorithm>
 
@@ -165,6 +166,7 @@ void Parser::synchronize() {
       case TokenType::VAR:
       case TokenType::FOR:
       case TokenType::IF:
+      case TokenType::INPUT:
       case TokenType::WHILE:
         return;
       default:;
@@ -260,6 +262,18 @@ auto Parser::printStatement() -> Stmt * {
   return new Print(value);
 }
 
+auto Parser::inputStatement() -> Stmt * {
+  consume(TokenType::COLON, "Expect ':' after 'DAWAT'.");
+  std::vector<Token> variables;
+
+  do {
+      variables.push_back(consume(TokenType::IDENTIFIER, "Expect variable name."));
+  } while (match({TokenType::COMMA}));
+
+  consume(TokenType::SEMICOLON, "Expect newline after value.");
+  return new Input(variables); 
+}
+
 auto Parser::statement() -> Stmt * {
   if (match({TokenType::IF})) {
     if (tokens[current - 2].type == TokenType::ELSE) {
@@ -271,6 +285,11 @@ auto Parser::statement() -> Stmt * {
   if (match({TokenType::PRINT})) {
     return printStatement();
   }
+
+  if (match({TokenType::INPUT})) {
+    return inputStatement();
+  }
+
   if (match({TokenType::WHILE})) {
     if (match({TokenType::FOR})) {
       return forStatement();

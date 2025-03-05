@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <any>
 
 #include "Expr.hpp"
 
@@ -74,6 +75,17 @@ class Print : public Stmt {
     visitor.visitPrintStmt(*this);
   }
 };
+
+class Input : public Stmt {
+  public:
+    std::vector<Token> variables;
+
+    Input(std::vector<Token> variables) : variables(std::move(variables)) {}
+
+    void accept(StmtVisitor &visitor) override {
+        visitor.visitInputStmt(*this);
+    }
+  };
 
 class Var : public Stmt {
  public:
