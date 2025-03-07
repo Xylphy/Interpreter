@@ -4,3 +4,4 @@
 *.JSON
 /cmake-build-debug/
 /.idea/
+*.code-workspace
