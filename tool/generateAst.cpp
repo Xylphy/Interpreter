@@ -148,7 +148,7 @@ void defineType(std::ofstream& file, const std::string& baseName,
   
   file << "~" << typeInfo.className << "() override {\n";
   for (const auto& field : fields) {
-    auto& [type, name] = field;
+    const auto& [type, name] = field;
     if (type.find('*') != std::string::npos) {  
       file << "delete " << name << ";\n";
     }

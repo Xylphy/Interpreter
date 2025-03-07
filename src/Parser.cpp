@@ -1,5 +1,4 @@
 #include "Headers/Parser.hpp"
-#include <any>
 
 #include <algorithm>
 
@@ -175,7 +174,7 @@ void Parser::synchronize() {
 }
 
 auto Parser::varDeclaration(TokenType type) -> Stmt * {
-  Token name = consume(TokenType::IDENTIFIER, "Expect variable name.");
+  Token name = consume(TokenType::IDENTIFIER, "Expected variable name.");
   name.type = type;
 
   Expr *initializer = nullptr;
@@ -265,11 +264,12 @@ auto Parser::inputStatement() -> Stmt * {
   std::vector<Token> variables;
 
   do {
-      variables.push_back(consume(TokenType::IDENTIFIER, "Expect variable name."));
+    variables.push_back(
+        consume(TokenType::IDENTIFIER, "Expect variable name."));
   } while (match({TokenType::COMMA}));
 
   consume(TokenType::SEMICOLON, "Expect newline after value.");
-  return new Input(variables); 
+  return new Input(variables);
 }
 
 auto Parser::statement() -> Stmt * {

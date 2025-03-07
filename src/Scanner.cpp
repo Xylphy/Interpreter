@@ -1,7 +1,6 @@
 #include "Headers/Scanner.hpp"
 
 #include "Headers/Lib/utility.hpp"
-#include "Headers/Token.hpp"
 #include "Headers/bisayaPP.hpp"
 
 Scanner::Scanner(std::string source) : source(std::move(source)) {}
