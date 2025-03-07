@@ -1,8 +1,6 @@
 #include "Headers/Lib/utility.hpp"
 
-#include <functional>
 #include <string>  // For MSVC Compiler
-#include <typeindex>
 
 #include "Headers/Errors.hpp"
 #include "Headers/Token.hpp"
@@ -14,32 +12,23 @@ auto anyToString(std::string& result, const std::any& value) noexcept -> void {
 }
 
 auto anyToString(const std::any& value) noexcept -> std::string {
-  static const std::unordered_map<std::type_index,
-                                  std::function<std::string(const std::any&)>>
-      typeToString{{typeid(int),
-                    [](const std::any& value) -> std::string {
-                      return std::to_string(std::any_cast<int>(value));
-                    }},
-                   {typeid(double),
-                    [](const std::any& value) -> std::string {
-                      return std::to_string(std::any_cast<double>(value));
-                    }},
-                   {typeid(std::string),
-                    [](const std::any& value) -> std::string {
-                      return std::any_cast<std::string>(value);
-                    }},
-                   {typeid(char),
-                    [](const std::any& value) -> std::string {
-                      return {1, std::any_cast<char>(value)};
-                    }},
-                   {typeid(bool), [](const std::any& value) -> std::string {
-                      return std::any_cast<bool>(value) ? "OO" : "DILI";
-                    }}};
-
-  auto iterator = typeToString.find(value.type());
-  if (iterator != typeToString.end()) {
-    return iterator->second(value);
+  const std::type_info& type = value.type();
+  if (type == typeid(int)) {
+    return std::to_string(std::any_cast<int>(value));
   }
+  if (type == typeid(double)) {
+    return std::to_string(std::any_cast<double>(value));
+  }
+  if (type == typeid(std::string)) {
+    return std::any_cast<std::string>(value);
+  }
+  if (type == typeid(char)) {
+    return {1, std::any_cast<char>(value)};
+  }
+  if (type == typeid(bool)) {
+    return std::any_cast<bool>(value) ? "OO" : "DILI";
+  }
+
   return {};
 }
 

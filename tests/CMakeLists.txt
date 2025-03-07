@@ -5,10 +5,22 @@ file(GLOB SOURCE_FILES "${CMAKE_SOURCE_DIR}/src/*.cpp")
 
 list(REMOVE_ITEM SOURCE_FILES "${CMAKE_SOURCE_DIR}/src/main.cpp")
 
-add_executable(tests 
+add_executable(tests
+    # Project Files
     ${HEADER_FILES}
     ${SOURCE_FILES}
-    test.cc
+
+    # Test Files
+    "includes/forLoop.hpp"
+    "includes/utils.hpp"
+    "includes/declare.hpp"
+    "includes/ifStatements.hpp"
+    "includes/samplePrograms.hpp"
+    "includes/scope.hpp"
+    "includes/shortCircuit.hpp"
+
+    "utils.cpp"
+    test.cpp
 )
 
 target_link_libraries(
