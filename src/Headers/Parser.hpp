@@ -36,6 +36,7 @@ class Parser {
 
   auto statement() -> Stmt*;
   auto printStatement() -> Stmt*;
+  auto inputStatement() -> Stmt*;
   auto expressionStatement() -> Stmt*;
   auto ifStatement() -> Stmt*;
   auto whileStatement() -> Stmt*;

@@ -9,15 +9,14 @@
 
 namespace BisayaPP {
 
+static Interpreter interpreter;
+
 const int FILE_OPEN_ERROR = 74;
 const int RUNTIME_ERROR = 70;
 const int SYNTAX_ERROR = 65;
 
 bool hadError = false;
 bool hadRuntimeError = false;
-
-// Interpreter for the AST
-static Interpreter interpreter;
 
 void run(const std::string& source) {
   // std::print("Running\n {}\n", source);
