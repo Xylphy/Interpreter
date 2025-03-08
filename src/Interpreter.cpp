@@ -1,8 +1,6 @@
 #include "Headers/Interpreter.hpp"
 
-#include <any>
 #include <iostream>
-#include <print>
 
 #include "Headers/Lib/utility.hpp"
 #include "Headers/Token.hpp"
@@ -78,19 +76,22 @@ auto Interpreter::visitBinaryExpr(const Binary& Expr) -> void {
     const TokenType& exprTokenType = Expr.op.type;
 
     if (leftType == TokenType::NUMBER && rightType == TokenType::NUMBER) {
-      tempResult = utility::numericOperation(std::any_cast<int>(left), exprTokenType,
-                                    std::any_cast<int>(right));
+      tempResult = utility::numericOperation(
+          std::any_cast<int>(left), exprTokenType, std::any_cast<int>(right));
     } else if (leftType == TokenType::NUMBER &&
                rightType == TokenType::DECIMAL_NUMBER) {
-      tempResult = utility::numericOperation(std::any_cast<int>(left), exprTokenType,
+      tempResult =
+          utility::numericOperation(std::any_cast<int>(left), exprTokenType,
                                     std::any_cast<double>(right));
     } else if (leftType == TokenType::DECIMAL_NUMBER &&
                rightType == TokenType::NUMBER) {
-      tempResult = utility::numericOperation(std::any_cast<double>(left), exprTokenType,
+      tempResult =
+          utility::numericOperation(std::any_cast<double>(left), exprTokenType,
                                     std::any_cast<int>(right));
     } else if (leftType == TokenType::DECIMAL_NUMBER &&
                rightType == TokenType::DECIMAL_NUMBER) {
-      tempResult = utility::numericOperation(std::any_cast<double>(left), exprTokenType,
+      tempResult =
+          utility::numericOperation(std::any_cast<double>(left), exprTokenType,
                                     std::any_cast<double>(right));
     }
 
@@ -114,9 +115,6 @@ auto Interpreter::visitBinaryExpr(const Binary& Expr) -> void {
     if (tokenType == TokenType::CONCATENATOR) {
       tempResult =
           utility::anyToString(left).append(utility::anyToString(right));
-    } else if (tokenType == TokenType::NEW_LINE) {
-      tempResult = utility::anyToString(left).append("\n").append(
-          utility::anyToString(right));
     }
   } catch (const std::runtime_error& error) {  // Division by zero
     throw RuntimeError(Expr.op, error.what());

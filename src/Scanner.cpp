@@ -151,6 +151,7 @@ void Scanner::scanToken() {
         while (peek() != '\n' && !isAtEnd()) {
           advance();
         }
+        advance();
       } else if (utility::isDigit(peek())) {
         number();
       } else {

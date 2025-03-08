@@ -2,6 +2,7 @@
 
 #include <algorithm>
 
+#include "Headers/Expr.hpp"
 #include "Headers/Token.hpp"
 #include "Headers/bisayaPP.hpp"
 
@@ -70,17 +71,21 @@ auto Parser::comparison() -> Expr * {
 auto Parser::term() -> Expr * {
   Expr *expr = factor();
 
-  while (match({TokenType::MINUS, TokenType::PLUS, TokenType::CONCATENATOR,
-                TokenType::NEW_LINE})) {
+  while (match({TokenType::MINUS, TokenType::PLUS, TokenType::CONCATENATOR})) {
     Token operatorToken = previous();
     Expr *right;
-    if (previous().type == TokenType::NEW_LINE &&
-        tokens[current].type == TokenType::SEMICOLON) {
-      return new Binary(expr, operatorToken,
-                        new Literal("", TokenType::STRING_LITERAL));
-    }
 
+    // if (previous().type == TokenType::NEW_LINE) {
+    //   if (peek().type == TokenType::SEMICOLON) {
+    //     return new Binary(expr, operatorToken,
+    //                       new Literal("", TokenType::STRING_LITERAL));
+    //   }
+
+    //   right = expression();
+    // } else {
     right = factor();
+    // }
+
     expr = new Binary(expr, operatorToken, right);
   }
 
@@ -119,6 +124,10 @@ auto Parser::primary() -> Expr * {
   if (match({TokenType::NUMBER, TokenType::STRING_LITERAL,
              TokenType::CHARACTER_LITERAL, TokenType::DECIMAL_NUMBER})) {
     return new Literal(previous().literal, previous().type);
+  }
+
+  if (match({TokenType::NEW_LINE})) {
+    return new Literal("\n", TokenType::STRING_LITERAL);
   }
 
   if (match({TokenType::IDENTIFIER})) {

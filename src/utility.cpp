@@ -28,6 +28,9 @@ auto anyToString(const std::any& value) noexcept -> std::string {
   if (type == typeid(bool)) {
     return std::any_cast<bool>(value) ? "OO" : "DILI";
   }
+  if (type == typeid(const char*)) {
+    return std::any_cast<const char*>(value);
+  }
 
   return {};
 }
@@ -72,7 +75,8 @@ auto checkValidOperation(const std::any& left, TokenType type,
 auto isConvertibleToString(const std::any& value) -> bool {
   const std::type_info& type = value.type();
   return isArithmetic(value) || type == typeid(std::string) ||
-         type == typeid(char) || type == typeid(const char*);
+         type == typeid(char) || type == typeid(const char*) ||
+         type == typeid(bool);
 }
 
 auto isArithmetic(const std::any& value) -> bool {
