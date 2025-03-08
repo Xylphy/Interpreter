@@ -19,14 +19,14 @@ bool hadError = false;
 bool hadRuntimeError = false;
 
 void run(const std::string& source) {
-  // std::print("Running\n {}\n", source);
+  std::print("Running\n {}\n", source);
 
   auto* scanner = new Scanner(source);
   std::vector<Token> tokens = scanner->scanTokens();
 
-  // for (Token token : tokens) {
-  //   std::print("{}\n", token);
-  // }
+  for (Token token : tokens) {
+    std::print("{}\n", token);
+  }
 
   auto* parser = new Parser(tokens);
   std::vector<Stmt*> statements = parser->parse();
