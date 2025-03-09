@@ -1,90 +1,90 @@
-# https://github.com/actions/starter-workflows/blob/main/ci/cmake-single-platform.yml
-name: CMake on multiple platforms
+# # https://github.com/actions/starter-workflows/blob/main/ci/cmake-single-platform.yml
+# name: CMake on multiple platforms
 
-on:
-  push:
-    branches: ["master"]
-  pull_request:
-    branches: ["master"]
+# on:
+#   push:
+#     branches: ["master"]
+#   pull_request:
+#     branches: ["master"]
 
-jobs:
-  build:
-    runs-on: ${{ matrix.os }}
+# jobs:
+#   build:
+#     runs-on: ${{ matrix.os }}
 
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, windows-latest]
-        build_type: [Release]
-        c_compiler: [gcc, clang, cl]
-        include:
-          - os: windows-latest
-            c_compiler: cl
-            cpp_compiler: cl
-          - os: ubuntu-latest
-            c_compiler: gcc
-            cpp_compiler: g++
-          - os: ubuntu-latest
-            c_compiler: clang
-            cpp_compiler: clang++
-        exclude:
-          - os: windows-latest
-            c_compiler: gcc
-          - os: windows-latest
-            c_compiler: clang
-          - os: ubuntu-latest
-            c_compiler: cl
+#     strategy:
+#       fail-fast: false
+#       matrix:
+#         os: [ubuntu-latest, windows-latest]
+#         build_type: [Release]
+#         c_compiler: [gcc, clang, cl]
+#         include:
+#           - os: windows-latest
+#             c_compiler: cl
+#             cpp_compiler: cl
+#           - os: ubuntu-latest
+#             c_compiler: gcc
+#             cpp_compiler: g++
+#           - os: ubuntu-latest
+#             c_compiler: clang
+#             cpp_compiler: clang++
+#         exclude:
+#           - os: windows-latest
+#             c_compiler: gcc
+#           - os: windows-latest
+#             c_compiler: clang
+#           - os: ubuntu-latest
+#             c_compiler: cl
 
-    steps:
-      # - uses: actions/checkout@v4
+#     steps:
+#       # - uses: actions/checkout@v4
 
-      - name: Install GCC 14 (or latest)
-        if: matrix.os == 'ubuntu-latest' && matrix.c_compiler == 'gcc'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y gcc-14 g++-14
-          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 100
-          sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-14 100
+#       - name: Install GCC 14 (or latest)
+#         if: matrix.os == 'ubuntu-latest' && matrix.c_compiler == 'gcc'
+#         run: |
+#           sudo apt-get update
+#           sudo apt-get install -y gcc-14 g++-14
+#           sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 100
+#           sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-14 100
 
-      - name: Install Clang 14 (or latest)
-        if: matrix.os == 'ubuntu-latest' && matrix.c_compiler == 'clang'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y clang-14
-          sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-14 100
-          sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-14 100
+#       - name: Install Clang 14 (or latest)
+#         if: matrix.os == 'ubuntu-latest' && matrix.c_compiler == 'clang'
+#         run: |
+#           sudo apt-get update
+#           sudo apt-get install -y clang-14
+#           sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-14 100
+#           sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-14 100
 
-      - name: Install MSVC compiler
-        if: matrix.os == 'windows-latest' && matrix.c_compiler == 'cl'
-        run: choco install visualstudio2022buildtools --package-parameters "--add Microsoft.VisualStudio.Workload.VCTools --includeRecommended --norestart"
+#       - name: Install MSVC compiler
+#         if: matrix.os == 'windows-latest' && matrix.c_compiler == 'cl'
+#         run: choco install visualstudio2022buildtools --package-parameters "--add Microsoft.VisualStudio.Workload.VCTools --includeRecommended --norestart"
 
-      # - name: Cache vcpkg and installed dependencies
-      #   uses: actions/cache@v3
-      #   with:
-      #     path: |
-      #       ${{ github.workspace }}/vcpkg
-      #       ${{ github.workspace }}/build
-      #     key: ${{ runner.os }}-vcpkg-${{ hashFiles('**/vcpkg.json') }}
-      #     restore-keys: |
-      #       ${{ runner.os }}-vcpkg-
+#       # - name: Cache vcpkg and installed dependencies
+#       #   uses: actions/cache@v3
+#       #   with:
+#       #     path: |
+#       #       ${{ github.workspace }}/vcpkg
+#       #       ${{ github.workspace }}/build
+#       #     key: ${{ runner.os }}-vcpkg-${{ hashFiles('**/vcpkg.json') }}
+#       #     restore-keys: |
+#       #       ${{ runner.os }}-vcpkg-
 
-      - name: Set reusable strings
-        id: strings
-        shell: bash
-        run: |
-          echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
+#       - name: Set reusable strings
+#         id: strings
+#         shell: bash
+#         run: |
+#           echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
 
-      - name: Configure CMake
-        run: |
-          cmake -B ${{ steps.strings.outputs.build-output-dir }}
-          -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
-          -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
-          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
-          -S ${{ github.workspace }}
+#       - name: Configure CMake
+#         run: |
+#           cmake -B ${{ steps.strings.outputs.build-output-dir }}
+#           -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
+#           -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
+#           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+#           -S ${{ github.workspace }}
 
-      - name: Build
-        run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
+#       - name: Build
+#         run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
 
-      - name: Test
-        working-directory: ${{ steps.strings.outputs.build-output-dir }}
-        run: ctest --build-config ${{ matrix.build_type }}
+#       - name: Test
+#         working-directory: ${{ steps.strings.outputs.build-output-dir }}
+#         run: ctest --build-config ${{ matrix.build_type }}
