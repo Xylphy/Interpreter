@@ -4,6 +4,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <utility>
 #include <vector>
 
 void defineAst(std::string&& outputDir, std::string&& baseName,
@@ -11,7 +12,7 @@ void defineAst(std::string&& outputDir, std::string&& baseName,
   // Header files that contain information (bag of data) about the AST nodes
 
   // File writer
-  std::ofstream headerFile("../src/" + outputDir + "/" + baseName + ".hpp");
+  std::ofstream headerFile("../../src/" + outputDir + "/" + baseName + ".hpp");
   if (!headerFile.is_open()) {
     std::cerr << "Could not open file for writing: "
               << outputDir + "/" + baseName + ".hpp" << '\n';
@@ -30,11 +31,10 @@ void defineAst(std::string&& outputDir, std::string&& baseName,
 
   // Includes
   headerFile << "#pragma once\n\n";
-  headerFile << "#include <vector>\n";
-
   if (baseName == "Expr") {
     headerFile << "#include \"Token.hpp\"\n";
   } else if (baseName == "Stmt") {
+    headerFile << "#include <vector>\n";
     headerFile << "#include \"Expr.hpp\"\n";
   }
   headerFile << '\n';
@@ -113,7 +113,7 @@ void defineType(std::ofstream& file, const std::string& baseName,
   // E.g. Expr left; Token op; Expr right;
   for (std::pair<std::string, std::string>& field : fields) {
     // NOTE: Structured bindings
-    auto& [type, name] = field;
+    auto [type, name] = field;
     file << type << " " << name << ";"
          << "\n";
 
@@ -145,12 +145,12 @@ void defineType(std::ofstream& file, const std::string& baseName,
        << "Visitor &visitor) -> void override { visitor.visit"
        << typeInfo.className << baseName << "(*this); }"
        << "\n";
-  
+
   file << "~" << typeInfo.className << "() override {\n";
-  for (const auto& field : fields) {
+  for (const std::pair<std::string, std::string>& field : fields) {
     const auto& [type, name] = field;
-    if (type.find('*') != std::string::npos) {  
-      file << "delete " << name << ";\n";
+    if (name.find('*') != std::string::npos) {
+      file << "delete " << name.substr(1) << ";\n";
     }
   }
   file << "}\n";

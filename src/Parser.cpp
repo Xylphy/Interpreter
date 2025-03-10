@@ -379,7 +379,7 @@ auto Parser::ifStatement() -> Stmt * {
     }
   }
 
-  return new If(condition, thenBranch, elseBranch);
+  return new If(thenBranch, condition, elseBranch);
 }
 
 auto Parser::orExpression() -> Expr * {

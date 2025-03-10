@@ -1,6 +1,6 @@
 #pragma once
 
-#include <vector>
+#include <utility>
 
 #include "Token.hpp"
 
@@ -35,7 +35,7 @@ class Assign : public Expr {
   Token name;
   Expr *value;
 
-  Assign(Token name, Expr *value) : name(name), value(value) {}
+  Assign(Token name, Expr *value) : name(std::move(name)), value(value) {}
 
   auto accept(ExprVisitor &visitor) -> void override {
     visitor.visitAssignExpr(*this);
@@ -48,8 +48,8 @@ class Binary : public Expr {
   Token op;
   Expr *right;
 
-  Binary(Expr *left, Token op, Expr *right)
-      : left(left), op(op), right(right) {}
+  Binary(Expr *left, Token tokenOperator, Expr *right)
+      : left(left), op(std::move(tokenOperator)), right(right) {}
 
   auto accept(ExprVisitor &visitor) -> void override {
     visitor.visitBinaryExpr(*this);
@@ -72,7 +72,7 @@ class Literal : public Expr {
   std::any value;
   TokenType type;
 
-  Literal(std::any value, TokenType type) : value(value), type(type) {}
+  Literal(std::any value, TokenType type) : value(std::move(value)), type(type) {}
 
   auto accept(ExprVisitor &visitor) -> void override {
     visitor.visitLiteralExpr(*this);
@@ -85,8 +85,8 @@ class Logical : public Expr {
   Token op;
   Expr *right;
 
-  Logical(Expr *left, Token op, Expr *right)
-      : left(left), op(op), right(right) {}
+  Logical(Expr *left, Token tokenOperator, Expr *right)
+      : left(left), op(std::move(tokenOperator)), right(right) {}
 
   auto accept(ExprVisitor &visitor) -> void override {
     visitor.visitLogicalExpr(*this);
@@ -98,7 +98,7 @@ class Unary : public Expr {
   Token op;
   Expr *right;
 
-  Unary(Token op, Expr *right) : op(op), right(right) {}
+  Unary(Token tokenOperator, Expr *right) : op(std::move(tokenOperator)), right(right) {}
 
   auto accept(ExprVisitor &visitor) -> void override {
     visitor.visitUnaryExpr(*this);
@@ -109,7 +109,7 @@ class Variable : public Expr {
  public:
   Token name;
 
-  Variable(Token name) : name(name) {}
+  Variable(Token name) : name(std::move(name)) {}
 
   auto accept(ExprVisitor &visitor) -> void override {
     visitor.visitVariableExpr(*this);
