@@ -1,9 +1,13 @@
 SUGOD
+
     MUGNA NUMERO a = 0
-    MUGNA NUMERO temp
-    ALANG SA(MUGNA NUMERO b = 1; a < 100000; b = temp + b)PUNDOK{
+    MUGNA NUMERO lumalabay
+
+    ALANG SA(MUGNA NUMERO b = 1; a < 100000; b = lumalabay + b) 
+    PUNDOK{
         IPAKITA: a & $
-        temp = a
+        lumalabay = a
         a = b
     }
+    
 KATAPUSAN
