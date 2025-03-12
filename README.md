@@ -5,12 +5,12 @@ This project is a simple interpreter for a custom programming language. It can r
 ## Features
 
 - Lexical Analyzer (Lexer) ✅
-    - Lexemes
-    - Tokens
-- Syntactical Analysis (Parser) 🛠️
-    - Abstract Syntax Tree
-    - Recursive Descent Parser
-- Execution of Code ️🛠️
+  - Lexemes
+  - Tokens
+- Syntactical Analysis (Parser) ✅
+  - Abstract Syntax Tree
+  - Recursive Descent Parser
+- Execution of Code ️✅
 
 ## Getting Started
 
