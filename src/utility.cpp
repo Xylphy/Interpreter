@@ -139,4 +139,14 @@ auto isTruthy(const std::any& value, TokenType type) -> bool {
   return false;
 }
 
+auto isDataType(const TokenType& type) -> bool {
+  return type == TokenType::INTEGER || type == TokenType::DECIMAL ||
+         type == TokenType::CHAR || type == TokenType::BOOL;
+}
+
+auto isLiterals(const TokenType& type) -> bool {
+  return type == TokenType::CHARACTER_LITERAL || type == TokenType::BOOL_TRUE ||
+         type == TokenType::BOOL_FALSE || type == TokenType::NUMBER ||
+         type == TokenType::DECIMAL_NUMBER;
+}
 }  // namespace utility

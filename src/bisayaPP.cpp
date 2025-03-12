@@ -36,6 +36,10 @@ void run(const std::string& source) {
   }
 
   interpreter.setInterpretResult(statements);
+
+  for (Stmt* statement : statements) {
+    delete statement;
+  }
 }
 
 void runFile(const char* path) {

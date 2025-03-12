@@ -16,7 +16,7 @@ auto main(int argc, char *argv[]) -> int {
        "If: Expr *condition, Stmt *thenBranch, Stmt *elseBranch",
        "Print: Expr *expression", "Var: Token name, Expr *initializer",
        "While: Expr *condition, Stmt *body",
-       "Input: std::vector<Token> variables"});
+       "Input: std::vector<Token> variables, std::vector<Token> delimeters, std::vector<Token> inputs"});
 
   // defineAst(
   //     "Headers", "Expr",

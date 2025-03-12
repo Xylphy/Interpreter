@@ -1,8 +1,12 @@
 #include "Headers/Parser.hpp"
 
 #include <algorithm>
+#include <iostream>
+#include <string>
 
-#include "Headers/Expr.hpp"
+#include "Headers/Errors.hpp"
+#include "Headers/Lib/utility.hpp"
+#include "Headers/Scanner.hpp"
 #include "Headers/Token.hpp"
 #include "Headers/bisayaPP.hpp"
 
@@ -16,9 +20,7 @@ auto Parser::equality() -> Expr * {
   Expr *expr = comparison();
 
   while (match({TokenType::BANG_EQUAL, TokenType::EQUAL_EQUAL})) {
-    Token operatorToken = previous();
-    Expr *right = comparison();
-    expr = new Binary(expr, operatorToken, right);
+    expr = new Binary(expr, previous(), comparison());
   }
 
   return expr;
@@ -60,9 +62,7 @@ auto Parser::comparison() -> Expr * {
 
   while (match({TokenType::GREATER, TokenType::GREATER_EQUAL, TokenType::LESS,
                 TokenType::LESS_EQUAL})) {
-    Token operatorToken = previous();
-    Expr *right = term();
-    expr = new Binary(expr, operatorToken, right);
+    expr = new Binary(expr, previous(), term());
   }
 
   return expr;
@@ -72,21 +72,7 @@ auto Parser::term() -> Expr * {
   Expr *expr = factor();
 
   while (match({TokenType::MINUS, TokenType::PLUS, TokenType::CONCATENATOR})) {
-    Token operatorToken = previous();
-    Expr *right;
-
-    // if (previous().type == TokenType::NEW_LINE) {
-    //   if (peek().type == TokenType::SEMICOLON) {
-    //     return new Binary(expr, operatorToken,
-    //                       new Literal("", TokenType::STRING_LITERAL));
-    //   }
-
-    //   right = expression();
-    // } else {
-    right = factor();
-    // }
-
-    expr = new Binary(expr, operatorToken, right);
+    expr = new Binary(expr, previous(), factor());
   }
 
   return expr;
@@ -96,9 +82,7 @@ auto Parser::factor() -> Expr * {
   Expr *expr = unary();
 
   while (match({TokenType::SLASH, TokenType::STAR, TokenType::MODULO})) {
-    Token operatorToken = previous();
-    Expr *right = unary();
-    expr = new Binary(expr, operatorToken, right);
+    expr = new Binary(expr, previous(), unary());
   }
 
   return expr;
@@ -106,9 +90,7 @@ auto Parser::factor() -> Expr * {
 
 auto Parser::unary() -> Expr * {
   if (match({TokenType::BANG, TokenType::MINUS})) {
-    Token operatorToken = previous();
-    Expr *right = unary();
-    return new Unary(operatorToken, right);
+    return new Unary(previous(), unary());
   }
 
   return primary();
@@ -246,9 +228,9 @@ auto Parser::parse() -> std::vector<Stmt *> {
     }
 
     return statements;
-  } catch (const ParseError &error) {
-    BisayaPP::error(previous(), error.what());
-    return {};
+    // } catch (const ParseError &error) {
+    //   BisayaPP::error(previous(), error.what());
+    //   return {};
   } catch (const SyntaxError &error) {
     BisayaPP::error(previous(), error.what());
     return {};
@@ -257,6 +239,7 @@ auto Parser::parse() -> std::vector<Stmt *> {
 
 auto Parser::expressionStatement() -> Stmt * {
   Expr *value = expression();
+
   consume(TokenType::SEMICOLON, "Expect newline after expression.");
   return new Expression(value);
 }
@@ -269,16 +252,30 @@ auto Parser::printStatement() -> Stmt * {
 }
 
 auto Parser::inputStatement() -> Stmt * {
-  consume(TokenType::COLON, "Expect ':' after 'DAWAT'.");
-  std::vector<Token> variables;
+  std::string input;
+  std::getline(std::cin, input);
 
-  do {
-    variables.push_back(
-        consume(TokenType::IDENTIFIER, "Expect variable name."));
-  } while (match({TokenType::COMMA}));
+  std::vector<Token> inputTokens = (new Scanner(input))->scanTokens();
+  std::vector<Token> identifiers;
+  std::vector<Token> inputs;
+
+  const size_t inputSize = inputTokens.size() - 1;
+
+  for (size_t i = 0; i < inputSize; i++, current++) {
+    if ((tokens[current].type == TokenType::IDENTIFIER) !=
+        utility::isLiterals(inputTokens[i].type)) {
+      throw SyntaxError(tokens[current], "Incorrect format for Input");
+    }
+
+    if (tokens[current].type == TokenType::IDENTIFIER) {
+      identifiers.emplace_back(tokens[current]);
+      inputs.emplace_back(inputTokens[i]);
+    }
+  }
 
   consume(TokenType::SEMICOLON, "Expect newline after value.");
-  return new Input(variables);
+
+  return new Input(identifiers, inputs);
 }
 
 auto Parser::statement() -> Stmt * {
@@ -386,9 +383,7 @@ auto Parser::orExpression() -> Expr * {
   Expr *expr = andExpression();
 
   while (match({TokenType::OR})) {
-    Token operatorToken = previous();
-    Expr *right = andExpression();
-    expr = new Logical(expr, operatorToken, right);
+    expr = new Logical(expr, previous(), andExpression());
   }
   return expr;
 }
@@ -397,9 +392,7 @@ auto Parser::andExpression() -> Expr * {
   Expr *expr = equality();
 
   while (match({TokenType::AND})) {
-    Token operatorToken = previous();
-    Expr *right = equality();
-    expr = new Logical(expr, operatorToken, right);
+    expr = new Logical(expr, previous(), equality());
   }
   return expr;
 }

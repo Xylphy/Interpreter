@@ -1,5 +1,5 @@
 SUGOD
-    MUGNA NUMERO x = 0
-    DAWAT: x
-    IPAKITA: x
+    MUGNA NUMERO x = 0, y
+    DAWAT: x, y
+    IPAKITA: x & " " & y
 KATAPUSAN

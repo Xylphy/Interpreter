@@ -6,12 +6,7 @@
 #include "includes/samplePrograms.hpp"
 #include "includes/scope.hpp"
 #include "includes/shortCircuit.hpp"
-
-
-// TEST(Input, Test_1) {
-//   test_assertEqualWithInput("../../tests/source_files/dawattest.bsy", "1",
-//   "1");
-// }
+#include "includes/input.hpp"
 
 auto main(int argc, char* argv[]) -> int {
   testing::InitGoogleTest(&argc, argv);

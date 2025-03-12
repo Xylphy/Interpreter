@@ -34,7 +34,6 @@ enum TokenType : std::uint8_t {
 
   // Literals
   IDENTIFIER,
-  CHARACTER,
   STRING_LITERAL,
   NUMBER,
   DECIMAL_NUMBER,
@@ -81,6 +80,7 @@ class Token {
   size_t line;
 
   Token(TokenType type, std::string lexeme, std::any literal, int line);
+  Token(const Token & other);
 
   [[nodiscard]] auto toString() const -> std::string;
 

@@ -39,7 +39,7 @@ class Scanner {
       {"IPAKITA:", PRINT},   {"BALIK", RETURN},
       {"SUPER", SUPER},      {"KINI", THIS},
       {"MUGNA", VAR},        {"ALANG", WHILE},
-      {"DAWAT", INPUT},      {"SUGOD", START},
+      {"DAWAT:", INPUT},     {"SUGOD", START},
       {"KATAPUSAN", END},    {"NUMERO", INTEGER},
       {"TIPIK", DECIMAL},    {"TINUOD", BOOL},
       {"\"OO\"", BOOL_TRUE}, {"\"DILI\"", BOOL_FALSE},

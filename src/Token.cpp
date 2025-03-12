@@ -8,6 +8,12 @@ Token::Token(TokenType type, std::string lexeme, std::any literal, int line)
       literal(std::move(literal)),
       line(line) {}
 
+Token::Token(const Token& other) {
+  if (this != &other) {
+    *this = other;
+  }
+}
+
 auto operator<<(std::ostream& ostream, const Token& token) -> std::ostream& {
   ostream << token.type << " " << token.lexeme << " ";
   return ostream;

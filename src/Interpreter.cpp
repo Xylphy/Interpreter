@@ -1,5 +1,6 @@
 #include "Headers/Interpreter.hpp"
 
+#include <cstddef>
 #include <iostream>
 
 #include "Headers/Lib/utility.hpp"
@@ -14,7 +15,6 @@ auto Interpreter::setResult(std::any& toSet, const std::any& toGet,
     case TokenType::NUMBER:
     case TokenType::DECIMAL_NUMBER:
     case TokenType::STRING_LITERAL:
-    case TokenType::CHAR:
     case TokenType::BOOL_TRUE:
     case TokenType::BOOL_FALSE:
     case TokenType::CHARACTER_LITERAL:
@@ -174,49 +174,11 @@ auto Interpreter::visitPrintStmt(const Print& Stmt) -> void {
 }
 
 auto Interpreter::visitInputStmt(const Input& stmt) -> void {
-  //   if (stmt.variables.empty()) {
-  //     throw RuntimeError("DAWAT requires at least one variable.");
-  //     }
+  const size_t size = stmt.inputs.size();
 
-  //   std::cout << "Enter values for: ";
-  //   for (size_t i = 0; i < stmt.variables.size(); ++i) {
-  //       std::cout << stmt.variables[i].lexeme;
-  //       if (i < stmt.variables.size() - 1) std::cout << ", ";
-  //   }
-  //   std::cout << "\n";
-
-  //   std::string inputLine;
-  //   std::getline(std::cin, inputLine);
-  //   std::stringstream ss(inputLine);
-  //   std::vector<std::string> values;
-  //   std::string value;
-
-  //   while (std::getline(ss, value, ',')) {
-  //       values.push_back(value);
-  //   }
-
-  //   if (values.size() != stmt.variables.size()) {
-  //       throw RuntimeError("Mismatch between variables and input values.");
-  //   }
-
-  //   for (size_t i = 0; i < stmt.variables.size(); ++i) {
-  //       Token varToken = stmt.variables[i];
-  //       std::any storedValue = values[i];
-
-  //       if (varToken.type == TokenType::NUMBER) {
-  //           storedValue = std::stoi(values[i]);
-  //       } else if (varToken.type == TokenType::DECIMAL_NUMBER) {
-  //           storedValue = std::stod(values[i]);
-  //       } else if (varToken.type == TokenType::CHARACTER_LITERAL &&
-  //       values[i].size() == 1) {
-  //           storedValue = values[i][0];
-  //       } else if (varToken.type == TokenType::BOOL_TRUE || varToken.type ==
-  //       TokenType::BOOL_FALSE) {
-  //           storedValue = (values[i] == "true" || values[i] == "1");
-  //       }
-
-  //       environment->assign(varToken, storedValue, varToken.type);
-  //   }
+  for (size_t i = 0; i < size; i++) {
+    environment->assign(stmt.variables[i], stmt.inputs[i].literal, stmt.inputs[i].type);
+  }
 }
 
 auto Interpreter::visitVarStmt(const Var& Stmt) -> void {

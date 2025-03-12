@@ -95,8 +95,8 @@ class Var : public Stmt {
   Token name;
   Expr *initializer;
 
-  Var(Token name, Expr *initializer)
-      : name(std::move(name)), initializer(initializer) {}
+  Var(const Token &name, Expr *initializer)
+      : name(name), initializer(initializer) {}
 
   auto accept(StmtVisitor &visitor) -> void override {
     visitor.visitVarStmt(*this);
@@ -125,8 +125,10 @@ class While : public Stmt {
 class Input : public Stmt {
  public:
   std::vector<Token> variables;
+  std::vector<Token> inputs;
 
-  Input(std::vector<Token> variables) : variables(std::move(variables)) {}
+  Input(std::vector<Token> variables, std::vector<Token> inputs)
+      : variables(std::move(variables)), inputs(std::move(inputs)) {}
 
   auto accept(StmtVisitor &visitor) -> void override {
     visitor.visitInputStmt(*this);

@@ -21,7 +21,8 @@ auto checkNumberOperands(const Token& token, TokenType left, TokenType right)
     -> void;
 auto checkNumberOperand(const Token& token, TokenType operand) -> void;
 auto isTruthy(const std::any& value, TokenType type) -> bool;
-
+auto isDataType(const TokenType& type) -> bool;
+auto isLiterals(const TokenType& type) -> bool;
 
 template <typename T, typename U>
 static auto addNumerics(const T& left, const U& right)
