@@ -2,6 +2,7 @@
 
 #include "../Token.hpp"  // IWYU pragma: export
 #include <cmath>
+#include<string>
 
 // This namespace contains utility functions that are used in the project.
 namespace utility {

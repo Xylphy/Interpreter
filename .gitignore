@@ -5,3 +5,4 @@
 /cmake-build-debug/
 /.idea/
 *.code-workspace
+CMakeCache.txt

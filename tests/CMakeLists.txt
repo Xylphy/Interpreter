@@ -1,5 +1,3 @@
-find_package(GTest REQUIRED)
-
 file(GLOB HEADER_FILES "${CMAKE_SOURCE_DIR}/src/Headers/*.hpp" "${CMAKE_SOURCE_DIR}/src/Headers/Lib/*.hpp")
 file(GLOB SOURCE_FILES "${CMAKE_SOURCE_DIR}/src/*.cpp")
 
