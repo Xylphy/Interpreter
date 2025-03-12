@@ -1,4 +1,4 @@
-/build
+build/
 /.cache
 /.vscode/
 *.JSON
@@ -6,3 +6,4 @@
 /.idea/
 *.code-workspace
 CMakeCache.txt
+CMakeFiles/

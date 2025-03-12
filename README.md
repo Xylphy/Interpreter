@@ -39,20 +39,10 @@ You can run the interpreter in two modes: file mode and prompt mode.
 To run a file, use the following command:
 
 ```sh
-./Interpreter
+./src/Interpreter
 ```
 
-Then enter `1` and provide the path to the file when prompted.
-
-#### Prompt Mode
-
-To run the interactive prompt, use the following command:
-
-```sh
-./Interpreter
-```
-
-Then enter `2` to start the prompt.
+And provide the path to the file when prompted.
 
 ## Usage
 
