@@ -22,7 +22,7 @@ auto Scanner::match(char&& expected) -> bool {
     return false;
   }
 
-  current++;
+  advance();
   return true;
 }
 
@@ -124,7 +124,7 @@ void Scanner::identifier() {
 void Scanner::escapeChar() {
   start = current++;
   addToken(CHARACTER_LITERAL, source.substr(start, current - start));
-  current++;
+  advance();
 }
 
 void Scanner::scanToken() {
@@ -220,8 +220,9 @@ void Scanner::scanToken() {
       } else if (utility::isAlpha(character)) {
         identifier();
       } else {
-        BisayaPP::error(line,
-                        "Unexpected character: " + std::to_string(character));
+        std::string message = "Unexpected character: ";
+        message.push_back(character);
+        BisayaPP::error(line, message);
       }
       break;
   }

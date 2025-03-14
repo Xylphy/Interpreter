@@ -133,8 +133,10 @@ auto Interpreter::visitLiteralExpr(const Literal& Expr) -> void {
   setResult(result, value, type);
 }
 
+#ifdef __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wswitch"
+#endif
 
 auto Interpreter::visitUnaryExpr(const Unary& Expr) -> void {
   setInterpretResult(Expr.right);
@@ -158,7 +160,9 @@ auto Interpreter::visitUnaryExpr(const Unary& Expr) -> void {
   }
 }
 
+#ifdef __clang__
 #pragma clang diagnostic pop
+#endif
 
 auto Interpreter::setPrintResult(Expr* expr) -> void { expr->accept(*this); }
 
@@ -177,7 +181,8 @@ auto Interpreter::visitInputStmt(const Input& stmt) -> void {
   const size_t size = stmt.inputs.size();
 
   for (size_t i = 0; i < size; i++) {
-    environment->assign(stmt.variables[i], stmt.inputs[i].literal, stmt.inputs[i].type);
+    environment->assign(stmt.variables[i], stmt.inputs[i].literal,
+                        stmt.inputs[i].type);
   }
 }
 

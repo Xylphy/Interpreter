@@ -2,12 +2,9 @@
 
 #include <algorithm>
 #include <iostream>
-#include <string>
 
-#include "Headers/Errors.hpp"
 #include "Headers/Lib/utility.hpp"
 #include "Headers/Scanner.hpp"
-#include "Headers/Token.hpp"
 #include "Headers/bisayaPP.hpp"
 
 Parser::Parser(std::vector<Token> &tokens) : tokens(tokens) {}

@@ -89,10 +89,10 @@ static auto equal(const T& left, const U& right) -> bool {
   return left == right;
 }
 
-// This function checks if the operation is valid for the given operands.
-
+#ifdef __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wswitch"
+#endif
 
 template <typename leftDataType, typename rightDataType>
 static auto numericOperation(const leftDataType& left, TokenType type,
@@ -133,5 +133,8 @@ static auto numericOperation(const leftDataType& left, TokenType type,
   throw std::runtime_error("Invalid operation");
 }
 
+#ifdef __clang__
 #pragma clang diagnostic pop
+#endif
+
 }  // namespace utility
