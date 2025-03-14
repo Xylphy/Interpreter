@@ -25,6 +25,15 @@ class Scanner {
   auto peek() -> char;
   auto peekNext() -> char;
   auto advance() -> char;
+  auto handleSingleCharacterToken(char character) -> void;
+  auto handleMinus() -> void;
+  auto handlePlus() -> void;
+  auto handleEqual() -> void;
+  auto handleLess() -> void;
+  auto handleGreater() -> void;
+  auto handleEscapeChar() -> void;
+  auto handleNewLine() -> void;
+  auto handleDefault(char character) -> void;
 
   size_t start = 0;
   size_t current = 0;

@@ -26,19 +26,10 @@ auto Scanner::match(char&& expected) -> bool {
   return true;
 }
 
-auto Scanner::peek() -> char {
-  if (isAtEnd()) {
-    return '\0';
-  }
-  return source[current];
-}
+auto Scanner::peek() -> char { return isAtEnd() ? '\0' : source[current]; }
 
 auto Scanner::peekNext() -> char {
-  if (current + 1 >= source.length()) {
-    return '\0';
-  }
-
-  return source[current + 1];
+  return current + 1 >= source.length() ? '\0' : source[current + 1];
 }
 
 void Scanner::string() {
@@ -132,6 +123,59 @@ void Scanner::scanToken() {
 
   switch (character) {
     case '(':
+    case ')':
+    case '{':
+    case '}':
+    case ',':
+    case ':':
+    case '*':
+    case '/':
+    case '%':
+    case '&':
+    case '$':
+      handleSingleCharacterToken(character);
+      break;
+    case '-':
+      handleMinus();
+      break;
+    case '+':
+      handlePlus();
+      break;
+    case '=':
+      handleEqual();
+      break;
+    case '<':
+      handleLess();
+      break;
+    case '>':
+      handleGreater();
+      break;
+    case '[':
+      handleEscapeChar();
+      break;
+    case ' ':
+    case '\r':
+    case '\t':
+      break;
+    case ';':
+    case '\n':
+      handleNewLine();
+      break;
+    case '\"':
+      string();
+      break;
+    case '\'':
+      charLiteral();
+      break;
+    default:
+      handleDefault(character);
+      break;
+  }
+}
+
+void Scanner::handleSingleCharacterToken(char character) {
+  switch (character) {
+    case '(':
       addToken(LEFT_PAREN);
       break;
     case ')':
@@ -146,41 +190,11 @@ void Scanner::scanToken() {
     case ',':
       addToken(COMMA);
       break;
-    case '-':
-      if (match('-')) {
-        while (peek() != '\n' && !isAtEnd()) {
-          advance();
-        }
-        advance();
-      } else if (utility::isDigit(peek())) {
-        number();
-      } else {
-        addToken(MINUS);
-      }
-      break;
     case ':':
       addToken(COLON);
       break;
-    case '+':
-      addToken(PLUS);
-      break;
     case '*':
       addToken(STAR);
-      break;
-    case '=':
-      addToken(match('=') ? EQUAL_EQUAL : EQUAL);
-      break;
-    case '<':
-      if (match('=')) {
-        addToken(LESS_EQUAL);
-      } else if (match('>')) {
-        addToken(BANG_EQUAL);
-      } else {
-        addToken(LESS);
-      }
-      break;
-    case '>':
-      addToken(match('=') ? GREATER_EQUAL : GREATER);
       break;
     case '/':
       addToken(SLASH);
@@ -194,37 +208,69 @@ void Scanner::scanToken() {
     case '$':
       addToken(NEW_LINE);
       break;
-    case '[':
-      if (peekNext() == ']') {
-        escapeChar();
-      }
-      break;
-    case ' ':
-    case '\r':
-    case '\t':
-      break;
-    case ';':
-    case '\n':
-      line++;
-      addToken(SEMICOLON);
-      break;
-    case '\"':
-      string();
-      break;
-    case '\'':
-      charLiteral();
-      break;
-    default:
-      if (utility::isDigit(character)) {
-        number();
-      } else if (utility::isAlpha(character)) {
-        identifier();
-      } else {
-        std::string message = "Unexpected character: ";
-        message.push_back(character);
-        BisayaPP::error(line, message);
-      }
-      break;
+    default:;
+  }
+}
+
+void Scanner::handleMinus() {
+  if (match('-')) {
+    while (peek() != '\n' && !isAtEnd()) {
+      advance();
+    }
+    advance();
+  } else if (utility::isDigit(peek())) {
+    number();
+  } else {
+    addToken(MINUS);
+  }
+}
+
+void Scanner::handlePlus() {
+  if (utility::isDigit(peek())) {
+    number();
+  } else {
+    addToken(PLUS);
+  }
+}
+
+void Scanner::handleEqual() { addToken(match('=') ? EQUAL_EQUAL : EQUAL); }
+
+void Scanner::handleLess() {
+  if (match('=')) {
+    addToken(LESS_EQUAL);
+  } else if (match('>')) {
+    addToken(BANG_EQUAL);
+  } else {
+    addToken(LESS);
+  }
+}
+
+void Scanner::handleGreater() {
+  addToken(match('=') ? GREATER_EQUAL : GREATER);
+}
+
+void Scanner::handleEscapeChar() {
+  if (peekNext() == ']') {
+    escapeChar();
+  } else {
+    BisayaPP::error(line, "Invalid escape character.");
+  }
+}
+
+void Scanner::handleNewLine() {
+  line++;
+  addToken(SEMICOLON);
+}
+
+void Scanner::handleDefault(char character) {
+  if (utility::isDigit(character)) {
+    number();
+  } else if (utility::isAlpha(character)) {
+    identifier();
+  } else {
+    std::string message = "Unexpected character: ";
+    message.push_back(character);
+    BisayaPP::error(line, message);
   }
 }
 
