@@ -97,7 +97,6 @@ static auto equal(const T& left, const U& right) -> bool {
 template <typename leftDataType, typename rightDataType>
 static auto numericOperation(const leftDataType& left, TokenType type,
                              const rightDataType& right) -> std::any {
-  bool newResult;
   std::any tempResult;
   switch (type) {
     case TokenType::GREATER:

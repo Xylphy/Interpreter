@@ -35,11 +35,13 @@ class Assign : public Expr {
   Token name;
   Expr *value;
 
-  Assign(Token name, Expr *value) : name(std::move(name)), value(value) {}
+  Assign(const Token &name, Expr *value) : name(name), value(value) {}
 
   auto accept(ExprVisitor &visitor) -> void override {
     visitor.visitAssignExpr(*this);
   }
+
+  ~Assign() override { delete value; }
 };
 
 class Binary : public Expr {
@@ -48,11 +50,16 @@ class Binary : public Expr {
   Token op;
   Expr *right;
 
-  Binary(Expr *left, Token tokenOperator, Expr *right)
-      : left(left), op(std::move(tokenOperator)), right(right) {}
+  Binary(Expr *left, const Token &operatorToken, Expr *right)
+      : left(left), op(operatorToken), right(right) {}
 
   auto accept(ExprVisitor &visitor) -> void override {
     visitor.visitBinaryExpr(*this);
+  }
+
+  ~Binary() override {
+    delete left;
+    delete right;
   }
 };
 
@@ -65,6 +72,8 @@ class Grouping : public Expr {
   auto accept(ExprVisitor &visitor) -> void override {
     visitor.visitGroupingExpr(*this);
   }
+
+  ~Grouping() override { delete expression; }
 };
 
 class Literal : public Expr {
@@ -72,11 +81,14 @@ class Literal : public Expr {
   std::any value;
   TokenType type;
 
-  Literal(std::any value, TokenType type) : value(std::move(value)), type(type) {}
+  Literal(std::any value, TokenType type)
+      : value(std::move(value)), type(type) {}
 
   auto accept(ExprVisitor &visitor) -> void override {
     visitor.visitLiteralExpr(*this);
   }
+
+  ~Literal() override = default;
 };
 
 class Logical : public Expr {
@@ -85,11 +97,16 @@ class Logical : public Expr {
   Token op;
   Expr *right;
 
-  Logical(Expr *left, Token tokenOperator, Expr *right)
-      : left(left), op(std::move(tokenOperator)), right(right) {}
+  Logical(Expr *left, const Token &operatorToken, Expr *right)
+      : left(left), op(operatorToken), right(right) {}
 
   auto accept(ExprVisitor &visitor) -> void override {
     visitor.visitLogicalExpr(*this);
+  }
+
+  ~Logical() override {
+    delete left;
+    delete right;
   }
 };
 
@@ -98,20 +115,25 @@ class Unary : public Expr {
   Token op;
   Expr *right;
 
-  Unary(Token tokenOperator, Expr *right) : op(std::move(tokenOperator)), right(right) {}
+  Unary(const Token &operatorToken, Expr *right)
+      : op(operatorToken), right(right) {}
 
   auto accept(ExprVisitor &visitor) -> void override {
     visitor.visitUnaryExpr(*this);
   }
+
+  ~Unary() override { delete right; }
 };
 
 class Variable : public Expr {
  public:
   Token name;
 
-  Variable(Token name) : name(std::move(name)) {}
+  Variable(const Token &name) : name(name) {}
 
   auto accept(ExprVisitor &visitor) -> void override {
     visitor.visitVariableExpr(*this);
   }
+
+  ~Variable() override = default;
 };

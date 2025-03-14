@@ -2,6 +2,8 @@
 
 #include <algorithm>
 #include <iostream>
+#include <memory>
+#include <vector>
 
 #include "Headers/Lib/utility.hpp"
 #include "Headers/Scanner.hpp"
@@ -252,7 +254,8 @@ auto Parser::inputStatement() -> Stmt * {
   std::string input;
   std::getline(std::cin, input);
 
-  std::vector<Token> inputTokens = (new Scanner(input))->scanTokens();
+  std::vector<Token> inputTokens =
+      std::make_unique<Scanner>(input)->scanTokens();
   std::vector<Token> identifiers;
   std::vector<Token> inputs;
 
@@ -399,15 +402,13 @@ auto Parser::whileStatement() -> Stmt * {
   Expr *condition = expression();
   consume(TokenType::RIGHT_PAREN, "Expect ')' after condition.");
 
-  Stmt *body = statement();
-
-  return new While(condition, body);
+  return new While(condition, statement());
 }
 
 auto Parser::forStatement() -> Stmt * {
   consume(TokenType::LEFT_PAREN, "Expect 'c' after 'ALANG SA',");
 
-  Stmt *initializer;
+  Stmt *initializer = nullptr;
   if (match({TokenType::SEMICOLON})) {
     initializer = nullptr;
   } else if (match({TokenType::VAR})) {
@@ -439,10 +440,8 @@ auto Parser::forStatement() -> Stmt * {
     advance();
   }
 
-  Stmt *body = statement();
+  std::vector<Stmt *> whileBody{statement()};
 
-  std::vector<Stmt *> whileBody;
-  whileBody.push_back(body);
   if (increment != nullptr) {
     whileBody.push_back(new Expression(increment));
   }
@@ -451,8 +450,7 @@ auto Parser::forStatement() -> Stmt * {
     condition = new Literal(true, TokenType::BOOL_TRUE);
   }
 
-  Stmt *whileBodyBlock = new Block(whileBody);
-  Stmt *whileLoop = new While(condition, whileBodyBlock);
+  Stmt *whileLoop = new While(condition, new Block(whileBody));
 
   std::vector<Stmt *> forStmt;
   if (initializer != nullptr) {

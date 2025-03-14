@@ -1,8 +1,10 @@
 #include "Headers/Interpreter.hpp"
 
+#include <any>
 #include <cstddef>
 #include <iostream>
 
+#include "Headers/Expr.hpp"
 #include "Headers/Lib/utility.hpp"
 #include "Headers/Token.hpp"
 #include "Headers/bisayaPP.hpp"
@@ -100,11 +102,8 @@ auto Interpreter::visitBinaryExpr(const Binary& Expr) -> void {
     } else if (tempResult.type() == typeid(double)) {
       type = TokenType::DECIMAL_NUMBER;
     } else if (tempResult.type() == typeid(bool)) {
-      if (std::any_cast<bool>(tempResult)) {
-        type = TokenType::BOOL_TRUE;
-      } else {
-        type = TokenType::BOOL_FALSE;
-      }
+      type = std::any_cast<bool>(tempResult) ? TokenType::BOOL_TRUE
+                                             : TokenType::BOOL_FALSE;
     } else {
       type = TokenType::STRING_LITERAL;
     }
@@ -146,6 +145,7 @@ auto Interpreter::visitUnaryExpr(const Unary& Expr) -> void {
   std::any tempResult;
   std::any right;
   setResult(right, result, rightType);
+
   switch (Expr.op.type) {
     case TokenType::BANG:
       newResult = utility::isTruthy(right, rightType);
@@ -233,6 +233,7 @@ auto Interpreter::executeBlock(const std::vector<Stmt*>& statements,
   for (Stmt* statement : statements) {
     execute(statement);
   }
+  delete environment;
   environment = previous;
 }
 
@@ -274,3 +275,5 @@ auto Interpreter::visitLogicalExpr(const Logical& Expr) -> void {
 
   evaluate(Expr.right);
 }
+
+Interpreter::~Interpreter() { delete environment; }

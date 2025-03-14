@@ -85,8 +85,8 @@ auto isArithmetic(const std::any& value) -> bool {
 }
 
 auto isAlpha(char character) noexcept -> bool {
-  return character >= 'a' && character <= 'z' ||
-         character >= 'A' && character <= 'Z' || character == '_' ||
+  return (character >= 'a' && character <= 'z') ||
+         (character >= 'A' && character <= 'Z') || character == '_' ||
          character == ':';
 }
 

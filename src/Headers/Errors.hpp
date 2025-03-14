@@ -13,7 +13,7 @@ class RuntimeError : public std::runtime_error {
  public:
   Token token;
 
-  RuntimeError(Token token, const std::string& message);
+  RuntimeError(const Token& token, const std::string& message);
 };
 
 class BreakError : public std::runtime_error {
@@ -23,6 +23,6 @@ class BreakError : public std::runtime_error {
 
 class SyntaxError : public std::runtime_error {
  public:
- Token token;
-  SyntaxError(Token token, const std::string& message);
+  Token token;
+  SyntaxError(const Token& token, const std::string& message);
 };

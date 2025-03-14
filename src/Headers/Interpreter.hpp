@@ -11,6 +11,8 @@ class Interpreter : public ExprVisitor, public StmtVisitor {
   auto evaluate(Expr* expression) -> bool;
   auto setInterpretResult(const std::vector<Stmt*>& statements) -> void;
 
+  ~Interpreter() override;
+
  private:
   auto visitBinaryExpr(const Binary& Expr) -> void override;
   auto visitGroupingExpr(const Grouping& Expr) -> void override;

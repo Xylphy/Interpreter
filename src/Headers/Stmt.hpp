@@ -41,7 +41,11 @@ class Block : public Stmt {
     visitor.visitBlockStmt(*this);
   }
 
-  ~Block() override = default;
+  ~Block() override {
+    for (Stmt *statement : statements) {
+      delete statement;
+    }
+  }
 };
 
 class Expression : public Stmt {

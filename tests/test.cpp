@@ -1,12 +1,12 @@
 #include <gtest/gtest.h>
 
-#include "includes/forLoop.hpp"
 #include "includes/declare.hpp"
+#include "includes/forLoop.hpp"
 #include "includes/ifStatements.hpp"
+#include "includes/input.hpp"
 #include "includes/samplePrograms.hpp"
 #include "includes/scope.hpp"
 #include "includes/shortCircuit.hpp"
-#include "includes/input.hpp"
 
 auto main(int argc, char* argv[]) -> int {
   testing::InitGoogleTest(&argc, argv);

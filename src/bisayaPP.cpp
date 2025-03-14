@@ -1,5 +1,6 @@
 #include <fstream>
 #include <iostream>
+#include <memory>
 #include <print>
 #include <sstream>
 
@@ -21,15 +22,15 @@ bool hadRuntimeError = false;
 void run(const std::string& source) {
   // std::print("Running\n {}\n", source);
 
-  auto* scanner = new Scanner(source);
-  std::vector<Token> tokens = scanner->scanTokens();
-
   // for (Token token : tokens) {
   //   std::print("{}\n", token);
   // }
 
-  auto* parser = new Parser(tokens);
-  std::vector<Stmt*> statements = parser->parse();
+  std::vector<Stmt*> statements =
+      std::make_unique<Parser>(
+          *std::make_unique<std::vector<Token>>(
+              std::make_unique<Scanner>(source)->scanTokens()))
+          ->parse();
 
   if (hadError) {
     return;
