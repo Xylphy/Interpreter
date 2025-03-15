@@ -4,11 +4,12 @@
 #include <memory>
 
 #include "Environment.hpp"
+#include "Expr.hpp"
 #include "Stmt.hpp"
 
 class Interpreter : public ExprVisitor, public StmtVisitor {
  public:
-  auto evaluate(Expr* expression) -> bool;
+  auto evaluate(const std::unique_ptr<Expr>& expression) -> bool;
   auto setInterpretResult(const std::vector<std::unique_ptr<Stmt>>& statements)
       -> void;
 
@@ -30,11 +31,11 @@ class Interpreter : public ExprVisitor, public StmtVisitor {
   auto visitWhileStmt(const While& Stmt) -> void override;
 
   auto execute(const std::unique_ptr<Stmt>& statement) -> void;
-  auto executeBlock(const std::vector<Stmt*>& statements,
+  auto executeBlock(const std::vector<std::unique_ptr<Stmt>>& statements,
                     std::shared_ptr<Environment>&& env) -> void;
-  auto setPrintResult(Expr* expr) -> void;
-  auto setInterpretResult(Expr* expr) -> void;
-  auto setResult(std::any& toSet, const std::any& toGet, TokenType type)
+  auto setPrintResult(const std::unique_ptr<Expr>& expr) -> void;
+  auto setInterpretResult(const std::unique_ptr<Expr>& expr) -> void;
+  auto setResult(std::any& toSet, const std::any& toGet, TokenType tokenType)
       -> void;
 
   [[nodiscard]] auto getResult() const -> std::any;

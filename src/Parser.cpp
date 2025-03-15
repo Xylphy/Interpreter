@@ -2,8 +2,6 @@
 
 #include <algorithm>
 #include <iostream>
-#include <memory>
-#include <vector>
 
 #include "Headers/Expr.hpp"
 #include "Headers/Lib/utility.hpp"

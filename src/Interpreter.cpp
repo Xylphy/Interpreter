@@ -13,8 +13,8 @@
 #include "Headers/bisayaPP.hpp"
 
 auto Interpreter::setResult(std::any& toSet, const std::any& toGet,
-                            TokenType type) -> void {
-  switch (type) {
+                            TokenType tokenType) -> void {
+  switch (tokenType) {
     case TokenType::NUMBER:
     case TokenType::DECIMAL_NUMBER:
     case TokenType::STRING_LITERAL:
@@ -28,7 +28,8 @@ auto Interpreter::setResult(std::any& toSet, const std::any& toGet,
   }
 }
 
-auto Interpreter::setInterpretResult(Expr* expr) -> void {
+auto Interpreter::setInterpretResult(const std::unique_ptr<Expr>& expr)
+    -> void {
   expr->accept(*this);
 }
 
@@ -47,7 +48,7 @@ auto Interpreter::execute(const std::unique_ptr<Stmt>& statement) -> void {
   statement->accept(*this);
 }
 
-auto Interpreter::evaluate(Expr* expression) -> bool {
+auto Interpreter::evaluate(const std::unique_ptr<Expr>& expression) -> bool {
   try {
     setPrintResult(expression);
     return true;
@@ -167,7 +168,9 @@ auto Interpreter::visitUnaryExpr(const Unary& Expr) -> void {
 #pragma clang diagnostic pop
 #endif
 
-auto Interpreter::setPrintResult(Expr* expr) -> void { expr->accept(*this); }
+auto Interpreter::setPrintResult(const std::unique_ptr<Expr>& expr) -> void {
+  expr->accept(*this);
+}
 
 auto Interpreter::visitExpressionStmt(const Expression& Stmt) -> void {
   evaluate(Stmt.expression);
@@ -229,15 +232,17 @@ auto Interpreter::visitBlockStmt(const Block& Stmt) -> void {
   executeBlock(Stmt.statements, std::make_shared<Environment>(environment));
 }
 
-auto Interpreter::executeBlock(const std::vector<Stmt*>& statements,
-                               std::shared_ptr<Environment>&& env) -> void {
-  std::weak_ptr<Environment> previous = environment;
+auto Interpreter::executeBlock(
+    const std::vector<std::unique_ptr<Stmt>>& statements,
+    std::shared_ptr<Environment>&& env) -> void {
+  std::shared_ptr<Environment> previous = environment;
   environment = std::move(env);
 
-  for (Stmt* statement : statements) {
+  for (const std::unique_ptr<Stmt>& statement : statements) {
     execute(statement);
   }
-  environment = previous.lock();
+
+  environment = previous;
 }
 
 auto Interpreter::visitIfStmt(const If& Stmt) -> void {
