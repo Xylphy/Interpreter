@@ -1,17 +1,16 @@
 #pragma once
 
-#include <any>
-
 #include "Environment.hpp"
+#include "Expr.hpp"
 #include "Stmt.hpp"
 
 class Interpreter : public ExprVisitor, public StmtVisitor {
  public:
   Interpreter();
-  auto evaluate(Expr* expression) -> bool;
-  auto setInterpretResult(const std::vector<Stmt*>& statements) -> void;
 
-  ~Interpreter() override;
+  auto evaluate(const std::unique_ptr<Expr>& expression) -> bool;
+  auto setInterpretResult(const std::vector<std::unique_ptr<Stmt>>& statements)
+      -> void;
 
  private:
   auto visitBinaryExpr(const Binary& Expr) -> void override;
@@ -30,17 +29,17 @@ class Interpreter : public ExprVisitor, public StmtVisitor {
   auto visitIfStmt(const If& Stmt) -> void override;
   auto visitWhileStmt(const While& Stmt) -> void override;
 
-  auto execute(Stmt* statement) -> void;
-  auto executeBlock(const std::vector<Stmt*>& statements, Environment* env)
-      -> void;
-  auto setPrintResult(Expr* expr) -> void;
-  auto setInterpretResult(Expr* expr) -> void;
-  auto setResult(std::any& toSet, const std::any& toGet, TokenType type)
+  auto execute(const std::unique_ptr<Stmt>& statement) -> void;
+  auto executeBlock(const std::vector<std::unique_ptr<Stmt>>& statements,
+                    std::shared_ptr<Environment>&& env) -> void;
+  auto setPrintResult(const std::unique_ptr<Expr>& expr) -> void;
+  auto setInterpretResult(const std::unique_ptr<Expr>& expr) -> void;
+  auto setResult(std::any& toSet, const std::any& toGet, TokenType tokenType)
       -> void;
 
   [[nodiscard]] auto getResult() const -> std::any;
 
-  Environment* environment;
+  std::shared_ptr<Environment> environment;
   TokenType type;
   std::any result;
 };

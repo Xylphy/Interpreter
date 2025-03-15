@@ -1,7 +1,23 @@
-file(GLOB HEADER_FILES "Headers/*.hpp" "Headers/Lib/*.hpp")
-file(GLOB SOURCE_FILES "*.cpp")
-
 add_executable(Interpreter
-  ${HEADER_FILES}
-  ${SOURCE_FILES}
+  # Headers
+  Headers/bisayaPP.hpp
+  Headers/Environment.hpp
+  Headers/Errors.hpp
+  Headers/Expr.hpp
+  Headers/Interpreter.hpp
+  Headers/Parser.hpp
+  Headers/Scanner.hpp
+  Headers/Stmt.hpp
+  Headers/Token.hpp
+
+  # Sources
+  bisayaPP.cpp
+  Environment.cpp
+  Errors.cpp
+  Interpreter.cpp
+  Parser.cpp
+  Scanner.cpp
+  Token.cpp
+  utility.cpp
+  main.cpp
 )

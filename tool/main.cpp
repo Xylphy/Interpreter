@@ -10,19 +10,23 @@ auto main(int argc, char *argv[]) -> int {
     exit(USAGE_ERROR_CODE);
   }
 
-  // defineAst(
-  //     "Headers", "Stmt",
-  //     {"Block: std::vector<Stmt*> statements", "Expression: Expr *expression",
-  //      "If: Expr *condition, Stmt *thenBranch, Stmt *elseBranch",
-  //      "Print: Expr *expression", "Var: Token name, Expr *initializer",
-  //      "While: Expr *condition, Stmt *body",
-  //      "Input: std::vector<Token> variables, std::vector<Token> delimeters, std::vector<Token> inputs"});
-
   defineAst(
-      "Headers", "Expr",
-      {"Assign: Token name, Expr *value",
-       "Binary: Expr *left, Token op, Expr *right",
-       "Grouping: Expr *expression", "Literal: std::any value, TokenType type", "Logical: Expr* left, Token op, Expr* right",
-        "Unary: Token op, Expr *right", "Variable: Token name"});
+      "Headers", "Stmt",
+      {"Block: std::vector<Stmt*> statements",
+       "Expression: std::unique_ptr<Expr> expression",
+       "If: std::unique_ptr<Expr> condition, std::unique_ptr<Stmt> thenBranch, std::unique_ptr<Stmt> elseBranch",
+       "Print: std::unique_ptr<Expr> expression",
+       "Var: Token name, std::unique_ptr<Expr> initializer",
+       "While: std::unique_ptr<Expr> condition, std::unique_ptr<Stmt> body",
+       "Input: std::vector<Token> variables, std::vector<Token> inputs"});
+
+  // defineAst(
+  //     "Headers", "Expr",
+  //     {"Assign: Token name, std::unique_ptr<Expr> value",
+  //      "Binary: std::unique_ptr<Expr> left, Token op, std::unique_ptr<Expr>
+  //      right", "Grouping: std::unique_ptr<Expr> expression", "Literal:
+  //      std::any value, TokenType type", "Logical: std::unique_ptr<Expr> left,
+  //      Token op, std::unique_ptr<Expr> right", "Unary: Token op,
+  //      std::unique_ptr<Expr> right", "Variable: Token name"});
   return 0;
 }

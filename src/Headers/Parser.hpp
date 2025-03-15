@@ -1,4 +1,4 @@
-#include <initializer_list>
+#include <memory>
 #include <vector>
 
 #include "Errors.hpp"
@@ -8,43 +8,43 @@ class Parser {
  public:
   Parser(std::vector<Token>& tokens);
   Parser(std::vector<Token>&& tokens);
-  auto parse() -> std::vector<Stmt*>;
+  auto parse() -> std::vector<std::unique_ptr<Stmt>>;
 
  private:
   auto match(std::initializer_list<TokenType> types) -> bool;
   auto check(TokenType type) -> bool;
   auto isAtEnd() -> bool;
-  auto expression() -> Expr*;
-  auto equality() -> Expr*;
-  auto comparison() -> Expr*;
-  auto term() -> Expr*;
-  auto factor() -> Expr*;
-  auto unary() -> Expr*;
-  auto primary() -> Expr*;
-  auto assignment() -> Expr*;
+  auto expression() -> std::unique_ptr<Expr>;
+  auto equality() -> std::unique_ptr<Expr>;
+  auto comparison() -> std::unique_ptr<Expr>;
+  auto term() -> std::unique_ptr<Expr>;
+  auto factor() -> std::unique_ptr<Expr>;
+  auto unary() -> std::unique_ptr<Expr>;
+  auto primary() -> std::unique_ptr<Expr>;
+  auto assignment() -> std::unique_ptr<Expr>;
   auto advance() -> Token;
   auto peek() -> Token;
   auto previous() -> Token;
   auto consume(TokenType type, const std::string& message) -> Token;
   auto synchronize() -> void;
-  auto block() -> std::vector<Stmt*>;
-  auto orExpression() -> Expr*;
-  auto andExpression() -> Expr*;
+  auto block() -> std::vector<std::unique_ptr<Stmt>>;
+  auto orExpression() -> std::unique_ptr<Expr>;
+  auto andExpression() -> std::unique_ptr<Expr>;
 
-  auto declaration() -> std::vector<Stmt*>;
-  auto varDeclaration(TokenType type) -> Stmt*;
+  auto declaration() -> std::vector<std::unique_ptr<Stmt>>;
+  auto varDeclaration(TokenType type) -> std::unique_ptr<Stmt>;
 
-  auto statement() -> Stmt*;
-  auto printStatement() -> Stmt*;
-  auto inputStatement() -> Stmt*;
-  auto expressionStatement() -> Stmt*;
-  auto ifStatement() -> Stmt*;
-  auto whileStatement() -> Stmt*;
-  auto forStatement() -> Stmt*;
+  auto statement() -> std::unique_ptr<Stmt>;
+  auto printStatement() -> std::unique_ptr<Stmt>;
+  auto inputStatement() -> std::unique_ptr<Stmt>;
+  auto expressionStatement() -> std::unique_ptr<Stmt>;
+  auto ifStatement() -> std::unique_ptr<Stmt>;
+  auto whileStatement() -> std::unique_ptr<Stmt>;
+  auto forStatement() -> std::unique_ptr<Stmt>;
 
   static auto error(const Token& token, const std::string& message)
       -> ParseError;
 
   std::vector<Token> tokens;
-  int current = 0;
+  size_t current = 0;
 };

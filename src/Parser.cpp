@@ -2,24 +2,24 @@
 
 #include <algorithm>
 #include <iostream>
-#include <memory>
-#include <vector>
 
+#include "Headers/Expr.hpp"
 #include "Headers/Lib/utility.hpp"
 #include "Headers/Scanner.hpp"
+#include "Headers/Stmt.hpp"
 #include "Headers/bisayaPP.hpp"
 
 Parser::Parser(std::vector<Token> &tokens) : tokens(tokens) {}
 
 Parser::Parser(std::vector<Token> &&tokens) : tokens(std::move(tokens)) {}
 
-auto Parser::expression() -> Expr * { return assignment(); }
+auto Parser::expression() -> std::unique_ptr<Expr> { return assignment(); }
 
-auto Parser::equality() -> Expr * {
-  Expr *expr = comparison();
+auto Parser::equality() -> std::unique_ptr<Expr> {
+  std::unique_ptr<Expr> expr = comparison();
 
   while (match({TokenType::BANG_EQUAL, TokenType::EQUAL_EQUAL})) {
-    expr = new Binary(expr, previous(), comparison());
+    expr = std::make_unique<Binary>(std::move(expr), previous(), comparison());
   }
 
   return expr;
@@ -56,71 +56,71 @@ auto Parser::peek() -> Token { return tokens[current]; }
 
 auto Parser::previous() -> Token { return tokens[current - 1]; }
 
-auto Parser::comparison() -> Expr * {
-  Expr *expr = term();
+auto Parser::comparison() -> std::unique_ptr<Expr> {
+  std::unique_ptr<Expr> expr = term();
 
   while (match({TokenType::GREATER, TokenType::GREATER_EQUAL, TokenType::LESS,
                 TokenType::LESS_EQUAL})) {
-    expr = new Binary(expr, previous(), term());
+    expr = std::make_unique<Binary>(std::move(expr), previous(), term());
   }
-
   return expr;
 }
 
-auto Parser::term() -> Expr * {
-  Expr *expr = factor();
+auto Parser::term() -> std::unique_ptr<Expr> {
+  std::unique_ptr<Expr> expr = factor();
 
   while (match({TokenType::MINUS, TokenType::PLUS, TokenType::CONCATENATOR})) {
-    expr = new Binary(expr, previous(), factor());
+    expr = std::make_unique<Binary>(std::move(expr), previous(), factor());
   }
 
   return expr;
 }
 
-auto Parser::factor() -> Expr * {
-  Expr *expr = unary();
+auto Parser::factor() -> std::unique_ptr<Expr> {
+  std::unique_ptr<Expr> expr = unary();
 
   while (match({TokenType::SLASH, TokenType::STAR, TokenType::MODULO})) {
-    expr = new Binary(expr, previous(), unary());
+    expr = std::make_unique<Binary>(std::move(expr), previous(), unary());
   }
 
   return expr;
 }
 
-auto Parser::unary() -> Expr * {
+auto Parser::unary() -> std::unique_ptr<Expr> {
   if (match({TokenType::BANG, TokenType::MINUS})) {
-    return new Unary(previous(), unary());
+    return std::make_unique<Unary>(previous(), unary());
   }
 
   return primary();
 }
 
-auto Parser::primary() -> Expr * {
+auto Parser::primary() -> std::unique_ptr<Expr> {
   if (match({TokenType::BOOL_FALSE})) {
-    return new Literal(false, TokenType::BOOL_FALSE);
+    return std::make_unique<Literal>(false, TokenType::BOOL_FALSE);
   }
   if (match({TokenType::BOOL_TRUE})) {
-    return new Literal(true, TokenType::BOOL_TRUE);
+    return std::make_unique<Literal>(true, TokenType::BOOL_TRUE);
   }
+
   if (match({TokenType::NUMBER, TokenType::STRING_LITERAL,
              TokenType::CHARACTER_LITERAL, TokenType::DECIMAL_NUMBER})) {
-    return new Literal(previous().literal, previous().type);
+    return std::make_unique<Literal>(previous().literal, previous().type);
   }
 
   if (match({TokenType::NEW_LINE})) {
-    return new Literal("\n", TokenType::STRING_LITERAL);
+    return std::make_unique<Literal>("\n", TokenType::STRING_LITERAL);
   }
 
   if (match({TokenType::IDENTIFIER})) {
-    return new Variable(previous());
+    return std::make_unique<Variable>(previous());
   }
 
   if (match({TokenType::LEFT_PAREN})) {
-    Expr *expr = expression();
+    std::unique_ptr<Expr> expr = expression();
     if (!match({TokenType::RIGHT_PAREN})) {
       throw std::runtime_error("Expect ')' after expression.");
     }
-    return new Grouping(expr);
+    return std::make_unique<Grouping>(std::move(expr));
   }
 
   throw ParseError(previous(), "Expect expression.");
@@ -163,11 +163,11 @@ void Parser::synchronize() {
   }
 }
 
-auto Parser::varDeclaration(TokenType type) -> Stmt * {
+auto Parser::varDeclaration(TokenType type) -> std::unique_ptr<Stmt> {
   Token name = consume(TokenType::IDENTIFIER, "Expected variable name.");
   name.type = type;
 
-  Expr *initializer = nullptr;
+  std::unique_ptr<Expr> initializer = nullptr;
   if (match({TokenType::EQUAL})) {
     initializer = expression();
   }
@@ -178,10 +178,10 @@ auto Parser::varDeclaration(TokenType type) -> Stmt * {
     throw ParseError(previous(), "Expect newline after variable declaration.");
   }
 
-  return new Var(name, initializer);
+  return std::make_unique<Var>(name, std::move(initializer));
 }
 
-auto Parser::declaration() -> std::vector<Stmt *> {
+auto Parser::declaration() -> std::vector<std::unique_ptr<Stmt>> {
   try {
     if (match({TokenType::VAR}) &&
         (peek().type == TokenType::INTEGER ||
@@ -189,22 +189,24 @@ auto Parser::declaration() -> std::vector<Stmt *> {
          peek().type == TokenType::BOOL)) {
       advance();
 
-      std::vector<Stmt *> declarations;
+      std::vector<std::unique_ptr<Stmt>> declarations;
       do {
-        declarations.push_back(varDeclaration(previous().type));
+        declarations.emplace_back(varDeclaration(previous().type));
       } while (check(TokenType::IDENTIFIER));
 
       return declarations;
     }
 
-    return {statement()};
+    std::vector<std::unique_ptr<Stmt>> stmts;
+    stmts.emplace_back(statement());
+    return stmts;
   } catch (const ParseError &error) {
     synchronize();
     return {};
   }
 }
 
-auto Parser::parse() -> std::vector<Stmt *> {
+auto Parser::parse() -> std::vector<std::unique_ptr<Stmt>> {
   try {
     if (tokens[0].type != TokenType::START) {
       BisayaPP::error(tokens[0],
@@ -213,9 +215,9 @@ auto Parser::parse() -> std::vector<Stmt *> {
     advance();
     advance();
 
-    std::vector<Stmt *> statements;
+    std::vector<std::unique_ptr<Stmt>> statements;
     while (!isAtEnd()) {
-      std::vector<Stmt *> decs = declaration();
+      std::vector<std::unique_ptr<Stmt>> decs = declaration();
       statements.reserve(statements.size() + decs.size());
       statements.insert(statements.end(), std::make_move_iterator(decs.begin()),
                         std::make_move_iterator(decs.end()));
@@ -236,21 +238,19 @@ auto Parser::parse() -> std::vector<Stmt *> {
   }
 }
 
-auto Parser::expressionStatement() -> Stmt * {
-  Expr *value = expression();
-
+auto Parser::expressionStatement() -> std::unique_ptr<Stmt> {
+  std::unique_ptr<Expr> value = expression();
   consume(TokenType::SEMICOLON, "Expect newline after expression.");
-  return new Expression(value);
+  return std::make_unique<Expression>(std::move(value));
 }
 
-auto Parser::printStatement() -> Stmt * {
-  Expr *value = expression();
-
+auto Parser::printStatement() -> std::unique_ptr<Stmt> {
+  std::unique_ptr<Expr> value = expression();
   consume(TokenType::SEMICOLON, "Expect newline after value.");
-  return new Print(value);
+  return std::make_unique<Print>(std::move(value));
 }
 
-auto Parser::inputStatement() -> Stmt * {
+auto Parser::inputStatement() -> std::unique_ptr<Stmt> {
   std::string input;
   std::getline(std::cin, input);
 
@@ -275,10 +275,10 @@ auto Parser::inputStatement() -> Stmt * {
 
   consume(TokenType::SEMICOLON, "Expect newline after value.");
 
-  return new Input(identifiers, inputs);
+  return std::make_unique<Input>(identifiers, inputs);
 }
 
-auto Parser::statement() -> Stmt * {
+auto Parser::statement() -> std::unique_ptr<Stmt> {
   if (match({TokenType::IF})) {
     if (tokens[current - 2].type == TokenType::ELSE) {
       BisayaPP::error(previous(), "Invalid syntax after WALA");
@@ -302,7 +302,7 @@ auto Parser::statement() -> Stmt * {
   }
 
   if (match({TokenType::BLOCK})) {
-    return new Block(block());
+    return std::make_unique<Block>(block());
   }
 
   if (match({TokenType::LEFT_BRACE})) {
@@ -312,16 +312,15 @@ auto Parser::statement() -> Stmt * {
   return expressionStatement();
 }
 
-auto Parser::assignment() -> Expr * {
-  Expr *expr = orExpression();
+auto Parser::assignment() -> std::unique_ptr<Expr> {
+  std::unique_ptr<Expr> expr = orExpression();
 
   if (match({TokenType::EQUAL})) {
     Token equals = previous();
-    Expr *value = assignment();
 
-    if (dynamic_cast<Variable *>(expr) != nullptr) {
-      Token name = static_cast<Variable *>(expr)->name;
-      return new Assign(name, value);
+    if (dynamic_cast<Variable *>(expr.get()) != nullptr) {
+      return std::make_unique<Assign>(static_cast<Variable *>(expr.get())->name,
+                                      assignment());
     }
 
     error(equals, "Invalid assignment target.");
@@ -330,8 +329,8 @@ auto Parser::assignment() -> Expr * {
   return expr;
 }
 
-auto Parser::block() -> std::vector<Stmt *> {
-  std::vector<Stmt *> statements;
+auto Parser::block() -> std::vector<std::unique_ptr<Stmt>> {
+  std::vector<std::unique_ptr<Stmt>> statements;
 
   consume(TokenType::LEFT_BRACE, "Expect '{' before block.");
 
@@ -340,7 +339,7 @@ auto Parser::block() -> std::vector<Stmt *> {
   }
 
   while (!check(TokenType::RIGHT_BRACE) && !isAtEnd()) {
-    std::vector<Stmt *> decs = declaration();
+    std::vector<std::unique_ptr<Stmt>> decs = declaration();
     statements.reserve(statements.size() + decs.size());
     statements.insert(statements.end(), std::make_move_iterator(decs.begin()),
                       std::make_move_iterator(decs.end()));
@@ -354,17 +353,17 @@ auto Parser::block() -> std::vector<Stmt *> {
   return statements;
 }
 
-auto Parser::ifStatement() -> Stmt * {
+auto Parser::ifStatement() -> std::unique_ptr<Stmt> {
   consume(TokenType::LEFT_PAREN, "Expect '(' after 'KUNG'.");
-  Expr *condition = expression();
+  std::unique_ptr<Expr> condition = expression();
   consume(TokenType::RIGHT_PAREN, "Expect ')' after condition.");
 
   if (check(TokenType::SEMICOLON)) {
     advance();
   }
 
-  Stmt *thenBranch = statement();
-  Stmt *elseBranch = nullptr;
+  std::unique_ptr<Stmt> thenBranch = statement();
+  std::unique_ptr<Stmt> elseBranch = nullptr;
 
   if (match({TokenType::IF})) {
     if (match({TokenType::BANG})) {
@@ -376,39 +375,41 @@ auto Parser::ifStatement() -> Stmt * {
     }
   }
 
-  return new If(thenBranch, condition, elseBranch);
+  return std::make_unique<If>(std::move(condition), std::move(thenBranch),
+                              std::move(elseBranch));
 }
 
-auto Parser::orExpression() -> Expr * {
-  Expr *expr = andExpression();
+auto Parser::orExpression() -> std::unique_ptr<Expr> {
+  std::unique_ptr<Expr> expr = andExpression();
 
   while (match({TokenType::OR})) {
-    expr = new Logical(expr, previous(), andExpression());
+    expr =
+        std::make_unique<Logical>(std::move(expr), previous(), andExpression());
   }
   return expr;
 }
 
-auto Parser::andExpression() -> Expr * {
-  Expr *expr = equality();
+auto Parser::andExpression() -> std::unique_ptr<Expr> {
+  std::unique_ptr<Expr> expr = equality();
 
   while (match({TokenType::AND})) {
-    expr = new Logical(expr, previous(), equality());
+    expr = std::make_unique<Logical>(std::move(expr), previous(), equality());
   }
   return expr;
 }
 
-auto Parser::whileStatement() -> Stmt * {
+auto Parser::whileStatement() -> std::unique_ptr<Stmt> {
   consume(TokenType::LEFT_PAREN, "Expect '(' after 'SAMTANG'.");
-  Expr *condition = expression();
+  std::unique_ptr<Expr> condition = expression();
   consume(TokenType::RIGHT_PAREN, "Expect ')' after condition.");
 
-  return new While(condition, statement());
+  return std::make_unique<While>(std::move(condition), statement());
 }
 
-auto Parser::forStatement() -> Stmt * {
+auto Parser::forStatement() -> std::unique_ptr<Stmt> {
   consume(TokenType::LEFT_PAREN, "Expect 'c' after 'ALANG SA',");
 
-  Stmt *initializer = nullptr;
+  std::unique_ptr<Stmt> initializer = nullptr;
   if (match({TokenType::SEMICOLON})) {
     initializer = nullptr;
   } else if (match({TokenType::VAR})) {
@@ -422,14 +423,14 @@ auto Parser::forStatement() -> Stmt * {
     initializer = expressionStatement();
   }
 
-  Expr *condition = nullptr;
+  std::unique_ptr<Expr> condition = nullptr;
   if (!check(TokenType::SEMICOLON)) {
     condition = expression();
   }
 
   consume(TokenType::SEMICOLON, "Expect ';' after loop condition.");
 
-  Expr *increment = nullptr;
+  std::unique_ptr<Expr> increment = nullptr;
   if (!check(TokenType::RIGHT_PAREN)) {
     increment = expression();
   }
@@ -440,24 +441,24 @@ auto Parser::forStatement() -> Stmt * {
     advance();
   }
 
-  std::vector<Stmt *> whileBody{statement()};
+  std::vector<std::unique_ptr<Stmt>> whileBody;
+  whileBody.emplace_back(statement());
 
   if (increment != nullptr) {
-    whileBody.push_back(new Expression(increment));
+    whileBody.emplace_back(std::make_unique<Expression>(std::move(increment)));
   }
 
   if (condition == nullptr) {
-    condition = new Literal(true, TokenType::BOOL_TRUE);
+    condition = std::make_unique<Literal>(true, TokenType::BOOL_TRUE);
   }
 
-  Stmt *whileLoop = new While(condition, new Block(whileBody));
-
-  std::vector<Stmt *> forStmt;
+  std::vector<std::unique_ptr<Stmt>> forStmt;
   if (initializer != nullptr) {
-    forStmt.push_back(initializer);
+    forStmt.emplace_back(std::move(initializer));
   }
 
-  forStmt.push_back(whileLoop);
+  forStmt.emplace_back(std::make_unique<While>(
+      std::move(condition), std::make_unique<Block>(std::move(whileBody))));
 
-  return new Block(forStmt);
+  return std::make_unique<Block>(std::move(forStmt));
 }

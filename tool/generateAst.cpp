@@ -31,6 +31,8 @@ void defineAst(std::string&& outputDir, std::string&& baseName,
 
   // Includes
   headerFile << "#pragma once\n\n";
+  headerFile << "#include <memory>\n";
+
   if (baseName == "Expr") {
     headerFile << "#include \"Token.hpp\"\n";
   } else if (baseName == "Stmt") {
@@ -56,9 +58,6 @@ void defineAst(std::string&& outputDir, std::string&& baseName,
                << subclassName << " &" << baseName << ") -> void = 0;"
                << "\n";
   }
-  headerFile << "virtual ~" << baseName << "Visitor() = default;"
-             << "\n";
-
   headerFile << "};\n\n";
 
   headerFile << "class " << baseName << "{"
@@ -145,15 +144,6 @@ void defineType(std::ofstream& file, const std::string& baseName,
        << "Visitor &visitor) -> void override { visitor.visit"
        << typeInfo.className << baseName << "(*this); }"
        << "\n";
-
-  file << "~" << typeInfo.className << "() override {\n";
-  for (const std::pair<std::string, std::string>& field : fields) {
-    const auto& [type, name] = field;
-    if (name.find('*') != std::string::npos) {
-      file << "delete " << name.substr(1) << ";\n";
-    }
-  }
-  file << "}\n";
 
   // End class
   file << "};" << "\n";

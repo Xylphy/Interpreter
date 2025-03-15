@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <utility>
 
 #include "Token.hpp"
@@ -21,7 +22,6 @@ class ExprVisitor {
   virtual auto visitLogicalExpr(const Logical &Expr) -> void = 0;
   virtual auto visitUnaryExpr(const Unary &Expr) -> void = 0;
   virtual auto visitVariableExpr(const Variable &Expr) -> void = 0;
-  virtual ~ExprVisitor() = default;
 };
 
 class Expr {
@@ -33,47 +33,41 @@ class Expr {
 class Assign : public Expr {
  public:
   Token name;
-  Expr *value;
+  std::unique_ptr<Expr> value;
 
-  Assign(const Token &name, Expr *value) : name(name), value(value) {}
+  Assign(const Token &name, std::unique_ptr<Expr> &&value)
+      : name(name), value(std::move(value)) {}
 
   auto accept(ExprVisitor &visitor) -> void override {
     visitor.visitAssignExpr(*this);
   }
-
-  ~Assign() override { delete value; }
 };
 
 class Binary : public Expr {
  public:
-  Expr *left;
+  std::unique_ptr<Expr> left;
   Token op;
-  Expr *right;
+  std::unique_ptr<Expr> right;
 
-  Binary(Expr *left, const Token &operatorToken, Expr *right)
-      : left(left), op(operatorToken), right(right) {}
+  Binary(std::unique_ptr<Expr> &&left, const Token &operatorToken,
+         std::unique_ptr<Expr> &&right)
+      : left(std::move(left)), op(operatorToken), right(std::move(right)) {}
 
   auto accept(ExprVisitor &visitor) -> void override {
     visitor.visitBinaryExpr(*this);
-  }
-
-  ~Binary() override {
-    delete left;
-    delete right;
   }
 };
 
 class Grouping : public Expr {
  public:
-  Expr *expression;
+  std::unique_ptr<Expr> expression;
 
-  Grouping(Expr *expression) : expression(expression) {}
+  Grouping(std::unique_ptr<Expr> &&expression)
+      : expression(std::move(expression)) {}
 
   auto accept(ExprVisitor &visitor) -> void override {
     visitor.visitGroupingExpr(*this);
   }
-
-  ~Grouping() override { delete expression; }
 };
 
 class Literal : public Expr {
@@ -87,42 +81,34 @@ class Literal : public Expr {
   auto accept(ExprVisitor &visitor) -> void override {
     visitor.visitLiteralExpr(*this);
   }
-
-  ~Literal() override = default;
 };
 
 class Logical : public Expr {
  public:
-  Expr *left;
+  std::unique_ptr<Expr> left;
   Token op;
-  Expr *right;
+  std::unique_ptr<Expr> right;
 
-  Logical(Expr *left, const Token &operatorToken, Expr *right)
-      : left(left), op(operatorToken), right(right) {}
+  Logical(std::unique_ptr<Expr> &&left, const Token &operatorToken,
+          std::unique_ptr<Expr> &&right)
+      : left(std::move(left)), op(operatorToken), right(std::move(right)) {}
 
   auto accept(ExprVisitor &visitor) -> void override {
     visitor.visitLogicalExpr(*this);
-  }
-
-  ~Logical() override {
-    delete left;
-    delete right;
   }
 };
 
 class Unary : public Expr {
  public:
   Token op;
-  Expr *right;
+  std::unique_ptr<Expr> right;
 
-  Unary(const Token &operatorToken, Expr *right)
-      : op(operatorToken), right(right) {}
+  Unary(const Token &operatorToken, std::unique_ptr<Expr> &&right)
+      : op(operatorToken), right(std::move(right)) {}
 
   auto accept(ExprVisitor &visitor) -> void override {
     visitor.visitUnaryExpr(*this);
   }
-
-  ~Unary() override { delete right; }
 };
 
 class Variable : public Expr {
@@ -134,6 +120,4 @@ class Variable : public Expr {
   auto accept(ExprVisitor &visitor) -> void override {
     visitor.visitVariableExpr(*this);
   }
-
-  ~Variable() override = default;
 };
