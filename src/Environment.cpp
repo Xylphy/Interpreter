@@ -1,10 +1,16 @@
 #include "Headers/Environment.hpp"
 
+#include <memory>
+
 #include "Headers/Errors.hpp"
 
 Environment::Environment() : enclosing(nullptr) {}
 
-Environment::Environment(Environment* enclosing) : enclosing(enclosing) {}
+Environment::Environment(std::shared_ptr<Environment>& enclosing)
+    : enclosing(enclosing) {}
+
+Environment::Environment(std::shared_ptr<Environment>&& enclosing)
+    : enclosing(std::move(enclosing)) {}
 
 auto Environment::defineVar(const std::string& name, const std::any& value,
                             TokenType type) -> void {

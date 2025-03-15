@@ -1,4 +1,5 @@
 #include <any>
+#include <memory>
 #include <unordered_map>
 
 #include "Token.hpp"
@@ -6,7 +7,8 @@
 class Environment {
  public:
   Environment();
-  Environment(Environment* enclosing);
+  Environment(std::shared_ptr<Environment>& enclosing);
+  Environment(std::shared_ptr<Environment>&& enclosing);
 
   auto defineVar(const std::string& name, const std::any& value, TokenType type)
       -> void;
@@ -18,5 +20,5 @@ class Environment {
 
  private:
   std::unordered_map<std::string, std::pair<std::any, TokenType>> values;
-  Environment* enclosing;
+  std::shared_ptr<Environment> enclosing;
 };

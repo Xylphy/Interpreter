@@ -26,7 +26,7 @@ void run(const std::string& source) {
   //   std::print("{}\n", token);
   // }
 
-  std::vector<Stmt*> statements =
+  std::vector<std::unique_ptr<Stmt>> statements =
       std::make_unique<Parser>(
           *std::make_unique<std::vector<Token>>(
               std::make_unique<Scanner>(source)->scanTokens()))
@@ -37,10 +37,6 @@ void run(const std::string& source) {
   }
 
   interpreter.setInterpretResult(statements);
-
-  for (Stmt* statement : statements) {
-    delete statement;
-  }
 }
 
 void runFile(const char* path) {

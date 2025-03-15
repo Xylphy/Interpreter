@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -22,7 +23,6 @@ class StmtVisitor {
   virtual auto visitVarStmt(const Var &Stmt) -> void = 0;
   virtual auto visitWhileStmt(const While &Stmt) -> void = 0;
   virtual auto visitInputStmt(const Input &Stmt) -> void = 0;
-  virtual ~StmtVisitor() = default;
 };
 
 class Stmt {
@@ -33,96 +33,80 @@ class Stmt {
 
 class Block : public Stmt {
  public:
-  std::vector<Stmt *> statements;
+  std::vector<std::unique_ptr<Stmt>> statements;
 
-  Block(std::vector<Stmt *> statements) : statements(std::move(statements)) {}
+  Block(std::vector<std::unique_ptr<Stmt>> &&statements)
+      : statements(std::move(statements)) {}
 
   auto accept(StmtVisitor &visitor) -> void override {
     visitor.visitBlockStmt(*this);
-  }
-
-  ~Block() override {
-    for (Stmt *statement : statements) {
-      delete statement;
-    }
   }
 };
 
 class Expression : public Stmt {
  public:
-  Expr *expression;
+  std::unique_ptr<Expr> expression;
 
-  Expression(Expr *expression) : expression(expression) {}
+  Expression(std::unique_ptr<Expr> &&expression)
+      : expression(std::move(expression)) {}
 
   auto accept(StmtVisitor &visitor) -> void override {
     visitor.visitExpressionStmt(*this);
   }
-
-  ~Expression() override { delete expression; }
 };
 
 class If : public Stmt {
  public:
-  Expr *condition;
-  Stmt *thenBranch;
-  Stmt *elseBranch;
+  std::unique_ptr<Expr> condition;
+  std::unique_ptr<Stmt> thenBranch;
+  std::unique_ptr<Stmt> elseBranch;
 
-  If(Stmt *thenBranch, Expr *condition, Stmt *elseBranch)
-      : condition(condition), thenBranch(thenBranch), elseBranch(elseBranch) {}
+  If(std::unique_ptr<Expr> &&condition, std::unique_ptr<Stmt> &&thenBranch,
+     std::unique_ptr<Stmt> &&elseBranch)
+      : condition(std::move(condition)),
+        thenBranch(std::move(thenBranch)),
+        elseBranch(std::move(elseBranch)) {}
 
   auto accept(StmtVisitor &visitor) -> void override {
     visitor.visitIfStmt(*this);
-  }
-
-  ~If() override {
-    delete condition;
-    delete thenBranch;
-    delete elseBranch;
   }
 };
 
 class Print : public Stmt {
  public:
-  Expr *expression;
+  std::unique_ptr<Expr> expression;
 
-  Print(Expr *expression) : expression(expression) {}
+  Print(std::unique_ptr<Expr> &&expression)
+      : expression(std::move((expression))) {}
 
   auto accept(StmtVisitor &visitor) -> void override {
     visitor.visitPrintStmt(*this);
   }
-
-  ~Print() override { delete expression; }
 };
 
 class Var : public Stmt {
  public:
   Token name;
-  Expr *initializer;
+  std::unique_ptr<Expr> initializer;
 
-  Var(const Token &name, Expr *initializer)
-      : name(name), initializer(initializer) {}
+  Var(const Token &name, std::unique_ptr<Expr> &&initializer)
+      : name(name), initializer(std::move(initializer)) {}
 
   auto accept(StmtVisitor &visitor) -> void override {
     visitor.visitVarStmt(*this);
   }
-
-  ~Var() override { delete initializer; }
 };
 
 class While : public Stmt {
  public:
-  Expr *condition;
-  Stmt *body;
+  std::unique_ptr<Expr> condition;
+  std::unique_ptr<Stmt> body;
 
-  While(Expr *condition, Stmt *body) : condition(condition), body(body) {}
+  While(std::unique_ptr<Expr> &&condition, std::unique_ptr<Stmt> &&body)
+      : condition(std::move(condition)), body(std::move(body)) {}
 
   auto accept(StmtVisitor &visitor) -> void override {
     visitor.visitWhileStmt(*this);
-  }
-
-  ~While() override {
-    delete condition;
-    delete body;
   }
 };
 
@@ -137,6 +121,4 @@ class Input : public Stmt {
   auto accept(StmtVisitor &visitor) -> void override {
     visitor.visitInputStmt(*this);
   }
-
-  ~Input() override = default;
 };

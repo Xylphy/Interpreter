@@ -3,13 +3,14 @@
 #include <any>
 #include <cstddef>
 #include <iostream>
+#include <memory>
+#include <utility>
 
 #include "Headers/Expr.hpp"
 #include "Headers/Lib/utility.hpp"
+#include "Headers/Stmt.hpp"
 #include "Headers/Token.hpp"
 #include "Headers/bisayaPP.hpp"
-
-Interpreter::Interpreter() : environment(new Environment()) {}
 
 auto Interpreter::setResult(std::any& toSet, const std::any& toGet,
                             TokenType type) -> void {
@@ -31,10 +32,10 @@ auto Interpreter::setInterpretResult(Expr* expr) -> void {
   expr->accept(*this);
 }
 
-auto Interpreter::setInterpretResult(const std::vector<Stmt*>& statements)
-    -> void {
+auto Interpreter::setInterpretResult(
+    const std::vector<std::unique_ptr<Stmt>>& statements) -> void {
   try {
-    for (Stmt* statement : statements) {
+    for (const std::unique_ptr<Stmt>& statement : statements) {
       execute(statement);
     }
   } catch (const RuntimeError& error) {
@@ -42,7 +43,9 @@ auto Interpreter::setInterpretResult(const std::vector<Stmt*>& statements)
   }
 }
 
-auto Interpreter::execute(Stmt* statement) -> void { statement->accept(*this); }
+auto Interpreter::execute(const std::unique_ptr<Stmt>& statement) -> void {
+  statement->accept(*this);
+}
 
 auto Interpreter::evaluate(Expr* expression) -> bool {
   try {
@@ -223,18 +226,18 @@ auto Interpreter::visitAssignExpr(const Assign& Expr) -> void {
 }
 
 auto Interpreter::visitBlockStmt(const Block& Stmt) -> void {
-  executeBlock(Stmt.statements, new Environment(environment));
+  executeBlock(Stmt.statements, std::make_shared<Environment>(environment));
 }
 
 auto Interpreter::executeBlock(const std::vector<Stmt*>& statements,
-                               Environment* env) -> void {
-  Environment* previous = environment;
-  environment = env;
+                               std::shared_ptr<Environment>&& env) -> void {
+  std::weak_ptr<Environment> previous = environment;
+  environment = std::move(env);
+
   for (Stmt* statement : statements) {
     execute(statement);
   }
-  delete environment;
-  environment = previous;
+  environment = previous.lock();
 }
 
 auto Interpreter::visitIfStmt(const If& Stmt) -> void {
@@ -275,5 +278,3 @@ auto Interpreter::visitLogicalExpr(const Logical& Expr) -> void {
 
   evaluate(Expr.right);
 }
-
-Interpreter::~Interpreter() { delete environment; }
