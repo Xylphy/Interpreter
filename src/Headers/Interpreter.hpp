@@ -1,14 +1,13 @@
 #pragma once
 
-#include <any>
-#include <memory>
-
 #include "Environment.hpp"
 #include "Expr.hpp"
 #include "Stmt.hpp"
 
 class Interpreter : public ExprVisitor, public StmtVisitor {
  public:
+  Interpreter();
+
   auto evaluate(const std::unique_ptr<Expr>& expression) -> bool;
   auto setInterpretResult(const std::vector<std::unique_ptr<Stmt>>& statements)
       -> void;

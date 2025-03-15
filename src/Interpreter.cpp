@@ -1,16 +1,12 @@
 #include "Headers/Interpreter.hpp"
 
-#include <any>
-#include <cstddef>
 #include <iostream>
 #include <memory>
-#include <utility>
 
-#include "Headers/Expr.hpp"
 #include "Headers/Lib/utility.hpp"
-#include "Headers/Stmt.hpp"
-#include "Headers/Token.hpp"
 #include "Headers/bisayaPP.hpp"
+
+Interpreter::Interpreter() : environment(std::make_shared<Environment>()) {}
 
 auto Interpreter::setResult(std::any& toSet, const std::any& toGet,
                             TokenType tokenType) -> void {
@@ -235,14 +231,14 @@ auto Interpreter::visitBlockStmt(const Block& Stmt) -> void {
 auto Interpreter::executeBlock(
     const std::vector<std::unique_ptr<Stmt>>& statements,
     std::shared_ptr<Environment>&& env) -> void {
-  std::shared_ptr<Environment> previous = environment;
-  environment = std::move(env);
+  std::shared_ptr<Environment> previous = std::move(environment);
+  environment = env;
 
   for (const std::unique_ptr<Stmt>& statement : statements) {
     execute(statement);
   }
 
-  environment = previous;
+  environment = std::move(previous);
 }
 
 auto Interpreter::visitIfStmt(const If& Stmt) -> void {

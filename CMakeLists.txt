@@ -11,8 +11,8 @@ set(CMAKE_CXX_STANDARD 23)
 # add_link_options(-Wall -Werror -fsanitize=address -fsanitize=leak -fno-omit-frame-pointer -g)
 
 #For release
-# set(CMAKE_BUILD_TYPE Release)
-# set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -flto -funroll-loops -ftree-vectorize -ffast-math -march=native -fstrict-aliasing ")
+set(CMAKE_BUILD_TYPE Release)
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -flto -funroll-loops -ftree-vectorize -ffast-math -march=native -fstrict-aliasing ")
 
 include(FetchContent)
 FetchContent_Declare(

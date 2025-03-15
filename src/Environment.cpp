@@ -6,21 +6,18 @@
 
 Environment::Environment() : enclosing(nullptr) {}
 
-Environment::Environment(std::shared_ptr<Environment>& enclosing)
-    : enclosing(enclosing) {}
-
-Environment::Environment(std::shared_ptr<Environment>&& enclosing)
+Environment::Environment(std::shared_ptr<Environment> enclosing)
     : enclosing(std::move(enclosing)) {}
 
 auto Environment::defineVar(const std::string& name, const std::any& value,
                             TokenType type) -> void {
-  values[name] = std::make_pair(value, type);
+  variables[name] = std::make_pair(value, type);
 }
 
 auto Environment::get(const Token& name) -> std::pair<std::any, TokenType>& {
-  auto iterator = values.find(name.lexeme);
+  auto iterator = variables.find(name.lexeme);
 
-  if (iterator != values.end()) {
+  if (iterator != variables.end()) {
     return iterator->second;
   }
 
@@ -33,8 +30,8 @@ auto Environment::get(const Token& name) -> std::pair<std::any, TokenType>& {
 
 auto Environment::assign(const Token& name, const std::any& value,
                          TokenType type) -> void {
-  if (values.find(name.lexeme) != values.end()) {
-    values[name.lexeme] = std::make_pair(value, type);
+  if (variables.find(name.lexeme) != variables.end()) {
+    variables[name.lexeme] = std::make_pair(value, type);
     return;
   }
 
