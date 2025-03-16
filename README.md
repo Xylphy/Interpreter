@@ -30,10 +30,6 @@ cmake ..
 make
 ```
 
-### Running the Interpreter
-
-You can run the interpreter in two modes: file mode and prompt mode.
-
 #### File Mode
 
 To run a file, use the following command:

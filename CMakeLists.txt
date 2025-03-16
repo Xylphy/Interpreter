@@ -46,7 +46,6 @@ endif()
 # set(CMAKE_CXX_CLANG_TIDY "clang-tidy;-checks=*,performance-*")
 
 add_subdirectory(src)
-add_subdirectory(tool)
 
 enable_testing()
 add_subdirectory(tests)
