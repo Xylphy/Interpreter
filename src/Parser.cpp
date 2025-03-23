@@ -7,6 +7,7 @@
 #include "Headers/Lib/utility.hpp"
 #include "Headers/Scanner.hpp"
 #include "Headers/Stmt.hpp"
+#include "Headers/Token.hpp"
 #include "Headers/bisayaPP.hpp"
 
 Parser::Parser(std::vector<Token> &tokens) : tokens(tokens) {}
@@ -19,7 +20,9 @@ auto Parser::equality() -> std::unique_ptr<Expr> {
   std::unique_ptr<Expr> expr = comparison();
 
   while (match({TokenType::BANG_EQUAL, TokenType::EQUAL_EQUAL})) {
-    expr = std::make_unique<Binary>(std::move(expr), previous(), comparison());
+    Token previousToken = previous();
+    expr =
+        std::make_unique<Binary>(std::move(expr), previousToken, comparison());
   }
 
   return expr;
@@ -61,7 +64,8 @@ auto Parser::comparison() -> std::unique_ptr<Expr> {
 
   while (match({TokenType::GREATER, TokenType::GREATER_EQUAL, TokenType::LESS,
                 TokenType::LESS_EQUAL})) {
-    expr = std::make_unique<Binary>(std::move(expr), previous(), term());
+    Token previousToken = previous();
+    expr = std::make_unique<Binary>(std::move(expr), previousToken, term());
   }
   return expr;
 }
@@ -70,7 +74,8 @@ auto Parser::term() -> std::unique_ptr<Expr> {
   std::unique_ptr<Expr> expr = factor();
 
   while (match({TokenType::MINUS, TokenType::PLUS, TokenType::CONCATENATOR})) {
-    expr = std::make_unique<Binary>(std::move(expr), previous(), factor());
+    Token previousToken = previous();
+    expr = std::make_unique<Binary>(std::move(expr), previousToken, factor());
   }
 
   return expr;
@@ -80,7 +85,8 @@ auto Parser::factor() -> std::unique_ptr<Expr> {
   std::unique_ptr<Expr> expr = unary();
 
   while (match({TokenType::SLASH, TokenType::STAR, TokenType::MODULO})) {
-    expr = std::make_unique<Binary>(std::move(expr), previous(), unary());
+    Token previousToken = previous();
+    expr = std::make_unique<Binary>(std::move(expr), previousToken, unary());
   }
 
   return expr;
@@ -88,7 +94,8 @@ auto Parser::factor() -> std::unique_ptr<Expr> {
 
 auto Parser::unary() -> std::unique_ptr<Expr> {
   if (match({TokenType::BANG, TokenType::MINUS})) {
-    return std::make_unique<Unary>(previous(), unary());
+    Token previousToken = previous();
+    return std::make_unique<Unary>(previousToken, unary());
   }
 
   return primary();
@@ -104,7 +111,8 @@ auto Parser::primary() -> std::unique_ptr<Expr> {
 
   if (match({TokenType::NUMBER, TokenType::STRING_LITERAL,
              TokenType::CHARACTER_LITERAL, TokenType::DECIMAL_NUMBER})) {
-    return std::make_unique<Literal>(previous().literal, previous().type);
+    Token previousToken = previous();
+    return std::make_unique<Literal>(previousToken.literal, previousToken.type);
   }
 
   if (match({TokenType::NEW_LINE})) {
@@ -229,9 +237,6 @@ auto Parser::parse() -> std::vector<std::unique_ptr<Stmt>> {
     }
 
     return statements;
-    // } catch (const ParseError &error) {
-    //   BisayaPP::error(previous(), error.what());
-    //   return {};
   } catch (const SyntaxError &error) {
     BisayaPP::error(previous(), error.what());
     return {};
@@ -383,8 +388,9 @@ auto Parser::orExpression() -> std::unique_ptr<Expr> {
   std::unique_ptr<Expr> expr = andExpression();
 
   while (match({TokenType::OR})) {
-    expr =
-        std::make_unique<Logical>(std::move(expr), previous(), andExpression());
+    Token previousToken = previous();
+    expr = std::make_unique<Logical>(std::move(expr), previousToken,
+                                     andExpression());
   }
   return expr;
 }
@@ -393,7 +399,9 @@ auto Parser::andExpression() -> std::unique_ptr<Expr> {
   std::unique_ptr<Expr> expr = equality();
 
   while (match({TokenType::AND})) {
-    expr = std::make_unique<Logical>(std::move(expr), previous(), equality());
+    Token previousToken = previous();
+    expr =
+        std::make_unique<Logical>(std::move(expr), previousToken, equality());
   }
   return expr;
 }

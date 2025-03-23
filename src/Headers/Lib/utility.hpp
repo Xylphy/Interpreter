@@ -1,8 +1,9 @@
 #pragma once
 
-#include "../Token.hpp"  // IWYU pragma: export
 #include <cmath>
-#include<string>
+#include <string>
+
+#include "../Token.hpp"  // IWYU pragma: export
 
 // This namespace contains utility functions that are used in the project.
 namespace utility {
@@ -89,11 +90,6 @@ static auto equal(const T& left, const U& right) -> bool {
   return left == right;
 }
 
-#ifdef __clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wswitch"
-#endif
-
 template <typename leftDataType, typename rightDataType>
 static auto numericOperation(const leftDataType& left, TokenType type,
                              const rightDataType& right) -> std::any {
@@ -128,12 +124,9 @@ static auto numericOperation(const leftDataType& left, TokenType type,
       }
     case TokenType::CONCATENATOR:
       return std::to_string(left).append(std::to_string(right));
+    default:
+      throw std::runtime_error("Invalid operation");
   }
-  throw std::runtime_error("Invalid operation");
 }
-
-#ifdef __clang__
-#pragma clang diagnostic pop
-#endif
 
 }  // namespace utility

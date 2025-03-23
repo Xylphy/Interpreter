@@ -132,11 +132,6 @@ auto Interpreter::visitLiteralExpr(const Literal& Expr) -> void {
   setResult(result, value, type);
 }
 
-#ifdef __clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wswitch"
-#endif
-
 auto Interpreter::visitUnaryExpr(const Unary& Expr) -> void {
   setInterpretResult(Expr.right);
   TokenType rightType = type;
@@ -157,12 +152,9 @@ auto Interpreter::visitUnaryExpr(const Unary& Expr) -> void {
       type = TokenType::NUMBER;
       setResult(result, right, rightType);
       break;
+    default:;
   }
 }
-
-#ifdef __clang__
-#pragma clang diagnostic pop
-#endif
 
 auto Interpreter::setPrintResult(const std::unique_ptr<Expr>& expr) -> void {
   expr->accept(*this);
