@@ -19,10 +19,11 @@ auto isAlpha(char character) noexcept -> bool;
 auto isAlphaNumeric(char character) noexcept -> bool;
 auto isDigit(char character) noexcept -> bool;
 auto validAssignment(const TokenType& tokenType) -> bool;
-auto checkNumberOperands(const Token& token, TokenType left, TokenType right)
-    -> void;
+auto checkNumberOperands(const TokenType& left, const Token& token,
+                         const TokenType& right) -> void;
 auto checkNumberOperand(const Token& token, TokenType operand) -> void;
-auto isTruthy(const std::any& value, TokenType type) -> bool;
+auto checkNumberOperand(const TokenType& tokenType) -> void;
+auto isTruthy(const std::any& value) -> bool;
 auto isDataType(const TokenType& type) -> bool;
 auto isLiterals(const TokenType& type) -> bool;
 

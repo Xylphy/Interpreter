@@ -3,11 +3,8 @@
 #include <algorithm>
 #include <iostream>
 
-#include "Headers/Expr.hpp"
 #include "Headers/Lib/utility.hpp"
 #include "Headers/Scanner.hpp"
-#include "Headers/Stmt.hpp"
-#include "Headers/Token.hpp"
 #include "Headers/bisayaPP.hpp"
 
 Parser::Parser(std::vector<Token> &tokens) : tokens(tokens) {}

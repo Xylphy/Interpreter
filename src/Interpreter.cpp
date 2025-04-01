@@ -73,7 +73,7 @@ auto Interpreter::visitBinaryExpr(const Binary& Expr) -> void {
 
   try {
     utility::checkNumberOperands(
-        Expr.op, leftType,
+        leftType, Expr.op,
         rightType);  // throws RuntimeError if not numbers
     const TokenType& exprTokenType = Expr.op.type;
 
@@ -143,12 +143,12 @@ auto Interpreter::visitUnaryExpr(const Unary& Expr) -> void {
 
   switch (Expr.op.type) {
     case TokenType::BANG:
-      newResult = utility::isTruthy(right, rightType);
+      newResult = utility::isTruthy(right);
       type = newResult ? TokenType::BOOL_TRUE : TokenType::BOOL_FALSE;
       setResult(result, newResult, type);
       break;
     case TokenType::MINUS:
-      utility::checkNumberOperand(Expr.op, rightType);
+      utility::checkNumberOperand(Expr.op.type);
       type = TokenType::NUMBER;
       setResult(result, right, rightType);
       break;
@@ -165,8 +165,7 @@ auto Interpreter::visitExpressionStmt(const Expression& Stmt) -> void {
 }
 
 auto Interpreter::visitPrintStmt(const Print& Stmt) -> void {
-  bool success = evaluate(Stmt.expression);
-  if (success) {
+  if (evaluate(Stmt.expression)) {
     std::cout << utility::anyToString(result);
   }
 }
@@ -236,7 +235,7 @@ auto Interpreter::executeBlock(
 auto Interpreter::visitIfStmt(const If& Stmt) -> void {
   evaluate(Stmt.condition);
 
-  if (utility::isTruthy(result, type)) {
+  if (utility::isTruthy(result)) {
     execute(Stmt.thenBranch);
   } else if (Stmt.elseBranch != nullptr) {
     execute(Stmt.elseBranch);
@@ -247,7 +246,7 @@ auto Interpreter::visitWhileStmt(const While& Stmt) -> void {
   evaluate(Stmt.condition);
 
   try {
-    while (utility::isTruthy(result, type)) {
+    while (utility::isTruthy(result)) {
       execute(Stmt.body);
       evaluate(Stmt.condition);
     }
@@ -260,11 +259,11 @@ auto Interpreter::visitLogicalExpr(const Logical& Expr) -> void {
   evaluate(Expr.left);
 
   if (Expr.op.type == TokenType::OR) {
-    if (utility::isTruthy(result, type)) {
+    if (utility::isTruthy(result)) {
       return;
     }
   } else {
-    if (!utility::isTruthy(result, type)) {
+    if (!utility::isTruthy(result)) {
       return;
     }
   }

@@ -1,5 +1,6 @@
 #include "Headers/Lib/utility.hpp"
 
+#include <stdexcept>
 #include <string>  // For MSVC Compiler
 
 #include "Headers/Errors.hpp"
@@ -102,37 +103,53 @@ auto validAssignment(const TokenType& tokenType) -> bool {
   return tokenType != TokenType::STRING_LITERAL;
 }
 
-auto checkNumberOperands(const Token& token, TokenType left, TokenType right)
-    -> void {
+auto checkNumberOperands(const TokenType& left, const Token& token,
+                         const TokenType& right) -> void {
   try {
-    checkNumberOperand(token, left);
-    checkNumberOperand(token, right);
+    checkNumberOperand(left);
+    checkNumberOperand(right);
   } catch (const RuntimeError& error) {
+    throw RuntimeError(token, "Operands must be numbers.");
+  } catch (const std::runtime_error& error) {
     throw RuntimeError(token, "Operands must be numbers.");
   }
 }
 
-auto checkNumberOperand(const Token& token, TokenType operand) -> void {
-  if (operand == TokenType::NUMBER || operand == TokenType::DECIMAL_NUMBER) {
+auto checkNumberOperand(const TokenType& tokenType) -> void {
+  if (tokenType == TokenType::NUMBER ||
+      tokenType == TokenType::DECIMAL_NUMBER) {
     return;
   }
+
+  throw std::runtime_error("Operand must be a number.");
+}
+
+auto checkNumberOperand(const Token& token) -> void {
+  if (token.literal.type() == typeid(int) ||
+      token.literal.type() == typeid(double)) {
+    return;
+  }
+
   throw RuntimeError(token, "Operand must be a number.");
 }
 
-auto isTruthy(const std::any& value, TokenType type) -> bool {
-  if (type == TokenType::NIL) {
+auto isTruthy(const std::any& value) -> bool {
+  if (!value.has_value()) {
     return false;
   }
-  if (type == TokenType::BOOL_TRUE) {
-    return true;
+  if (value.type() == typeid(bool)) {
+    return std::any_cast<bool>(value);
   }
-  if (type == TokenType::DECIMAL_NUMBER) {
+  if (value.type() == typeid(double)) {
     return std::any_cast<double>(value) != 0;
   }
-  if (type == TokenType::NUMBER) {
+  if (value.type() == typeid(int)) {
     return std::any_cast<int>(value) != 0;
   }
-  if (type == TokenType::STRING_LITERAL) {
+  if (value.type() == typeid(char)) {
+    return std::any_cast<char>(value) != '\0';
+  }
+  if (value.type() == typeid(std::string)) {
     return !std::any_cast<std::string>(value).empty();
   }
 
