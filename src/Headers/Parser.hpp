@@ -24,7 +24,7 @@ class Parser {
   auto assignment() -> std::unique_ptr<Expr>;
   auto advance() -> Token;
   auto peek() -> Token;
-  auto previous() -> Token;
+  auto previous() -> Token&;
   auto consume(TokenType type, const std::string& message) -> Token;
   auto synchronize() -> void;
   auto block() -> std::vector<std::unique_ptr<Stmt>>;
@@ -32,7 +32,7 @@ class Parser {
   auto andExpression() -> std::unique_ptr<Expr>;
 
   auto declaration() -> std::vector<std::unique_ptr<Stmt>>;
-  auto varDeclaration(TokenType type) -> std::unique_ptr<Stmt>;
+  auto varDeclaration(TokenType& type) -> std::unique_ptr<Stmt>;
 
   auto statement() -> std::unique_ptr<Stmt>;
   auto printStatement() -> std::unique_ptr<Stmt>;

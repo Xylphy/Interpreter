@@ -3,22 +3,41 @@
 #include <memory>
 
 #include "Headers/Errors.hpp"
+#include "Headers/Lib/utility.hpp"
+#include "Headers/Token.hpp"
 
 Environment::Environment() : enclosing(nullptr) {}
 
 Environment::Environment(std::shared_ptr<Environment> enclosing)
     : enclosing(std::move(enclosing)) {}
 
-auto Environment::defineVar(const std::string& name, const std::any& value,
+auto Environment::defineVar(const Token& token, const std::any& value,
                             TokenType type) -> void {
-  variables[name] = std::make_pair(value, type);
+  if (!utility::typeEquality({token.type}, {type}) &&
+      type != TokenType::UNITIALIZED && token.type != TokenType::UNITIALIZED) {
+    throw RuntimeError(token, "Invalid assignment target.");
+  }
+  /*
+  Unitialized means the data type has been resetted and it assumes the variable is already declared
+  */
+  if (token.type == TokenType::UNITIALIZED) { 
+    variables[token.lexeme].first = value;
+  } else {
+    variables[token.lexeme] = std::make_pair(value, token.type);
+  }
 }
 
-auto Environment::get(const Token& name) -> std::pair<std::any, TokenType>& {
-  auto iterator = variables.find(name.lexeme);
+auto Environment::get(const Token& name) -> std::pair<std::any, TokenType> {
+  if (auto iterator = variables.find(name.lexeme);
+      iterator != variables.end()) {
+    std::pair<std::any, TokenType> value = iterator->second;
+    value.second = utility::typeToLiteralType(value.second);
 
-  if (iterator != variables.end()) {
-    return iterator->second;
+    if (value.second == TokenType::BOOL) {
+      value.second = std::any_cast<bool>(value.first) ? TokenType::BOOL_TRUE
+                                                      : TokenType::BOOL_FALSE;
+    }
+    return value;
   }
 
   if (enclosing != nullptr) {
@@ -28,17 +47,23 @@ auto Environment::get(const Token& name) -> std::pair<std::any, TokenType>& {
   throw RuntimeError(name, "Undefined variable '" + name.lexeme + "'.");
 }
 
-auto Environment::assign(const Token& name, const std::any& value,
+auto Environment::assign(const Token& token, const std::any& value,
                          TokenType type) -> void {
-  if (variables.find(name.lexeme) != variables.end()) {
-    variables[name.lexeme] = std::make_pair(value, type);
+  if (auto iterator = variables.find(token.lexeme);
+      iterator != variables.end()) {
+    if (!utility::typeEquality({iterator->second.second}, {type}) &&
+        type != TokenType::UNITIALIZED &&
+        token.type != TokenType::UNITIALIZED) {
+      throw RuntimeError(token, "Invalid assignment target.");
+    }
+    variables[token.lexeme].first = value;
     return;
   }
 
   if (enclosing != nullptr) {
-    enclosing->assign(name, value, type);
+    enclosing->assign(token, value, type);
     return;
   }
 
-  throw RuntimeError(name, "Undefined variable '" + name.lexeme + "'.");
+  throw RuntimeError(token, "Undefined variable '" + token.lexeme + "'.");
 }

@@ -166,4 +166,36 @@ auto isLiterals(const TokenType& type) -> bool {
          type == TokenType::BOOL_FALSE || type == TokenType::NUMBER ||
          type == TokenType::DECIMAL_NUMBER;
 }
+
+auto typeEquality(VariableTokenType variableType, LiteralTokenType literalType)
+    -> bool {
+  switch (variableType.type) {
+    case TokenType::INTEGER:
+      return literalType.type == TokenType::NUMBER;
+    case TokenType::DECIMAL:
+      return literalType.type == TokenType::DECIMAL_NUMBER;
+    case TokenType::BOOL:
+      return literalType.type == TokenType::BOOL_TRUE ||
+             literalType.type == TokenType::BOOL_FALSE;
+    case TokenType::CHAR:
+      return literalType.type == TokenType::CHARACTER_LITERAL;
+    default:
+      return false;
+  }
+}
+
+auto typeToLiteralType(const TokenType& type) -> TokenType {
+  switch (type) {
+    case TokenType::INTEGER:
+      return TokenType::NUMBER;
+    case TokenType::DECIMAL:
+      return TokenType::DECIMAL_NUMBER;
+    case TokenType::BOOL:
+      return TokenType::BOOL;
+    case TokenType::CHAR:
+      return TokenType::CHARACTER_LITERAL;
+    default:
+      return TokenType::NIL;
+  }
+}
 }  // namespace utility

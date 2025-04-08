@@ -20,12 +20,6 @@ bool hadError = false;
 bool hadRuntimeError = false;
 
 void run(const std::string& source) {
-  // std::print("Running\n {}\n", source);
-
-  // for (Token token : tokens) {
-  //   std::print("{}\n", token);
-  // }
-
   std::vector<std::unique_ptr<Stmt>> statements =
       std::make_unique<Parser>(
           *std::make_unique<std::vector<Token>>(

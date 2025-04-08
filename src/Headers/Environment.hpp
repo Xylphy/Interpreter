@@ -9,11 +9,12 @@ class Environment {
   Environment();
   Environment(std::shared_ptr<Environment> enclosing);
 
-  auto defineVar(const std::string& name, const std::any& value, TokenType type)
+  auto defineVar(const Token& token, const std::any& value, TokenType type)
       -> void;
 
-  auto get(const Token& name) -> std::pair<std::any, TokenType>&;
-  auto assign(const Token& name, const std::any& value, TokenType type) -> void;
+  auto get(const Token& name) -> std::pair<std::any, TokenType>;
+  auto assign(const Token& token, const std::any& value, TokenType type)
+      -> void;
 
  private:
   std::unordered_map<std::string, std::pair<std::any, TokenType>> variables;

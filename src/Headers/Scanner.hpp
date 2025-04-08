@@ -57,12 +57,3 @@ class Scanner {
       {"\"WALA\"", NIL},     {"DILI", BANG},
       {"PUNDOK", BLOCK}};
 };
-
-class InputScanner {
- public:
-  InputScanner(std::string source);
-  auto scanTokens() -> std::vector<Token>;
-
- private:
-    std::string source;
-};

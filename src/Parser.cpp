@@ -5,6 +5,7 @@
 
 #include "Headers/Lib/utility.hpp"
 #include "Headers/Scanner.hpp"
+#include "Headers/Token.hpp"
 #include "Headers/bisayaPP.hpp"
 
 Parser::Parser(std::vector<Token> &tokens) : tokens(tokens) {}
@@ -54,7 +55,7 @@ auto Parser::isAtEnd() -> bool {
 
 auto Parser::peek() -> Token { return tokens[current]; }
 
-auto Parser::previous() -> Token { return tokens[current - 1]; }
+auto Parser::previous() -> Token & { return tokens[current - 1]; }
 
 auto Parser::comparison() -> std::unique_ptr<Expr> {
   std::unique_ptr<Expr> expr = term();
@@ -168,7 +169,7 @@ void Parser::synchronize() {
   }
 }
 
-auto Parser::varDeclaration(TokenType type) -> std::unique_ptr<Stmt> {
+auto Parser::varDeclaration(TokenType &type) -> std::unique_ptr<Stmt> {
   Token name = consume(TokenType::IDENTIFIER, "Expected variable name.");
   name.type = type;
 
@@ -178,6 +179,9 @@ auto Parser::varDeclaration(TokenType type) -> std::unique_ptr<Stmt> {
   }
 
   if (check(TokenType::SEMICOLON) || check(TokenType::COMMA)) {
+    if (check(TokenType::SEMICOLON)) {
+      type = TokenType::UNITIALIZED; // Reset the data type. Refer to Environment.cpp
+    }
     advance();
   } else {
     throw ParseError(previous(), "Expect newline after variable declaration.");
@@ -194,9 +198,10 @@ auto Parser::declaration() -> std::vector<std::unique_ptr<Stmt>> {
          peek().type == TokenType::BOOL)) {
       advance();
 
+      TokenType dataType = previous().type;
       std::vector<std::unique_ptr<Stmt>> declarations;
       do {
-        declarations.emplace_back(varDeclaration(previous().type));
+        declarations.emplace_back(varDeclaration(dataType));
       } while (check(TokenType::IDENTIFIER));
 
       return declarations;

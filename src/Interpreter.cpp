@@ -190,23 +190,18 @@ auto Interpreter::visitVarStmt(const Var& Stmt) -> void {
     utility::convertData(tokenType, value);
   }
 
-  if (!utility::validAssignment(Stmt.name.type)) {
-    throw RuntimeError(Stmt.name, "Invalid assignment target.");
-  }
-
-  environment->defineVar(Stmt.name.lexeme, value, tokenType);
+  environment->defineVar(Stmt.name, value, tokenType);
 }
 
 auto Interpreter::visitVariableExpr(const Variable& Expr) -> void {
-  std::pair<std::any, TokenType>& variableExpr = environment->get(Expr.name);
+  const auto [value, tokenType] = environment->get(Expr.name);
+  type = tokenType;
 
-  type = variableExpr.second;
-
-  if (type == TokenType::UNITIALIZED) {
+  if (!value.has_value()) {
     throw RuntimeError(Expr.name, "Variable not initialized.");
   }
 
-  setResult(result, variableExpr.first, type);
+  setResult(result, value, type);
 }
 
 auto Interpreter::visitAssignExpr(const Assign& Expr) -> void {

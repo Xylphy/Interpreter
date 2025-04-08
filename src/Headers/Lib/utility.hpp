@@ -8,6 +8,14 @@
 // This namespace contains utility functions that are used in the project.
 namespace utility {
 
+struct LiteralTokenType {
+  TokenType type;
+};
+
+struct VariableTokenType {
+  TokenType type;
+};
+
 auto anyToString(std::string& result, const std::any& value) noexcept -> void;
 auto anyToString(const std::any& value) noexcept -> std::string;
 auto convertData(const TokenType& type, std::any& value) -> void;
@@ -26,6 +34,8 @@ auto checkNumberOperand(const TokenType& tokenType) -> void;
 auto isTruthy(const std::any& value) -> bool;
 auto isDataType(const TokenType& type) -> bool;
 auto isLiterals(const TokenType& type) -> bool;
+auto typeEquality(VariableTokenType variableType, LiteralTokenType literalType) -> bool;
+auto typeToLiteralType(const TokenType& type) -> TokenType;
 
 template <typename T, typename U>
 static auto addNumerics(const T& left, const U& right)

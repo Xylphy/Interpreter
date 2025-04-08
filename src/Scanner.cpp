@@ -283,4 +283,4 @@ void Scanner::addToken(TokenType type, const std::any& literal) {
 
 void Scanner::addToken(TokenType type) { addToken(type, ""); }
 
-InputScanner::InputScanner(std::string source) : source(std::move(source)) {}
+// InputScanner::InputScanner(std::string source) : source(std::move(source)) {}
