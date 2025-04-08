@@ -10,13 +10,13 @@ set(CMAKE_CXX_STANDARD 23)
 # add_compile_options(-Wall -Werror -fsanitize=address -fsanitize=leak -fno-omit-frame-pointer -g)
 # add_link_options(-Wall -Werror -fsanitize=address -fsanitize=leak -fno-omit-frame-pointer -g)
 
-#For release
-# set(CMAKE_BUILD_TYPE Release)
-# if(MSVC)
-#   set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /O2 /Ot /Oi /GL /GS- /fp:fast /arch:AVX2 /fp:except- /MP")
-# else()
-#   set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -flto -funroll-loops -ftree-vectorize -ffast-math -march=native -fstrict-aliasing ")
-# endif()
+# For release
+set(CMAKE_BUILD_TYPE Release)
+if(MSVC)
+  set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /O2 /Ot /Oi /GL /GS- /fp:fast /arch:AVX2 /fp:except- /MP")
+else()
+  set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -flto -funroll-loops -ftree-vectorize -ffast-math -march=native -fstrict-aliasing ")
+endif()
 
 include(FetchContent)
 FetchContent_Declare(
