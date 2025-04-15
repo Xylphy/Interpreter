@@ -18,6 +18,7 @@ This project is a simple interpreter for a custom programming language. It can r
 
 - C++ compiler (e.g., g++)
 - CMake (optional, for building the project)
+- Build Tools like VS Build Tools for Windows
 
 ### Building the Project
 
@@ -35,7 +36,11 @@ make
 To run a file, use the following command:
 
 ```sh
+#Linux
 ./src/Interpreter
+
+#Windows
+.\src\Debug\Interpreter.exe 
 ```
 
 And provide the path to the file when prompted.
