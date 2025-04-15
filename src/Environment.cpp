@@ -18,7 +18,7 @@ auto Environment::defineVar(const Token& token, const std::any& value,
     throw RuntimeError(token, "Invalid assignment target.");
   }
   /*
-  Unitialized means the data type has been resetted and it assumes the variable is already declared
+  Unitialized means the data type has been resetted and it assumes the variable was already declared
   */
   if (token.type == TokenType::UNITIALIZED) { 
     variables[token.lexeme].first = value;

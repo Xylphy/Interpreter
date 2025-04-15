@@ -1,0 +1,19 @@
+-- ang goal kay ma ano ni sila na di kailangan i group
+-- rar
+SUGOD --start
+    IPAKITA: 1 > 2 & $
+    IPAKITA: 1 < 2 & $
+    IPAKITA: 1 >= 2 & $
+    IPAKITA: 1 <= 2 & $
+    IPAKITA: 2 >= 2 & $
+    IPAKITA: 2 <= 2 & $
+    IPAKITA: 2.5 == 2.5 & $
+    IPAKITA: 2.5 <> 2.5 & $
+    IPAKITA: 2.0 == 2 & $
+    IPAKITA: 2 == '2' & $
+    IPAKITA: 2 + 3 & $
+    IPAKITA: 10 - 5 & $
+    IPAKITA: 4 * 5 & $
+    IPAKITA: 20 / 4 & $
+    IPAKITA: 10 % 3 & $
+KATAPUSAN

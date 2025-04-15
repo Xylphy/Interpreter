@@ -10,7 +10,7 @@
 
 namespace BisayaPP {
 
-static Interpreter interpreter;
+Interpreter interpreter;
 
 const int FILE_OPEN_ERROR = 74;
 const int RUNTIME_ERROR = 70;
@@ -33,7 +33,7 @@ void run(const std::string& source) {
   interpreter.setInterpretResult(statements);
 }
 
-void runFile(const char* path) {
+auto runFile(const char* path) -> int {
   std::ifstream file(path);
 
   if (!file.is_open()) {
@@ -47,11 +47,12 @@ void runFile(const char* path) {
   run(buffer.str());
 
   if (hadError) {
-    exit(SYNTAX_ERROR);
+    return SYNTAX_ERROR;
   }
   if (hadRuntimeError) {
-    exit(RUNTIME_ERROR);
+    return RUNTIME_ERROR;
   }
+  return 0;
 }
 
 void runPrompt() {
@@ -70,7 +71,7 @@ void runPrompt() {
 }
 
 void report(size_t line, const std::string& where, const std::string& message) {
-  std::cerr << "[line " << line << "] Error" << where << ": " << message
+  std::cout << "[line " << line << "] Error" << where << ": " << message
             << '\n';
 }
 
@@ -91,4 +92,5 @@ void runtimeError(const RuntimeError& runtimeError) {
   hadRuntimeError = true;
 }
 
+void resetInterpreter() { interpreter.resetInterpreter(); }
 }  // namespace BisayaPP

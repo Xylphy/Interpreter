@@ -265,3 +265,9 @@ auto Interpreter::visitLogicalExpr(const Logical& Expr) -> void {
 
   evaluate(Expr.right);
 }
+
+auto Interpreter::resetInterpreter() -> void {
+  environment = std::make_shared<Environment>();
+  result = {};
+  type = TokenType::UNITIALIZED;
+}

@@ -17,6 +17,8 @@ auto test_assertEqual(const std::string&& path, const std::string& expected)
 
   std::cout.rdbuf(old);
 
+  BisayaPP::resetInterpreter();
+
   ASSERT_EQ(buffer.str(), expected);
 }
 
@@ -33,6 +35,8 @@ auto test_assertEqualWithInput(const std::string&& path,
 
   std::cin.rdbuf(oldIn);
   std::cout.rdbuf(oldOut);
+
+  BisayaPP::resetInterpreter();
 
   ASSERT_EQ(outputBuffer.str(), expected);
 }

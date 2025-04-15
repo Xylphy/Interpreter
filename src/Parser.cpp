@@ -17,7 +17,8 @@ auto Parser::expression() -> std::unique_ptr<Expr> { return assignment(); }
 auto Parser::equality() -> std::unique_ptr<Expr> {
   std::unique_ptr<Expr> expr = comparison();
 
-  while (match({TokenType::BANG_EQUAL, TokenType::EQUAL_EQUAL})) {
+  while (match({TokenType::BANG_EQUAL, TokenType::EQUAL_EQUAL,
+                TokenType::CONCATENATOR})) {
     Token previousToken = previous();
     expr =
         std::make_unique<Binary>(std::move(expr), previousToken, comparison());
@@ -71,7 +72,7 @@ auto Parser::comparison() -> std::unique_ptr<Expr> {
 auto Parser::term() -> std::unique_ptr<Expr> {
   std::unique_ptr<Expr> expr = factor();
 
-  while (match({TokenType::MINUS, TokenType::PLUS, TokenType::CONCATENATOR})) {
+  while (match({TokenType::MINUS, TokenType::PLUS})) {
     Token previousToken = previous();
     expr = std::make_unique<Binary>(std::move(expr), previousToken, factor());
   }
@@ -180,7 +181,8 @@ auto Parser::varDeclaration(TokenType &type) -> std::unique_ptr<Stmt> {
 
   if (check(TokenType::SEMICOLON) || check(TokenType::COMMA)) {
     if (check(TokenType::SEMICOLON)) {
-      type = TokenType::UNITIALIZED; // Reset the data type. Refer to Environment.cpp
+      type = TokenType::UNITIALIZED;  // Reset the data type. Refer to
+                                      // Environment.cpp
     }
     advance();
   } else {

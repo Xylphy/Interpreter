@@ -12,6 +12,11 @@ class Interpreter : public ExprVisitor, public StmtVisitor {
   auto setInterpretResult(const std::vector<std::unique_ptr<Stmt>>& statements)
       -> void;
 
+  // Resets the interpreter state
+  // Used especially where the interpreter is tested against multiple test cases
+  // and must be resetted for each test case
+  void resetInterpreter();
+
  private:
   auto visitBinaryExpr(const Binary& Expr) -> void override;
   auto visitGroupingExpr(const Grouping& Expr) -> void override;
