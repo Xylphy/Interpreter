@@ -10,7 +10,7 @@
 #endif
 
 TEST(Interpreter, Scope) {
-  test_assertEqual("../../tests/source_files/Scopes/scope.bsy",
+  test_assertEqual(FILE_PATH_1,
                    "9\x1"
                    "dOO5\x1"
                    "dOO2\x1"
