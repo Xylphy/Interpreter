@@ -1,11 +1,9 @@
 #include "Headers/Parser.hpp"
 
 #include <algorithm>
-#include <iostream>
 #include <print>
 
 #include "Headers/Lib/utility.hpp"
-#include "Headers/Scanner.hpp"
 #include "Headers/Token.hpp"
 #include "Headers/bisayaPP.hpp"
 
@@ -259,38 +257,22 @@ auto Parser::expressionStatement() -> std::unique_ptr<Stmt> {
 auto Parser::printStatement() -> std::unique_ptr<Stmt> {
   std::unique_ptr<Expr> value = expression();
 
-  if(!check(TokenType::SEMICOLON)) {
+  if (!check(TokenType::SEMICOLON)) {
     BisayaPP::error(peek(), "Expect newline after value.");
   }
   return std::make_unique<Print>(std::move(value));
 }
 
 auto Parser::inputStatement() -> std::unique_ptr<Stmt> {
-  std::string input;
-  std::getline(std::cin, input);
+  std::vector<Token> dawatTokens;
 
-  std::vector<Token> inputTokens =
-      std::make_unique<Scanner>(input)->scanTokens();
-  std::vector<Token> identifiers;
-  std::vector<Token> inputs;
-
-  const size_t inputSize = inputTokens.size() - 1;
-
-  for (size_t i = 0; i < inputSize; i++, current++) {
-    if ((tokens[current].type == TokenType::IDENTIFIER) !=
-        utility::isLiterals(inputTokens[i].type)) {
-      throw SyntaxError(tokens[current], "Incorrect format for Input");
-    }
-
-    if (tokens[current].type == TokenType::IDENTIFIER) {
-      identifiers.emplace_back(tokens[current]);
-      inputs.emplace_back(inputTokens[i]);
-    }
+  while (!isAtEnd() && !check(TokenType::SEMICOLON)) {
+    dawatTokens.emplace_back(advance());
   }
 
   consume(TokenType::SEMICOLON, "Expect newline after value.");
 
-  return std::make_unique<Input>(identifiers, inputs);
+  return std::make_unique<Input>(dawatTokens);
 }
 
 auto Parser::statement() -> std::unique_ptr<Stmt> {

@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "Headers/Lib/utility.hpp"
+#include "Headers/Scanner.hpp"
 #include "Headers/bisayaPP.hpp"
 
 Interpreter::Interpreter() : environment(std::make_shared<Environment>()) {}
@@ -37,6 +38,8 @@ auto Interpreter::setInterpretResult(
     }
   } catch (const RuntimeError& error) {
     BisayaPP::runtimeError(error);
+  } catch (const SyntaxError& error) {
+    BisayaPP::error(error.token, error.what());
   }
 }
 
@@ -171,11 +174,27 @@ auto Interpreter::visitPrintStmt(const Print& Stmt) -> void {
 }
 
 auto Interpreter::visitInputStmt(const Input& stmt) -> void {
-  const size_t size = stmt.inputs.size();
+  std::string input;
+  std::getline(std::cin, input);
 
-  for (size_t i = 0; i < size; i++) {
-    environment->assign(stmt.variables[i], stmt.inputs[i].literal,
-                        stmt.inputs[i].type);
+  std::vector<Token> tokens = std::make_unique<Scanner>(input)->scanTokens();
+
+  size_t inputSize = tokens.size();
+  const std::vector<Token>& inputTokens = stmt.tokens;
+
+  if (--inputSize != stmt.tokens.size()) {
+    throw SyntaxError(stmt.tokens[0], "Incorrect format for inputs");
+  }
+
+  for (size_t i = 0; i < inputSize; i++) {
+    if ((inputTokens[i].type == TokenType::IDENTIFIER) !=
+        utility::isLiterals(tokens[i].type)) {
+      throw SyntaxError(inputTokens[i], "Incorrect format for input");
+    }
+
+    if (inputTokens[i].type == TokenType::IDENTIFIER) {
+      environment->assign(inputTokens[i], tokens[i].literal, tokens[i].type);
+    }
   }
 }
 

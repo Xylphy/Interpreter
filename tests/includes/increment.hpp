@@ -14,6 +14,7 @@
 #define FILE_PATH_9 "../../../tests/source_files/Increment/Test Case 9.bpp"
 #define FILE_PATH_10 "../../../tests/source_files/Increment/Test Case 10.bpp"
 #define FILE_PATH_11 "../../../tests/source_files/Increment/Test Case 11.bpp"
+#define FILE_PATH_12 "../../../tests/source_files/Increment/Test Case 12.bpp"
 #else
 #define FILE_PATH_1 "../../tests/source_files/Increment/Test Case 1.bpp"
 #define FILE_PATH_2 "../../tests/source_files/Increment/Test Case 2.bpp"
@@ -26,6 +27,7 @@
 #define FILE_PATH_9 "../../tests/source_files/Increment/Test Case 9.bpp"
 #define FILE_PATH_10 "../../tests/source_files/Increment/Test Case 10.bpp"
 #define FILE_PATH_11 "../../tests/source_files/Increment/Test Case 11.bpp"
+#define FILE_PATH_12 "../../tests/source_files/Increment/Test Case 12.bpp"
 #endif
 
 TEST(Increment, Test_1) { test_assertEqual(FILE_PATH_1, ""); }
@@ -67,6 +69,10 @@ TEST(Increment, TEST_11) {
   test_assertEqualWithInput(FILE_PATH_11, {"7", "2"}, "9");
 }
 
+TEST(Increment, TEST_12) {
+  test_assertEqualWithInput(FILE_PATH_12, {"\"OO\""}, "DILI");
+}
+
 #undef FILE_PATH_1
 #undef FILE_PATH_2
 #undef FILE_PATH_3
@@ -78,3 +84,4 @@ TEST(Increment, TEST_11) {
 #undef FILE_PATH_9
 #undef FILE_PATH_10
 #undef FILE_PATH_11
+#undef FILE_PATH_12
