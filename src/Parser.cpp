@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <iostream>
+#include <print>
 
 #include "Headers/Lib/utility.hpp"
 #include "Headers/Scanner.hpp"
@@ -171,7 +172,10 @@ void Parser::synchronize() {
 }
 
 auto Parser::varDeclaration(TokenType &type) -> std::unique_ptr<Stmt> {
-  Token name = consume(TokenType::IDENTIFIER, "Expected variable name.");
+  if (!check(TokenType::IDENTIFIER)) {
+    BisayaPP::error(peek(), "Expect variable name.");
+  }
+  Token name = advance();
   name.type = type;
 
   std::unique_ptr<Expr> initializer = nullptr;
@@ -239,7 +243,6 @@ auto Parser::parse() -> std::vector<std::unique_ptr<Stmt>> {
       BisayaPP::error(tokens[current],
                       "Expect 'KATAPUSAN' at the end of the file.");
     }
-
     return statements;
   } catch (const SyntaxError &error) {
     BisayaPP::error(previous(), error.what());
@@ -255,7 +258,10 @@ auto Parser::expressionStatement() -> std::unique_ptr<Stmt> {
 
 auto Parser::printStatement() -> std::unique_ptr<Stmt> {
   std::unique_ptr<Expr> value = expression();
-  consume(TokenType::SEMICOLON, "Expect newline after value.");
+
+  if(!check(TokenType::SEMICOLON)) {
+    BisayaPP::error(peek(), "Expect newline after value.");
+  }
   return std::make_unique<Print>(std::move(value));
 }
 

@@ -143,8 +143,8 @@ auto Interpreter::visitUnaryExpr(const Unary& Expr) -> void {
 
   switch (Expr.op.type) {
     case TokenType::BANG:
-      newResult = utility::isTruthy(right);
-      type = newResult ? TokenType::BOOL_TRUE : TokenType::BOOL_FALSE;
+      newResult = !utility::isTruthy(right);
+      type = newResult ? TokenType::BOOL_FALSE : TokenType::BOOL_TRUE;
       setResult(result, newResult, type);
       break;
     case TokenType::MINUS:

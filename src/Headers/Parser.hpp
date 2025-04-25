@@ -10,6 +10,8 @@ class Parser {
   Parser(std::vector<Token>&& tokens);
   auto parse() -> std::vector<std::unique_ptr<Stmt>>;
 
+  [[nodiscard]] auto getCurrentIndex() const -> size_t { return current; }
+
  private:
   auto match(std::initializer_list<TokenType> types) -> bool;
   auto check(TokenType type) -> bool;

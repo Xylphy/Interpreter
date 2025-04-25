@@ -1,5 +1,6 @@
 #include "Headers/Environment.hpp"
 
+#include <iterator>
 #include <memory>
 
 #include "Headers/Errors.hpp"
@@ -18,9 +19,10 @@ auto Environment::defineVar(const Token& token, const std::any& value,
     throw RuntimeError(token, "Invalid assignment target.");
   }
   /*
-  Unitialized means the data type has been resetted and it assumes the variable was already declared
+  Unitialized means the data type has been resetted and it assumes the variable
+  was already declared
   */
-  if (token.type == TokenType::UNITIALIZED) { 
+  if (token.type == TokenType::UNITIALIZED) {
     variables[token.lexeme].first = value;
   } else {
     variables[token.lexeme] = std::make_pair(value, token.type);
@@ -56,7 +58,14 @@ auto Environment::assign(const Token& token, const std::any& value,
         token.type != TokenType::UNITIALIZED) {
       throw RuntimeError(token, "Invalid assignment target.");
     }
-    variables[token.lexeme].first = value;
+
+    if (type == TokenType::BOOL_TRUE ||
+        type == TokenType::BOOL_FALSE) {  // Check from dawat
+                                          // TODO Transfer this job to parser
+      variables[token.lexeme].first = type == TokenType::BOOL_TRUE;
+    } else {
+      variables[token.lexeme].first = value;
+    }
     return;
   }
 
