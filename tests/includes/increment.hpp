@@ -15,6 +15,8 @@
 #define FILE_PATH_10 "../../../tests/source_files/Increment/Test Case 10.bpp"
 #define FILE_PATH_11 "../../../tests/source_files/Increment/Test Case 11.bpp"
 #define FILE_PATH_12 "../../../tests/source_files/Increment/Test Case 12.bpp"
+#define FILE_PATH_13 "../../../tests/source_files/Increment/Test Case 13.bpp"
+#define FILE_PATH_14 "../../../tests/source_files/Increment/Test Case 14.bpp"
 #else
 #define FILE_PATH_1 "../../tests/source_files/Increment/Test Case 1.bpp"
 #define FILE_PATH_2 "../../tests/source_files/Increment/Test Case 2.bpp"
@@ -28,6 +30,8 @@
 #define FILE_PATH_10 "../../tests/source_files/Increment/Test Case 10.bpp"
 #define FILE_PATH_11 "../../tests/source_files/Increment/Test Case 11.bpp"
 #define FILE_PATH_12 "../../tests/source_files/Increment/Test Case 12.bpp"
+#define FILE_PATH_13 "../../tests/source_files/Increment/Test Case 13.bpp"
+#define FILE_PATH_14 "../../tests/source_files/Increment/Test Case 14.bpp"
 #endif
 
 TEST(Increment, Test_1) { test_assertEqual(FILE_PATH_1, ""); }
@@ -73,6 +77,15 @@ TEST(Increment, TEST_12) {
   test_assertEqualWithInput(FILE_PATH_12, {"\"OO\""}, "DILI");
 }
 
+TEST(Increment, TEST_13) {
+  test_assertEqual(FILE_PATH_13,
+                   "[line 2] Error at 'OO': Undefined variable 'OO'.\n");
+}
+
+TEST(Increment, TEST_14) {
+  test_assertEqualWithInput(FILE_PATH_14, {"7"}, "49");
+}
+
 #undef FILE_PATH_1
 #undef FILE_PATH_2
 #undef FILE_PATH_3
@@ -85,3 +98,5 @@ TEST(Increment, TEST_12) {
 #undef FILE_PATH_10
 #undef FILE_PATH_11
 #undef FILE_PATH_12
+#undef FILE_PATH_13
+#undef FILE_PATH_14
