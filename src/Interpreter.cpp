@@ -5,6 +5,7 @@
 
 #include "Headers/Lib/utility.hpp"
 #include "Headers/Scanner.hpp"
+#include "Headers/Token.hpp"
 #include "Headers/bisayaPP.hpp"
 
 Interpreter::Interpreter() : environment(std::make_shared<Environment>()) {}
@@ -151,9 +152,21 @@ auto Interpreter::visitUnaryExpr(const Unary& Expr) -> void {
       setResult(result, newResult, type);
       break;
     case TokenType::MINUS:
-      utility::checkNumberOperand(Expr.op.type);
+      if (type == TokenType::NUMBER) {
+        tempResult = -std::any_cast<int>(right);
+      } else if (type == TokenType::DECIMAL_NUMBER) {
+        tempResult = -std::any_cast<double>(right);
+      }
+      setResult(result, tempResult, rightType);
+      break;
+    case TokenType::INCREMENT:
       type = TokenType::NUMBER;
-      setResult(result, right, rightType);
+      if (type == TokenType::DECIMAL_NUMBER) {
+        tempResult = std::any_cast<double>(right) + 1;
+      } else if (type == TokenType::NUMBER) {
+        tempResult = std::any_cast<int>(right) + 1;
+      }
+      setResult(result, tempResult, rightType);
       break;
     default:;
   }

@@ -228,6 +228,8 @@ void Scanner::handleMinus() {
 void Scanner::handlePlus() {
   if (utility::isDigit(peek())) {
     number();
+  } else if (match('+')) {
+    addToken(INCREMENT);
   } else {
     addToken(PLUS);
   }

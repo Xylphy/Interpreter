@@ -7,9 +7,10 @@
 #include "Headers/Token.hpp"
 #include "Headers/bisayaPP.hpp"
 
-Parser::Parser(std::vector<Token> &tokens) : tokens(tokens) {}
+Parser::Parser(std::vector<Token> &tokens) : tokens(tokens), hadError(false) {}
 
-Parser::Parser(std::vector<Token> &&tokens) : tokens(std::move(tokens)) {}
+Parser::Parser(std::vector<Token> &&tokens)
+    : tokens(std::move(tokens)), hadError(false) {}
 
 auto Parser::expression() -> std::unique_ptr<Expr> { return assignment(); }
 
@@ -50,7 +51,8 @@ auto Parser::advance() -> Token {
 }
 
 auto Parser::isAtEnd() -> bool {
-  return peek().type == TokenType::END_OF_FILE || peek().type == TokenType::END;
+  return peek().type == TokenType::END_OF_FILE ||
+         peek().type == TokenType::END || hadError;
 }
 
 auto Parser::peek() -> Token { return tokens[current]; }
@@ -118,7 +120,13 @@ auto Parser::primary() -> std::unique_ptr<Expr> {
   }
 
   if (match({TokenType::IDENTIFIER})) {
-    return std::make_unique<Variable>(previous());
+    Token variable = previous();
+    if (match({TokenType::INCREMENT})) {
+      return std::make_unique<Unary>(previous(),
+                                     std::make_unique<Variable>(variable));
+    }
+
+    return std::make_unique<Variable>(variable);
   }
 
   if (match({TokenType::LEFT_PAREN})) {
@@ -138,6 +146,18 @@ auto Parser::consume(TokenType type, const std::string &message) -> Token {
   }
 
   throw ParseError(peek(), message);
+}
+
+auto Parser::checkTokenType(TokenType type, const std::string &message)
+    -> Token {
+  if (check(type)) {
+    return advance();
+  }
+
+  BisayaPP::error(peek(), message);
+  hadError = true;
+
+  return {TokenType::END_OF_FILE, "", nullptr, 0};
 }
 
 auto Parser::error(const Token &token, const std::string &message)
@@ -220,14 +240,42 @@ auto Parser::declaration() -> std::vector<std::unique_ptr<Stmt>> {
   }
 }
 
+auto Parser::findStart() -> void {
+  const size_t size = tokens.size();
+  for (; current < size; current++) {
+    TokenType type = tokens[current].type;
+    if (type == TokenType::START) {
+      break;
+    }
+    if (type != TokenType::SEMICOLON) {
+      BisayaPP::error(tokens[current],
+                      "Expect 'SUGOD' at the beginning of the file.");
+      hadError = true;
+      break;
+    }
+  }
+}
+
+auto Parser::findEnd() -> void {
+  for (size_t index = tokens.size() - 1; index >= 0; index--) {
+    TokenType type = tokens[index].type;
+    if (type == TokenType::END) {
+      break;
+    }
+
+    if (type != TokenType::SEMICOLON && type != TokenType::END_OF_FILE) {
+      BisayaPP::error(tokens[index],
+                      "Expect 'KATAPUSAN' at the end of the file.");
+      hadError = true;
+      break;
+    }
+  }
+}
+
 auto Parser::parse() -> std::vector<std::unique_ptr<Stmt>> {
   try {
-    if (tokens[0].type != TokenType::START) {
-      BisayaPP::error(tokens[0],
-                      "Expect 'SUGOD' at the beginning of the file.");
-    }
-    advance();
-    advance();
+    findStart();
+    findEnd();
 
     std::vector<std::unique_ptr<Stmt>> statements;
     while (!isAtEnd()) {
@@ -237,10 +285,6 @@ auto Parser::parse() -> std::vector<std::unique_ptr<Stmt>> {
                         std::make_move_iterator(decs.end()));
     }
 
-    if (tokens[current].type != TokenType::END) {
-      BisayaPP::error(tokens[current],
-                      "Expect 'KATAPUSAN' at the end of the file.");
-    }
     return statements;
   } catch (const SyntaxError &error) {
     BisayaPP::error(previous(), error.what());
@@ -256,10 +300,7 @@ auto Parser::expressionStatement() -> std::unique_ptr<Stmt> {
 
 auto Parser::printStatement() -> std::unique_ptr<Stmt> {
   std::unique_ptr<Expr> value = expression();
-
-  if (!check(TokenType::SEMICOLON)) {
-    BisayaPP::error(peek(), "Expect newline after value.");
-  }
+  checkTokenType(TokenType::SEMICOLON, "Expect newline after value.");
   return std::make_unique<Print>(std::move(value));
 }
 
@@ -399,15 +440,15 @@ auto Parser::andExpression() -> std::unique_ptr<Expr> {
 }
 
 auto Parser::whileStatement() -> std::unique_ptr<Stmt> {
-  consume(TokenType::LEFT_PAREN, "Expect '(' after 'SAMTANG'.");
+  checkTokenType(TokenType::LEFT_PAREN, "Expect '(' after 'ALANG'.");
   std::unique_ptr<Expr> condition = expression();
-  consume(TokenType::RIGHT_PAREN, "Expect ')' after condition.");
+  checkTokenType(TokenType::RIGHT_PAREN, "Expect ')' after condition.");
 
   return std::make_unique<While>(std::move(condition), statement());
 }
 
 auto Parser::forStatement() -> std::unique_ptr<Stmt> {
-  consume(TokenType::LEFT_PAREN, "Expect 'c' after 'ALANG SA',");
+  checkTokenType(TokenType::LEFT_PAREN, "Expect '(' after 'ALANG SA'.");
 
   std::unique_ptr<Stmt> initializer = nullptr;
   if (match({TokenType::SEMICOLON})) {
@@ -428,14 +469,14 @@ auto Parser::forStatement() -> std::unique_ptr<Stmt> {
     condition = expression();
   }
 
-  consume(TokenType::SEMICOLON, "Expect ';' after loop condition.");
+  checkTokenType(TokenType::SEMICOLON, "Expect ';' after loop condition.");
 
   std::unique_ptr<Expr> increment = nullptr;
   if (!check(TokenType::RIGHT_PAREN)) {
     increment = expression();
   }
 
-  consume(TokenType::RIGHT_PAREN, "Expect ')' after for clauses.");
+  checkTokenType(TokenType::RIGHT_PAREN, "Expect ')' after for clauses.");
 
   if (check(TokenType::SEMICOLON)) {
     advance();

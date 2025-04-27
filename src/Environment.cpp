@@ -1,6 +1,5 @@
 #include "Headers/Environment.hpp"
 
-#include <iterator>
 #include <memory>
 
 #include "Headers/Errors.hpp"

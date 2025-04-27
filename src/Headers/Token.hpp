@@ -31,6 +31,7 @@ enum TokenType : std::uint8_t {
   GREATER_EQUAL,
   LESS,
   LESS_EQUAL,
+  INCREMENT,
 
   // Literals
   IDENTIFIER,

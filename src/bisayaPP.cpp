@@ -27,7 +27,7 @@ void run(const std::string& source) {
           ->parse();
 
   if (hadError) {
-    std::print("An error occurred while parsing the source code.\n");
+    // std::cout << "An error occurred while parsing the source code.\n";
     return;
   }
 
@@ -74,7 +74,6 @@ void runPrompt() {
 void report(size_t line, const std::string& where, const std::string& message) {
   std::cout << "[line " << line << "] Error" << where << ": " << message
             << '\n';
-  //  The line before must be uncommented to set the error flag
   // hadError = true;
 }
 

@@ -28,10 +28,14 @@ class Parser {
   auto peek() -> Token;
   auto previous() -> Token&;
   auto consume(TokenType type, const std::string& message) -> Token;
+  auto checkTokenType(TokenType type, const std::string& message) -> Token;
   auto synchronize() -> void;
   auto block() -> std::vector<std::unique_ptr<Stmt>>;
   auto orExpression() -> std::unique_ptr<Expr>;
   auto andExpression() -> std::unique_ptr<Expr>;
+
+  auto findStart() -> void;
+  auto findEnd() -> void;
 
   auto declaration() -> std::vector<std::unique_ptr<Stmt>>;
   auto varDeclaration(TokenType& type) -> std::unique_ptr<Stmt>;
@@ -49,4 +53,5 @@ class Parser {
 
   std::vector<Token> tokens;
   size_t current = 0;
+  bool hadError;
 };
