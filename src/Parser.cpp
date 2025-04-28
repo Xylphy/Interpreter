@@ -383,7 +383,7 @@ auto Parser::assignment() -> std::unique_ptr<Expr> {
 auto Parser::block() -> std::vector<std::unique_ptr<Stmt>> {
   std::vector<std::unique_ptr<Stmt>> statements;
 
-  consume(TokenType::LEFT_BRACE, "Expect '{' before block.");
+  checkTokenType(TokenType::LEFT_BRACE, "Expect '{' before block.");
 
   if (check(TokenType::SEMICOLON)) {
     advance();
@@ -396,7 +396,7 @@ auto Parser::block() -> std::vector<std::unique_ptr<Stmt>> {
                       std::make_move_iterator(decs.end()));
   }
 
-  consume(TokenType::RIGHT_BRACE, "Expect '}' after block.");
+  checkTokenType(TokenType::RIGHT_BRACE, "Expect '}' after block.");
   if (check(TokenType::SEMICOLON)) {
     advance();
   }
@@ -405,9 +405,9 @@ auto Parser::block() -> std::vector<std::unique_ptr<Stmt>> {
 }
 
 auto Parser::ifStatement() -> std::unique_ptr<Stmt> {
-  consume(TokenType::LEFT_PAREN, "Expect '(' after 'KUNG'.");
+  checkTokenType(TokenType::LEFT_PAREN, "Expect '(' after 'KUNG'.");
   std::unique_ptr<Expr> condition = expression();
-  consume(TokenType::RIGHT_PAREN, "Expect ')' after condition.");
+  checkTokenType(TokenType::RIGHT_PAREN, "Expect ')' after condition.");
 
   if (check(TokenType::SEMICOLON)) {
     advance();
