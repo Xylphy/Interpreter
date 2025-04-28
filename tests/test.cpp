@@ -3,6 +3,7 @@
 #include "includes/declare.hpp"
 #include "includes/forLoop.hpp"
 #include "includes/ifStatements.hpp"
+#include "includes/increment.hpp"
 #include "includes/input.hpp"
 #include "includes/samplePrograms.hpp"
 #include "includes/scope.hpp"

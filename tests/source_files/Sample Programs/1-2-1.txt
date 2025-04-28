@@ -1,0 +1,11 @@
+SUGOD
+	MUGNA TINUOD a = "OO", b = "DILI", c = OO
+	DAWAT: a
+KATAPUSAN
+
+SUGOD
+	MUGNA NUMERO a = 3, b = 4, c, d
+	DAWAT: c
+	d = (3 + 4) * c
+	IPAKITA: d
+KATAPUSAN

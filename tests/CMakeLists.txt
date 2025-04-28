@@ -16,6 +16,7 @@ add_executable(tests
     "includes/samplePrograms.hpp"
     "includes/scope.hpp"
     "includes/shortCircuit.hpp"
+    "includes/increment.hpp"
 
     "utils.cpp"
     test.cpp

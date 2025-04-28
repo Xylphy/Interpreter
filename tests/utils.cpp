@@ -5,6 +5,7 @@
 #include <iostream>
 #include <sstream>
 #include <streambuf>
+#include <string>
 
 #include "../src/Headers/bisayaPP.hpp"
 
@@ -23,9 +24,14 @@ auto test_assertEqual(const std::string&& path, const std::string& expected)
 }
 
 auto test_assertEqualWithInput(const std::string&& path,
-                               const std::string& input,
+                               const std::initializer_list<std::string> input,
                                const std::string&& expected) -> void {
-  std::stringstream inputBuffer(input);
+  std::stringstream inputBuffer;
+
+  for (const std::string& line : input) {
+    inputBuffer << line << '\n';
+  }
+
   std::streambuf* oldIn = std::cin.rdbuf(inputBuffer.rdbuf());
 
   std::stringstream outputBuffer;
