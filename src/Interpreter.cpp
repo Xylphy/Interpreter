@@ -159,15 +159,6 @@ auto Interpreter::visitUnaryExpr(const Unary& Expr) -> void {
       }
       setResult(result, tempResult, rightType);
       break;
-    case TokenType::INCREMENT:
-      type = TokenType::NUMBER;
-      if (type == TokenType::DECIMAL_NUMBER) {
-        tempResult = std::any_cast<double>(right) + 1;
-      } else if (type == TokenType::NUMBER) {
-        tempResult = std::any_cast<int>(right) + 1;
-      }
-      setResult(result, tempResult, rightType);
-      break;
     default:;
   }
 }

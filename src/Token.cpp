@@ -2,7 +2,7 @@
 
 #include <ostream>
 
-Token::Token(TokenType type, std::string lexeme, std::any literal, int line)
+Token::Token(TokenType type, std::string lexeme, std::any literal, size_t line)
     : type(type),
       lexeme(std::move(lexeme)),
       literal(std::move(literal)),

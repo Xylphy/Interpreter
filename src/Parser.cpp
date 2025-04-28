@@ -122,8 +122,13 @@ auto Parser::primary() -> std::unique_ptr<Expr> {
   if (match({TokenType::IDENTIFIER})) {
     Token variable = previous();
     if (match({TokenType::INCREMENT})) {
-      return std::make_unique<Unary>(previous(),
-                                     std::make_unique<Variable>(variable));
+      // return std::make_unique<Unary>(previous(),
+      //                                std::make_unique<Variable>(variable));
+      return std::make_unique<Assign>(
+          variable, std::make_unique<Binary>(
+                        std::make_unique<Variable>(variable),
+                        Token(TokenType::PLUS, "+", nullptr, variable.line),
+                        std::make_unique<Literal>(1, TokenType::NUMBER)));
     }
 
     return std::make_unique<Variable>(variable);
