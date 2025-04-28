@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <print>
 
+#include "Headers/Expr.hpp"
 #include "Headers/Lib/utility.hpp"
 #include "Headers/Token.hpp"
 #include "Headers/bisayaPP.hpp"
@@ -122,8 +123,6 @@ auto Parser::primary() -> std::unique_ptr<Expr> {
   if (match({TokenType::IDENTIFIER})) {
     Token variable = previous();
     if (match({TokenType::INCREMENT})) {
-      // return std::make_unique<Unary>(previous(),
-      //                                std::make_unique<Variable>(variable));
       return std::make_unique<Assign>(
           variable, std::make_unique<Binary>(
                         std::make_unique<Variable>(variable),
@@ -132,6 +131,15 @@ auto Parser::primary() -> std::unique_ptr<Expr> {
     }
 
     return std::make_unique<Variable>(variable);
+  }
+
+  if (match({TokenType::INCREMENT})) {
+    checkTokenType(TokenType::IDENTIFIER, "Expect variable after '++'.");
+    return std::make_unique<Assign>(
+        previous(), std::make_unique<Binary>(
+                        std::make_unique<Variable>(previous()),
+                        Token(TokenType::PLUS, "+", nullptr, previous().line),
+                        std::make_unique<Literal>(1, TokenType::NUMBER)));
   }
 
   if (match({TokenType::LEFT_PAREN})) {
