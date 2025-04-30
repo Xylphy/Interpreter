@@ -15,8 +15,8 @@ void report(size_t line, const std::string& where, const std::string& message);
 void error(const Token& token, const std::string& message);
 void runtimeError(const RuntimeError& error);
 
-// Resets the interpreter state
+// Resets the program state
 // Used especially for test cases
-void resetInterpreter();
+void resetProgramState();
 
 }  // namespace BisayaPP

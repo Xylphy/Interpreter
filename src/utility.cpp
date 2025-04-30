@@ -1,7 +1,14 @@
 #include "Headers/Lib/utility.hpp"
 
+#include <functional>
 #include <stdexcept>
-#include <string>  // For MSVC Compiler
+#include <typeindex>
+#include <unordered_map>
+#include <utility>
+
+#if defined(_MSC_VER)
+#include <string>
+#endif
 
 #include "Headers/Errors.hpp"
 #include "Headers/Token.hpp"
@@ -53,12 +60,14 @@ auto convertData(const TokenType& type, std::any& value) -> void {
 auto checkValidOperation(const std::any& left, TokenType type,
                          const std::any& right) -> bool {
   switch (type) {
+    case TokenType::BANG_EQUAL:
+    case TokenType::EQUAL_EQUAL:
+      return (isCharacter(left) && isCharacter(right)) ||
+             (isArithmetic(left) && isArithmetic(right));
     case TokenType::GREATER:
     case TokenType::GREATER_EQUAL:
     case TokenType::LESS:
     case TokenType::LESS_EQUAL:
-    case TokenType::BANG_EQUAL:
-    case TokenType::EQUAL_EQUAL:
     case TokenType::MINUS:
     case TokenType::PLUS:
     case TokenType::SLASH:
@@ -85,6 +94,11 @@ auto isArithmetic(const std::any& value) -> bool {
   return type == typeid(int) || type == typeid(double);
 }
 
+auto isCharacter(const std::any& value) -> bool {
+  const std::type_info& type = value.type();
+  return type == typeid(char);
+}
+
 auto isAlpha(char character) noexcept -> bool {
   return (character >= 'a' && character <= 'z') ||
          (character >= 'A' && character <= 'Z') || character == '_' ||
@@ -103,11 +117,11 @@ auto validAssignment(const TokenType& tokenType) -> bool {
   return tokenType != TokenType::STRING_LITERAL;
 }
 
-auto checkNumberOperands(const TokenType& left, const Token& token,
-                         const TokenType& right) -> void {
+auto checkOperands(const TokenType& left, const Token& token,
+                   const TokenType& right) -> void {
   try {
-    checkNumberOperand(left);
-    checkNumberOperand(right);
+    checkOperand(left);
+    checkOperand(right);
   } catch (const RuntimeError& error) {
     throw RuntimeError(token, "Operands must be numbers.");
   } catch (const std::runtime_error& error) {
@@ -115,9 +129,10 @@ auto checkNumberOperands(const TokenType& left, const Token& token,
   }
 }
 
-auto checkNumberOperand(const TokenType& tokenType) -> void {
+auto checkOperand(const TokenType& tokenType) -> void {
   if (tokenType == TokenType::NUMBER ||
-      tokenType == TokenType::DECIMAL_NUMBER) {
+      tokenType == TokenType::DECIMAL_NUMBER ||
+      tokenType == TokenType::CHARACTER_LITERAL) {
     return;
   }
 
@@ -198,4 +213,71 @@ auto typeToLiteralType(const TokenType& type) -> TokenType {
       return TokenType::NIL;
   }
 }
+
+auto doOperation(const char& left, TokenType operation, const char& right)
+    -> std::any {
+  switch (operation) {
+    case TokenType::BANG_EQUAL:
+      return notEqual(left, right);
+    case TokenType::EQUAL_EQUAL:
+      return equal(left, right);
+    case TokenType::GREATER:
+      return greaterThan(left, right);
+    case TokenType::GREATER_EQUAL:
+      return greaterThanOrEqual(left, right);
+    case TokenType::LESS:
+      return lessThan(left, right);
+    case TokenType::LESS_EQUAL:
+      return lessThanOrEqual(left, right);
+    case TokenType::CONCATENATOR:
+      return std::string(1, left).append(1, right);
+    default:
+      throw std::runtime_error("Invalid operation for char operands");
+  }
+}
+
+void doOperation(TokenType& leftType, std::any& left, TokenType& rightType,
+                 std::any& right, std::any& tempResult,
+                 const TokenType& exprTokenType) {
+  if (leftType == TokenType::NUMBER && rightType == TokenType::NUMBER) {
+    tempResult = utility::doOperation(std::any_cast<int>(left), exprTokenType,
+                                      std::any_cast<int>(right));
+  } else if (leftType == TokenType::NUMBER &&
+             rightType == TokenType::DECIMAL_NUMBER) {
+    tempResult = utility::doOperation(std::any_cast<int>(left), exprTokenType,
+                                      std::any_cast<double>(right));
+  } else if (leftType == TokenType::DECIMAL_NUMBER &&
+             rightType == TokenType::NUMBER) {
+    tempResult = utility::doOperation(std::any_cast<double>(left),
+                                      exprTokenType, std::any_cast<int>(right));
+  } else if (leftType == TokenType::DECIMAL_NUMBER &&
+             rightType == TokenType::DECIMAL_NUMBER) {
+    tempResult =
+        utility::doOperation(std::any_cast<double>(left), exprTokenType,
+                             std::any_cast<double>(right));
+  } else if (leftType == TokenType::CHARACTER_LITERAL &&
+             rightType == TokenType::CHARACTER_LITERAL) {
+    tempResult = utility::doOperation(std::any_cast<char>(left), exprTokenType,
+                                      std::any_cast<char>(right));
+  } else if (leftType == TokenType::CHARACTER_LITERAL &&
+             rightType == TokenType::NUMBER) {
+    tempResult = utility::doOperation(std::any_cast<char>(left), exprTokenType,
+                                      std::any_cast<int>(right));
+  } else if (leftType == TokenType::NUMBER &&
+             rightType == TokenType::CHARACTER_LITERAL) {
+    tempResult = utility::doOperation(std::any_cast<int>(left), exprTokenType,
+                                      std::any_cast<char>(right));
+  } else if (leftType == TokenType::CHARACTER_LITERAL &&
+             rightType == TokenType::DECIMAL_NUMBER) {
+    tempResult = utility::doOperation(std::any_cast<char>(left), exprTokenType,
+                                      std::any_cast<double>(right));
+  } else if (leftType == TokenType::DECIMAL_NUMBER &&
+             rightType == TokenType::CHARACTER_LITERAL) {
+    tempResult = utility::doOperation(
+        std::any_cast<double>(left), exprTokenType, std::any_cast<char>(right));
+  } else {
+    throw std::runtime_error("Invalid operation");
+  }
+}
+
 }  // namespace utility

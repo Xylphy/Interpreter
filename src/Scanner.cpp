@@ -114,7 +114,7 @@ void Scanner::identifier() {
 
 void Scanner::escapeChar() {
   start = current++;
-  addToken(CHARACTER_LITERAL, source.substr(start, current - start));
+  addToken(CHARACTER_LITERAL, source.substr(start, current - start)[0]);
   advance();
 }
 

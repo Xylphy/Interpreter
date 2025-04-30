@@ -32,6 +32,12 @@ void run(const std::string& source) {
   }
 
   interpreter.setInterpretResult(statements);
+
+  if (hadRuntimeError) {
+    std::cout
+        << "A runtime error occurred while interpreting the source code.\n";
+    return;
+  }
 }
 
 auto runFile(const char* path) -> int {
@@ -94,5 +100,8 @@ void runtimeError(const RuntimeError& runtimeError) {
   hadRuntimeError = true;
 }
 
-void resetInterpreter() { interpreter.resetInterpreter(); }
+void resetProgramState() { 
+  hadError = false;
+  hadRuntimeError = false;
+  interpreter.resetInterpreter(); }
 }  // namespace BisayaPP

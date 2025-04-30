@@ -1,5 +1,6 @@
 #include "Headers/Interpreter.hpp"
 
+#include <functional>
 #include <iostream>
 #include <memory>
 
@@ -76,30 +77,13 @@ auto Interpreter::visitBinaryExpr(const Binary& Expr) -> void {
   std::any tempResult;
 
   try {
-    utility::checkNumberOperands(
+    utility::checkOperands(
         leftType, Expr.op,
-        rightType);  // throws RuntimeError if not numbers
+        rightType);  // throws RuntimeError if not numbers or characters
     const TokenType& exprTokenType = Expr.op.type;
 
-    if (leftType == TokenType::NUMBER && rightType == TokenType::NUMBER) {
-      tempResult = utility::numericOperation(
-          std::any_cast<int>(left), exprTokenType, std::any_cast<int>(right));
-    } else if (leftType == TokenType::NUMBER &&
-               rightType == TokenType::DECIMAL_NUMBER) {
-      tempResult =
-          utility::numericOperation(std::any_cast<int>(left), exprTokenType,
-                                    std::any_cast<double>(right));
-    } else if (leftType == TokenType::DECIMAL_NUMBER &&
-               rightType == TokenType::NUMBER) {
-      tempResult =
-          utility::numericOperation(std::any_cast<double>(left), exprTokenType,
-                                    std::any_cast<int>(right));
-    } else if (leftType == TokenType::DECIMAL_NUMBER &&
-               rightType == TokenType::DECIMAL_NUMBER) {
-      tempResult =
-          utility::numericOperation(std::any_cast<double>(left), exprTokenType,
-                                    std::any_cast<double>(right));
-    }
+    utility::doOperation(leftType, left, rightType, right, tempResult,
+                         exprTokenType);
 
     if (tempResult.type() == typeid(int)) {
       type = TokenType::NUMBER;

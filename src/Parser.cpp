@@ -51,6 +51,12 @@ auto Parser::advance() -> Token {
   return previous();
 }
 
+auto Parser::skipConsecutiveTokens(TokenType token) -> void {
+  while (check(token)) {
+    advance();
+  }
+}
+
 auto Parser::isAtEnd() -> bool {
   return peek().type == TokenType::END_OF_FILE ||
          peek().type == TokenType::END || hadError;
@@ -258,6 +264,7 @@ auto Parser::findStart() -> void {
   for (; current < size; current++) {
     TokenType type = tokens[current].type;
     if (type == TokenType::START) {
+      current++;
       break;
     }
     if (type != TokenType::SEMICOLON) {
@@ -397,9 +404,7 @@ auto Parser::block() -> std::vector<std::unique_ptr<Stmt>> {
   }
 
   checkTokenType(TokenType::RIGHT_BRACE, "Expect '}' after block.");
-  if (check(TokenType::SEMICOLON)) {
-    advance();
-  }
+  skipConsecutiveTokens(TokenType::SEMICOLON);
 
   return statements;
 }
@@ -409,9 +414,7 @@ auto Parser::ifStatement() -> std::unique_ptr<Stmt> {
   std::unique_ptr<Expr> condition = expression();
   checkTokenType(TokenType::RIGHT_PAREN, "Expect ')' after condition.");
 
-  if (check(TokenType::SEMICOLON)) {
-    advance();
-  }
+  skipConsecutiveTokens(TokenType::SEMICOLON);
 
   std::unique_ptr<Stmt> thenBranch = statement();
   std::unique_ptr<Stmt> elseBranch = nullptr;

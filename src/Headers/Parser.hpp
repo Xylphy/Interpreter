@@ -36,6 +36,7 @@ class Parser {
 
   auto findStart() -> void;
   auto findEnd() -> void;
+  auto skipConsecutiveTokens(TokenType token) -> void;
 
   auto declaration() -> std::vector<std::unique_ptr<Stmt>>;
   auto varDeclaration(TokenType& type) -> std::unique_ptr<Stmt>;

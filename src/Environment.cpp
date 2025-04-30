@@ -6,8 +6,6 @@
 #include "Headers/Lib/utility.hpp"
 #include "Headers/Token.hpp"
 
-Environment::Environment() : enclosing(nullptr) {}
-
 Environment::Environment(std::shared_ptr<Environment> enclosing)
     : enclosing(std::move(enclosing)) {}
 

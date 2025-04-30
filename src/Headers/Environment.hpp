@@ -6,7 +6,7 @@
 
 class Environment {
  public:
-  Environment();
+  Environment() = default;
   Environment(std::shared_ptr<Environment> enclosing);
 
   auto defineVar(const Token& token, const std::any& value, TokenType type)
