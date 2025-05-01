@@ -47,4 +47,5 @@ class Interpreter : public ExprVisitor, public StmtVisitor {
   std::shared_ptr<Environment> environment;
   TokenType type;
   std::any result;
+  bool hadError = false;
 };

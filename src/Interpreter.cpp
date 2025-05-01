@@ -4,6 +4,7 @@
 #include <iostream>
 #include <memory>
 
+#include "Headers/Errors.hpp"
 #include "Headers/Lib/utility.hpp"
 #include "Headers/Scanner.hpp"
 #include "Headers/Token.hpp"
@@ -29,24 +30,29 @@ auto Interpreter::setResult(std::any& toSet, const std::any& toGet,
 
 auto Interpreter::setInterpretResult(const std::unique_ptr<Expr>& expr)
     -> void {
-  expr->accept(*this);
+  if (!hadError) {
+    expr->accept(*this);
+  }
 }
 
 auto Interpreter::setInterpretResult(
     const std::vector<std::unique_ptr<Stmt>>& statements) -> void {
   try {
-    for (const std::unique_ptr<Stmt>& statement : statements) {
-      execute(statement);
+    for (size_t i = 0; i < statements.size() && !hadError; i++) {
+      execute(statements[i]);
     }
   } catch (const RuntimeError& error) {
     BisayaPP::runtimeError(error);
+    hadError = true;
   } catch (const SyntaxError& error) {
     BisayaPP::error(error.token, error.what());
   }
 }
 
 auto Interpreter::execute(const std::unique_ptr<Stmt>& statement) -> void {
-  statement->accept(*this);
+  if (!hadError) {
+    statement->accept(*this);
+  }
 }
 
 auto Interpreter::evaluate(const std::unique_ptr<Expr>& expression) -> bool {
@@ -55,6 +61,7 @@ auto Interpreter::evaluate(const std::unique_ptr<Expr>& expression) -> bool {
     return true;
   } catch (RuntimeError& error) {
     BisayaPP::runtimeError(error);
+    hadError = true;
     return false;
   }
 }
@@ -148,7 +155,9 @@ auto Interpreter::visitUnaryExpr(const Unary& Expr) -> void {
 }
 
 auto Interpreter::setPrintResult(const std::unique_ptr<Expr>& expr) -> void {
-  expr->accept(*this);
+  if (!hadError) {
+    expr->accept(*this);
+  }
 }
 
 auto Interpreter::visitExpressionStmt(const Expression& Stmt) -> void {
@@ -218,7 +227,9 @@ auto Interpreter::visitAssignExpr(const Assign& Expr) -> void {
 }
 
 auto Interpreter::visitBlockStmt(const Block& Stmt) -> void {
-  executeBlock(Stmt.statements, std::make_shared<Environment>(environment));
+  if (!hadError) {
+    executeBlock(Stmt.statements, std::make_shared<Environment>(environment));
+  }
 }
 
 auto Interpreter::executeBlock(
@@ -248,7 +259,7 @@ auto Interpreter::visitWhileStmt(const While& Stmt) -> void {
   evaluate(Stmt.condition);
 
   try {
-    while (utility::isTruthy(result)) {
+    while (utility::isTruthy(result) && !hadError) {
       execute(Stmt.body);
       evaluate(Stmt.condition);
     }
@@ -276,5 +287,6 @@ auto Interpreter::visitLogicalExpr(const Logical& Expr) -> void {
 auto Interpreter::resetInterpreter() -> void {
   environment = std::make_shared<Environment>();
   result = {};
+  hadError = false;
   type = TokenType::UNITIALIZED;
 }

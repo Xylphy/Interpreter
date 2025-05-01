@@ -3,6 +3,7 @@
 
 #include "Errors.hpp"
 #include "Stmt.hpp"
+#include "Token.hpp"
 
 class Parser {
  public:
@@ -44,7 +45,7 @@ class Parser {
   auto statement() -> std::unique_ptr<Stmt>;
   auto printStatement() -> std::unique_ptr<Stmt>;
   auto inputStatement() -> std::unique_ptr<Stmt>;
-  auto expressionStatement() -> std::unique_ptr<Stmt>;
+  auto expressionStatement(TokenType endToken) -> std::unique_ptr<Stmt>;
   auto ifStatement() -> std::unique_ptr<Stmt>;
   auto whileStatement() -> std::unique_ptr<Stmt>;
   auto forStatement() -> std::unique_ptr<Stmt>;

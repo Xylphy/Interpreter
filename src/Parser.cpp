@@ -312,9 +312,9 @@ auto Parser::parse() -> std::vector<std::unique_ptr<Stmt>> {
   }
 }
 
-auto Parser::expressionStatement() -> std::unique_ptr<Stmt> {
+auto Parser::expressionStatement(TokenType endToken) -> std::unique_ptr<Stmt> {
   std::unique_ptr<Expr> value = expression();
-  consume(TokenType::SEMICOLON, "Expect newline after expression.");
+  consume(endToken, "Expect newline after expression.");
   return std::make_unique<Expression>(std::move(value));
 }
 
@@ -367,7 +367,7 @@ auto Parser::statement() -> std::unique_ptr<Stmt> {
     throw SyntaxError(previous(), "Expected 'PUNDOK' before '{'.");
   }
 
-  return expressionStatement();
+  return expressionStatement(TokenType::SEMICOLON);
 }
 
 auto Parser::assignment() -> std::unique_ptr<Expr> {
@@ -468,7 +468,7 @@ auto Parser::forStatement() -> std::unique_ptr<Stmt> {
   checkTokenType(TokenType::LEFT_PAREN, "Expect '(' after 'ALANG SA'.");
 
   std::unique_ptr<Stmt> initializer = nullptr;
-  if (match({TokenType::SEMICOLON})) {
+  if (match({TokenType::COMMA})) {
     initializer = nullptr;
   } else if (match({TokenType::VAR})) {
     if (match({TokenType::INTEGER, TokenType::DECIMAL, TokenType::CHAR,
@@ -478,15 +478,15 @@ auto Parser::forStatement() -> std::unique_ptr<Stmt> {
       BisayaPP::error(previous(), "Expect data type after 'VAR'.");
     }
   } else {
-    initializer = expressionStatement();
+    initializer = expressionStatement(TokenType::COMMA);
   }
 
   std::unique_ptr<Expr> condition = nullptr;
-  if (!check(TokenType::SEMICOLON)) {
+  if (!check(TokenType::COMMA)) {
     condition = expression();
   }
 
-  checkTokenType(TokenType::SEMICOLON, "Expect ';' after loop condition.");
+  checkTokenType(TokenType::COMMA, "Expect ',' after loop condition.");
 
   std::unique_ptr<Expr> increment = nullptr;
   if (!check(TokenType::RIGHT_PAREN)) {
@@ -495,9 +495,7 @@ auto Parser::forStatement() -> std::unique_ptr<Stmt> {
 
   checkTokenType(TokenType::RIGHT_PAREN, "Expect ')' after for clauses.");
 
-  if (check(TokenType::SEMICOLON)) {
-    advance();
-  }
+  skipConsecutiveTokens(TokenType::SEMICOLON);
 
   std::vector<std::unique_ptr<Stmt>> whileBody;
   whileBody.emplace_back(statement());
