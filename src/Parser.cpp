@@ -423,6 +423,7 @@ auto Parser::ifStatement() -> std::unique_ptr<Stmt> {
     if (match({TokenType::BANG})) {
       elseBranch = ifStatement();
     } else if (match({TokenType::ELSE})) {
+      skipConsecutiveTokens(TokenType::SEMICOLON);
       elseBranch = statement();
     } else {
       BisayaPP::error(previous(), "Expect 'KUNG' or 'DILI' after 'KUNG'.");
