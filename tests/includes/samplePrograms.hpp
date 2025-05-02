@@ -33,14 +33,14 @@
 
 #endif
 
-TEST(Sample_Programs, Test_1) { test_assertEqual(FILE_PATH_1, "[-60]"); }
+TEST(Sample_Programs, Test_1) { test_assertEqual(FILE_PATH_1, "[-60\x1]"); }
 
 TEST(Sample_Programs, Test_2) { test_assertEqual(FILE_PATH_2, "OO"); }
 
 TEST(Sample_Programs, Test_3) {
   test_assertEqual(FILE_PATH_3,
                    "4OO5\n\x1"
-                   "c#last");
+                   "c\x1#last");
 }
 
 TEST(Sample_Programs, Test_4) { test_assertEqual(FILE_PATH_4, "25"); }
@@ -54,24 +54,28 @@ TEST(Sample_Programs, Test_6) { test_assertEqual(FILE_PATH_6, "OO"); }
 TEST(Sample_Programs, Test_7) {
   test_assertEqual(
       FILE_PATH_7,
-      "[line 2] Error at 'wrongType': Invalid assignment target.\n");
+      "[line 2] Error at 'wrongType': Invalid assignment target.\nA runtime "
+      "error occurred while interpreting the source code.\n");
 }
 
 TEST(Sample_Programs, Test_8) {
   test_assertEqual(
       FILE_PATH_8,
-      "[line 2] Error at 'undefinedVar': Undefined variable 'undefinedVar'.\n");
+      "[line 2] Error at 'undefinedVar': Undefined variable 'undefinedVar'.\nA "
+      "runtime error occurred while interpreting the source code.\n");
 }
 
 TEST(Sample_Programs, Test_9) {
   test_assertEqual(FILE_PATH_9,
-                   "[line 3] Error at 'x': Undefined variable 'x'.\n");
+                   "[line 3] Error at 'x': Undefined variable 'x'.\nA runtime "
+                   "error occurred while interpreting the source code.\n");
 }
 
 TEST(Sample_Programs, Test_10) {
   test_assertEqual(FILE_PATH_10,
-                   "OO\nDILI\nOO\nOO\nOO\nOO\nDILI\nOO\n[line 10] Error at "
-                   "'==': Invalid operation\n5\n5\n20\n5\n1\n");
+                   "DILI\nOO\nDILI\nOO\nOO\nOO\nOO\nDILI\nOO\n[line 10] Error "
+                   "at '==': Invalid operation\nA runtime error occurred while "
+                   "interpreting the source code.\n");
 }
 
 #undef FILE_PATH_1

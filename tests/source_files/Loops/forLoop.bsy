@@ -3,7 +3,7 @@ SUGOD
     MUGNA NUMERO a = 0
     MUGNA NUMERO lumalabay
 
-    ALANG SA(MUGNA NUMERO b = 1; a < 100000; b = lumalabay + b) 
+    ALANG SA(MUGNA NUMERO b = 1, a < 100000, b = lumalabay + b) 
     PUNDOK{
         IPAKITA: a & $
         lumalabay = a

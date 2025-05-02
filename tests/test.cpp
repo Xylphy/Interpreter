@@ -4,6 +4,7 @@
 #include "includes/forLoop.hpp"
 #include "includes/ifStatements.hpp"
 #include "includes/increment.hpp"
+#include "includes/increment2.hpp"
 #include "includes/input.hpp"
 #include "includes/samplePrograms.hpp"
 #include "includes/scope.hpp"

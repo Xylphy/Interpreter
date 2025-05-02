@@ -38,12 +38,14 @@ TEST(Increment, Test_1) { test_assertEqual(FILE_PATH_1, ""); }
 
 TEST(Increment, Test_2) {
   test_assertEqual(FILE_PATH_2,
-                   "[line 3] Error at 'NUMERO': Expect variable name.\n");
+                   "[line 3] Error at 'NUMERO': Expect variable name.\nAn "
+                   "error occurred while parsing the source code.\n");
 }
 
 TEST(Increment, Test_3) {
   test_assertEqual(FILE_PATH_3,
-                   "[line 2] Error at '7': Expect variable name.\n");
+                   "[line 2] Error at '7': Expect variable name.\nAn "
+                   "error occurred while parsing the source code.\n");
 }
 
 TEST(Increment, Test_4) { test_assertEqual(FILE_PATH_4, ""); }
@@ -54,19 +56,20 @@ TEST(Increment, Test_6) { test_assertEqual(FILE_PATH_6, "-5"); }
 
 TEST(Increment, Test_7) { test_assertEqual(FILE_PATH_7, "-2"); }
 
-TEST(Increment, Test_8) { test_assertEqual(FILE_PATH_8, "&-5&2&"); }
+TEST(Increment, Test_8) {
+  test_assertEqual(FILE_PATH_8,
+                   "&-5\x1&2\x1&");  // \x1 is a SOH non-printable character
+}
 
 TEST(Increment, Test_9) {
   test_assertEqual(FILE_PATH_9,
-                   "\x1"
-                   "a\x1"
-                   "b");
+                   "ab");
 }
 
 TEST(Increment, Test_10) {
   test_assertEqual(FILE_PATH_10,
-                   "[line 5] Error at 'b': Expect newline after value.\n\x1"
-                   "a");
+                   "[line 5] Error at 'b': Expect newline after value.\nAn "
+                   "error occurred while parsing the source code.\n");
 }
 
 TEST(Increment, TEST_11) {
@@ -78,8 +81,10 @@ TEST(Increment, TEST_12) {
 }
 
 TEST(Increment, TEST_13) {
-  test_assertEqual(FILE_PATH_13,
-                   "[line 2] Error at 'OO': Undefined variable 'OO'.\n");
+  test_assertEqual(
+      FILE_PATH_13,
+      "[line 2] Error at 'OO': Undefined variable 'OO'.\nA runtime error "
+      "occurred while interpreting the source code.\n");
 }
 
 TEST(Increment, TEST_14) {
