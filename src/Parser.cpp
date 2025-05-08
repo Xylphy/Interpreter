@@ -211,6 +211,7 @@ void Parser::synchronize() {
 auto Parser::varDeclaration(TokenType &type) -> std::unique_ptr<Stmt> {
   if (!check(TokenType::IDENTIFIER)) {
     BisayaPP::error(peek(), "Expect variable name.");
+    hadError = true;
   }
   Token name = advance();
   name.type = type;
@@ -241,7 +242,8 @@ auto Parser::declaration() -> std::vector<std::unique_ptr<Stmt>> {
          peek().type == TokenType::BOOL)) {
       advance();
 
-      TokenType dataType = previous().type;
+      TokenType dataType = previous().type;  // MUGNA NUMERO a = 5 + 5
+
       std::vector<std::unique_ptr<Stmt>> declarations;
       do {
         declarations.emplace_back(varDeclaration(dataType));
@@ -298,7 +300,7 @@ auto Parser::parse() -> std::vector<std::unique_ptr<Stmt>> {
     findEnd();
 
     std::vector<std::unique_ptr<Stmt>> statements;
-    while (!isAtEnd()) {
+    while (!isAtEnd() && !hadError) {
       std::vector<std::unique_ptr<Stmt>> decs = declaration();
       statements.reserve(statements.size() + decs.size());
       statements.insert(statements.end(), std::make_move_iterator(decs.begin()),
@@ -460,6 +462,8 @@ auto Parser::whileStatement() -> std::unique_ptr<Stmt> {
   checkTokenType(TokenType::LEFT_PAREN, "Expect '(' after 'ALANG'.");
   std::unique_ptr<Expr> condition = expression();
   checkTokenType(TokenType::RIGHT_PAREN, "Expect ')' after condition.");
+
+  skipConsecutiveTokens(TokenType::SEMICOLON);
 
   return std::make_unique<While>(std::move(condition), statement());
 }

@@ -1,6 +1,5 @@
 #include "Headers/Interpreter.hpp"
 
-#include <functional>
 #include <iostream>
 #include <memory>
 

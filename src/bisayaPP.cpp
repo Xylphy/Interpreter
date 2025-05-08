@@ -100,8 +100,9 @@ void runtimeError(const RuntimeError& runtimeError) {
   hadRuntimeError = true;
 }
 
-void resetProgramState() { 
+void resetProgramState() {
   hadError = false;
   hadRuntimeError = false;
-  interpreter.resetInterpreter(); }
+  interpreter.resetInterpreter();
+}
 }  // namespace BisayaPP

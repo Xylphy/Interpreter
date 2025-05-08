@@ -1,9 +1,9 @@
 #pragma once
 
 #include <sys/types.h>
+
 #include <cmath>
 #include <string>
-#include <variant>
 
 #include "../Token.hpp"  // IWYU pragma: export
 

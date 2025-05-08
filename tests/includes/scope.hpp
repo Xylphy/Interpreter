@@ -5,7 +5,7 @@
 
 #if defined(_MSC_VER)
 #define FILE_PATH_1 "../../../tests/source_files/Scopes/scope.bsy"
-#else
+#else 
 #define FILE_PATH_1 "../../tests/source_files/Scopes/scope.bsy"
 #endif
 
