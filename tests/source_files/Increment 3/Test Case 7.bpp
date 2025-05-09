@@ -1,0 +1,15 @@
+SUGOD
+ 
+  MUGNA NUMERO x, y
+  DAWAT: x
+ 
+  ALANG SA (y = 0, y <= x, y++) 
+  PUNDOK {
+ 
+    KUNG (y > 5)
+    PUNDOK {
+      IPAKITA: y
+    }
+ 
+  }
+KATAPUSAN

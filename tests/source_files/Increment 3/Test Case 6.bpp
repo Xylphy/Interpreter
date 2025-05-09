@@ -1,0 +1,27 @@
+SUGOD
+    MUGNA NUMERO edad
+    DAWAT: edad
+    KUNG (edad >= 18)
+    PUNDOK{
+        KUNG (edad >= 60)
+        PUNDOK{
+            IPAKITA: "Senior"
+        }
+        KUNG WALA
+        PUNDOK{
+            IPAKITA: "Adult"
+        }
+    }
+    KUNG DILI (edad >= 13)
+    PUNDOK{
+        IPAKITA: "Teen"
+    }
+    KUNG DILI (edad >= 6)
+    PUNDOK{
+        IPAKITA: "Child"
+    }
+    KUNG WALA
+    PUNDOK{
+        IPAKITA: "Toddler"
+    }
+KATAPUSAN

@@ -1,7 +1,11 @@
 SUGOD
 MUGNA NUMERO a = 2
-ALANG(a <= 5)
+MUGNA NUMERO n
+
+DAWAT: n
+ALANG(a <= n)
 PUNDOK{
     IPAKITA: a & $
+    a++
 }
 KATAPUSAN

@@ -8,7 +8,7 @@
 #define FILE_PATH_1 "../../tests/source_files/Loops/forLoop.bsy"
 #endif
 
-TEST(Interpreter, FOR_LOOP) {
+TEST(ForLoop, TEST_1) {
   test_assertEqual(
       FILE_PATH_1,
       "0\n1\n1\n2\n3\n5\n8\n13\n21\n34\n55\n89\n144\n233\n377\n610\n987\n"

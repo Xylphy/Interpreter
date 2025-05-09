@@ -415,12 +415,9 @@ auto Parser::ifStatement() -> std::unique_ptr<Stmt> {
   checkTokenType(TokenType::LEFT_PAREN, "Expect '(' after 'KUNG'.");
   std::unique_ptr<Expr> condition = expression();
   checkTokenType(TokenType::RIGHT_PAREN, "Expect ')' after condition.");
-
   skipConsecutiveTokens(TokenType::SEMICOLON);
-
   std::unique_ptr<Stmt> thenBranch = statement();
   std::unique_ptr<Stmt> elseBranch = nullptr;
-
   if (match({TokenType::IF})) {
     if (match({TokenType::BANG})) {
       elseBranch = ifStatement();
@@ -431,7 +428,6 @@ auto Parser::ifStatement() -> std::unique_ptr<Stmt> {
       BisayaPP::error(previous(), "Expect 'KUNG' or 'DILI' after 'KUNG'.");
     }
   }
-
   return std::make_unique<If>(std::move(condition), std::move(thenBranch),
                               std::move(elseBranch));
 }
