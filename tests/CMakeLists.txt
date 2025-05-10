@@ -17,7 +17,7 @@ add_executable(tests
     "includes/scope.hpp"
     "includes/shortCircuit.hpp"
     "includes/increment.hpp"
-    "includes/whileLoop.hpp"
+    "includes/additionalFeature.hpp"
     "includes/increment3.hpp"
 
     "utils.cpp"

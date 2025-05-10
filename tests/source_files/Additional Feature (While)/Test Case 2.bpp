@@ -1,0 +1,8 @@
+SUGOD
+MUGNA NUMERO a = 2
+ALANG(a <= 10)
+PUNDOK{
+    IPAKITA: a & $
+    a++
+}
+KATAPUSAN

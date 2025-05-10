@@ -10,6 +10,7 @@
 #include "includes/samplePrograms.hpp"
 #include "includes/scope.hpp"
 #include "includes/shortCircuit.hpp"
+#include "includes/additionalFeature.hpp"
 
 auto main(int argc, char* argv[]) -> int {
   testing::InitGoogleTest(&argc, argv);
